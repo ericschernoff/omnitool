@@ -1,0 +1,108 @@
+[*#
+	Template to prepare the 'grid mode' display view Jemplate for a tool.
+
+	This is meant to be processed into a Jemplate file to be sent to the client,
+	who will load in data from a json call.  The server-side processing is to
+	build the structure of that template.
+
+	Very greedy template -- wants all of $self from your tool.pm class.
+
+	Since this is a 'double' template, we need to change the directive markers
+	(delimiters) right off the bat.
+*]
+
+<div class="row">
+<div class="col-xs-12">
+
+[%# Only display the search table if there are results to show. %]
+[% IF records_keys.0 %]
+	[% PROCESS results_table_[*tool_and_instance*] %]
+[% ELSIF error_message %]
+	<div class="center h4">
+		[% error_message.replace("\n", '<br/>') %]
+	</div>
+[% ELSE %]
+	<div class="center h4">
+		No [%datatype_name%] Results Found.  Please Adjust Your Search Options.
+	</div>
+[% END %]
+
+</div>
+</div>
+
+[%# The actual results table template starts now. %]
+
+[% BLOCK results_table_[*tool_and_instance*] %]
+
+<div class="row">
+	[*# cycle through the records key on the client side *]
+	[% FOREACH record_key IN records_keys %]
+
+	[* first_field = included_records_fields.shift *]
+	[* first_field_name = included_field_names.shift *]
+
+	<div class="col-xs-12 col-sm-6 widget-container-col">
+	<div class="widget-box">
+		<div class="widget-header">
+			<h5 class="widget-title">[% records.$record_key.[*first_field*] %]</h5>
+			<div class="widget-toolbar">
+				<div class="widget-menu">
+					[% IF records.$record_key.inline_actions.0 %]
+						<a href="#" data-action="settings" data-toggle="dropdown">
+							<i class="ace-icon fa fa-bars"></i>
+						</a>
+						<ul class="dropdown-menu dropdown-menu-right dropdown-light-blue dropdown-caret dropdown-closer">
+						[% IF metainfo.$record_key.lock_user %]
+							<li>
+								<a name="lock_[%$record_key%]" class="bolder">
+									<i class="ace-icon fa fa-lock"></i> LOCKED ([%metainfo.$record_key.lock_user%])
+								</a>
+							</li>
+						[% END %]
+						[% FOREACH action IN records.$record_key.inline_actions %]
+							<li>
+								<a href="[% action.uri %]">[% action.button_name %]</a>
+							</li>
+						[% END %]
+						</ul>
+					[% ELSE %]
+					-
+					[% END %]
+				</div>
+			</div>
+				<!-- /section:custom/widget-box.toolbar -->
+		</div>
+
+		[*# background color from record-coloring rules *]
+		[% IF metainfo.$record_key.record_color %]
+			[% SET row_bgcolor = metainfo.$record_key.record_color %]
+		[% ELSE %]
+			[% SET row_bgcolor = 'ffffff' %]
+		[% END %]
+
+		<div class="widget-body">
+			<div class="widget-main" style="background-color: #[%row_bgcolor%]">
+
+				[* FOREACH column_name IN included_field_names *]
+					[* record_field = included_records_fields.shift *]
+					<b>[*column_name*]:</b>
+					[% IF records.$record_key.[*record_field*].0.text|| records.$record_key.[*record_field*].0.image || records.$record_key.[*record_field*].0.glyph %]
+						[% the_field = "[*record_field*]" %]
+						[% PROCESS complex_field %]
+					[% ELSE %]
+						[* IF record_field == 'altcode' *]
+							[% metainfo.$record_key.altcode %]
+						[* ELSE *]
+							[% records.$record_key.[*record_field*] %]
+						[* END *]
+
+					[% END %]
+					<br/>
+				[* END *]
+			</div>
+		</div>
+	</div>
+	</div>
+	[% END %]
+</div>
+[% END %]

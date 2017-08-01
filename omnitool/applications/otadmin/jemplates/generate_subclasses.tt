@@ -1,0 +1,17 @@
+[*#
+	Jemplate for Generate Sub-Classes tool for Tools and Datatypes/
+
+	Meant to be shown as a modal.
+ *]
+
+[%# from modal_parts.tt - print top of modal %]
+[% PROCESS modal_head %]
+
+When you click the link below, a new browser tab will open with 'starter'
+code to prepare a [%class_type%] sub-class for [%record_name%].  Please
+save this into your code base at the spot indicated in the file comments.
+<br/><br/>
+<a href="[%generate_subclass_link%]" target="_blank">Generate [%class_type%] for "[%record_name%]" [%which%]</a>
+
+[%# from modal_parts.tt - print bottom of modal %]
+[% PROCESS modal_foot %]

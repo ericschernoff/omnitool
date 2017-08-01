@@ -1,0 +1,165 @@
+[%# shareable jemplate code for spreadsheet-style form entries %]
+[% BLOCK spreadsheet_form_entries %]
+
+	<div class="row">
+	<div class="col-xs-12" style="margin-top: 10px">
+
+		[% IF success_message %]
+			<div class="page-header">
+				<span class="green h3">[% success_message %] </span>
+			</div>
+		[% END %]
+
+		[% IF display_title %]
+			<div class="page-header">
+				<span class="h3">[% display_title %] </span>
+			</div>
+		[% END %]
+
+
+		[% IF error_title %]
+			<div class="page-header">
+				<span class="red h3">[% error_title %] </span>
+			</div>
+		[% END %]
+
+		[% IF error_message %]
+			<div class="center h3 red">
+				[% error_message %]
+			</div>
+		[% END %]
+
+		<form class="form-horizontal center" id="[%the_tool_id%]_form" action="[%my_json_uri%]" method="post" role="form">
+		<input type="hidden" name="form_submitted" value="1" />
+
+		[% IF instructions %]
+			<div class="bigger">
+				[% instructions %]
+				<br/><br/>
+			</div>
+		[% END %]
+
+		[% FOREACH hf IN form.hidden_fields.keys %]
+			<input type="hidden" name="[%hf%]" value="[%form.hidden_fields.$hf%]" />
+		[% END %]
+
+		[%# allow for a 'main' form to be included at the top %]
+		[% FOREACH f IN form.field_keys %]
+			[% IF form.fields.$f.is_required %]
+				[% SET form.fields.$f.title = '* ' _ form.fields.$f.title %]
+			[% END %]
+
+			<div class="form-group" id="field_div_[%form.fields.$f.name%]">
+				<label class="col-sm-3 control-label no-padding-right" for="form-field-[%f%]">
+					[% IF form.fields.$f.field_error %]
+						<span class="bold red">
+							[% form.fields.$f.title %]
+							<i class="ace-icon fa fa-exclamation-circle red"></i>
+						</span>
+					[% ELSE %]
+						[% form.fields.$f.title %]
+					[% END %]
+
+					[% IF form.fields.$f.instructions %]
+						<span class="help-button" data-rel="popover" data-trigger="hover" data-placement="right" data-content="[%form.fields.$f.instructions%]">?</span>
+					[% END %]
+				</label>
+				<div class="col-sm-7">
+					<div class="clearfix">
+					[% SET field_type = form.fields.$f.field_type %]
+					[% PROCESS $field_type %]
+					</div>
+
+					[% IF form.fields.$f.error_instructions %]
+						<div class="space-2"></div>
+						<div class="help-block col-sm-7 bolder red">
+							[% form.fields.$f.error_instructions %]
+						</div>
+					[% END %]
+
+				</div>
+			</div>
+		[% END %]
+
+		<table class="table table-striped table-bordered table-hover" id="tool_results_[%the_tool_id%]">
+		<thead>
+			<tr>
+			[% FOREACH heading IN headings %]
+				<th center" nowrap>[% heading %]</th>
+			[% END %]
+			</tr>
+		<thead>
+		<tbody id="[%the_tool_id%]_form_area">
+		[% FOREACH form IN forms %]
+			[% FOREACH hf IN form.hidden_fields.keys %]
+				<input type="hidden" name="[%hf%]" value="[%form.hidden_fields.$hf%]" />
+			[% END %]
+			<tr id="[%form.row_name%]_form_entry">
+			<td>
+				[% IF form.row_name == 'New' %]
+					<a href="javascript:append_spreadsheet_form('[%the_tool_id%]')">[%form.row_name%] <i class="ace-icon fa fa-plus"></i></a>
+					[%# stash it for keeping a storage version %]
+					[% SET new_form = form %]
+				[% ELSE %]
+					[% form.row_name %]
+				[% END %]
+			</td>
+			[% FOREACH f IN form.field_keys %]
+				<td>
+					[% SET field_type = form.fields.$f.field_type %]
+					[% PROCESS $field_type %]
+					[% IF form.fields.$f.field_error %]
+						<span class="bold red">
+						*
+						</span>
+					[% END %]
+					[% IF form.fields.$f.instructions %]
+						[%form.fields.$f.instructions%]
+					[% END %]
+				</td>
+			[% END %]
+			</tr>
+		[% END %]
+		</tbody>
+		</table>
+
+		[% IF submit_button_text %]
+			<center>
+			<button class="btn btn-white" type="submit">
+				[% submit_button_text %]
+			</button>
+			</center>
+			<br/><br/>
+		[% END %]
+
+		</form>
+	</div>
+	</div>
+
+	[% IF new_form %]
+		<table class="hidden">
+			<tbody id="new_item_form_entry_storage">
+			<tr id="new_item_form_entry">
+			<td>
+				<a href="javascript:append_spreadsheet_form ('[%the_tool_id%]')">[%new_form.row_name%] <i class="ace-icon fa fa-plus"></i></a>
+			</td>
+			[% FOREACH f IN new_form.field_keys %]
+				<td class="omnitool-data">
+					[% SET field_type = new_form.fields.$f.field_type %]
+					[% PROCESS $field_type %]
+					[% IF form.fields.$f.instructions %]
+						[%form.fields.$f.instructions%]
+					[% END %]
+					[% IF new_form.fields.$f.field_error %]
+						<span class="bold red">
+						*
+						</span>
+					[% END %]
+				</td>
+			[% END %]
+			</tr>
+			</tbody>
+		</table>
+	[% END %]
+
+[% END %]

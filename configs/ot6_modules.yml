@@ -1,0 +1,1093 @@
+--- 
+classes: 
+  - 
+    methods: 
+      - init
+      - options_used_in_applications
+    name: omnitool::applications::otadmin::datatypes::access_roles
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - init
+      - options_app_code_directory
+      - options_share_my_datatypes
+      - options_ui_template
+    name: omnitool::applications::otadmin::datatypes::applications
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - init
+      - post_validate_form
+    name: omnitool::applications::otadmin::datatypes::database_servers
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - get_datatype_field_names
+      - get_datatype_names
+      - get_datatypes_hash
+      - init
+      - pre_save
+    name: omnitool::applications::otadmin::datatypes::datatype_fields
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - get_datatype_field_names
+      - get_datatype_names
+      - get_datatypes_hash
+      - init
+      - options_containable_datatypes
+      - options_perl_module
+      - post_validate_form
+      - pre_save
+      - prepare_for_form_fields
+    name: omnitool::applications::otadmin::datatypes::datatypes
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - change_user_session
+      - daily_routines
+      - field_database_info
+      - field_instance_link
+      - init
+      - options_database_server_id
+      - options_switch_into_access_roles
+      - options_ui_logo
+      - pack_extra_luggage
+      - pack_luggage
+      - post_save
+      - post_validate_form
+    name: omnitool::applications::otadmin::datatypes::instances
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - init
+      - options_hard_set_access_roles
+    name: omnitool::applications::otadmin::datatypes::omnitool_users
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - get_datatype_field_names
+      - get_datatype_names
+      - get_datatypes_hash
+      - options_match_field
+      - options_use_for_modes
+      - prepare_for_form_fields
+    name: omnitool::applications::otadmin::datatypes::record_coloring_rules
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - init
+      - options_trigger_menu
+      - prepare_for_form_fields
+    name: omnitool::applications::otadmin::datatypes::tool_filter_menus
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - get_datatype_field_names
+      - get_datatype_names
+      - get_datatypes_hash
+      - options_default_sort_column
+      - options_fields_to_include
+      - options_mode_type
+      - prepare_for_form_fields
+    name: omnitool::applications::otadmin::datatypes::tool_mode_configs
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - field_enhanced_name
+      - get_datatype_field_names
+      - get_datatype_names
+      - get_datatypes_hash
+      - init
+      - options_default_mode
+      - options_javascript_class
+      - options_link_match_field
+      - options_perl_module
+      - options_target_datatype
+      - post_load
+      - post_save
+      - post_search
+      - pre_load
+      - pre_save
+      - pre_search
+      - prepare_for_form_fields
+    name: omnitool::applications::otadmin::datatypes::tools
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - field_tied_to_ip_address_display
+      - init
+      - pre_save
+    name: omnitool::applications::otadmin::datatypes::user_api_keys
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - prepare_message
+    name: omnitool::applications::otadmin::tools::active_sessions
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - generate_form
+      - init
+      - perform_action
+      - perform_form_action
+      - view_error_message
+    name: omnitool::applications::otadmin::tools::background_tasks
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - generate_form
+      - init
+      - perform_form_action
+    name: omnitool::applications::otadmin::tools::create_api_key
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - append_file
+      - generate_form
+      - init
+      - overwrite_file
+      - perform_form_action
+      - read_dir
+      - read_file
+      - write_file
+    name: omnitool::applications::otadmin::tools::deploy_admin_database
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - Dump
+      - DumpFile
+      - Load
+      - LoadFile
+      - generate_form
+      - init
+      - perform_form_action
+    name: omnitool::applications::otadmin::tools::find_class_by_sub
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - flush_datatype_hashes
+      - prepare_message
+    name: omnitool::applications::otadmin::tools::flush_datatype_hashes
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - flush_the_sessions
+      - perform_action
+    name: omnitool::applications::otadmin::tools::flush_sessions
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - generate_form
+      - init
+      - perform_form_action
+    name: omnitool::applications::otadmin::tools::flush_user_sessions
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - append_file
+      - generate_helper_module
+      - overwrite_file
+      - perform_action
+      - read_dir
+      - read_file
+      - write_file
+    name: omnitool::applications::otadmin::tools::generate_application_helpers
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - init
+      - perform_action
+    name: omnitool::applications::otadmin::tools::generate_crontab
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - generate_subclass
+      - perform_action
+    name: omnitool::applications::otadmin::tools::generate_subclasses
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - do_make_table_actions
+      - perform_action
+    name: omnitool::applications::otadmin::tools::make_tables
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - example_scripts
+      - init
+      - pre_search_execute
+      - pre_tool_controls
+    name: omnitool::applications::otadmin::tools::manage_api_keys
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - generate_form
+      - load_tool_parent_options
+      - perform_form_action
+    name: omnitool::applications::otadmin::tools::move_tool
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - display_fields_options
+      - generate_form
+      - get_datatype_field_names
+      - get_datatype_names
+      - get_datatypes_hash
+      - init
+      - perform_form_action
+    name: omnitool::applications::otadmin::tools::oneclick_crud
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - generate_form
+      - perform_form_action
+    name: omnitool::applications::otadmin::tools::order_items
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - init
+      - prepare_message
+    name: omnitool::applications::otadmin::tools::renew_api_key
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - perform_action
+    name: omnitool::applications::otadmin::tools::start_background_tasks
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - post_search_execute
+      - special_breadcrumbs
+    name: omnitool::applications::otadmin::tools::tool_manager
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - generate_form
+      - init
+      - perform_form_action
+    name: omnitool::applications::otadmin::tools::update_api_key
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - init
+      - perform_action
+    name: omnitool::applications::otadmin::tools::view_dt
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - append_file
+      - generate_form
+      - generate_pod2html
+      - htmlify
+      - overwrite_file
+      - perform_form_action
+      - pod2html
+      - read_dir
+      - read_file
+      - write_file
+    name: omnitool::applications::otadmin::tools::view_module_documentation
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - generate_form
+      - grab_instance_session
+      - init
+      - perform_form_action
+    name: omnitool::applications::otadmin::tools::view_users_access
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - figure_metainfo_table
+      - name_and_parent_from_altcode
+      - new
+      - parent_string_from_altcode
+    name: omnitool::common::altcode_decoder
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - create_bookmark
+      - delete_bookmark
+      - fetch_default_bookmark_uri
+      - fetch_tool_bookmarks
+      - new
+      - rename_bookmark
+      - set_default_bookmark
+      - sort_bookmarks
+    name: omnitool::common::bookmark_broker
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - get_datatype_field_names
+      - get_datatype_names
+      - get_datatypes_hash
+      - nfreeze
+      - thaw
+    name: omnitool::common::datatype_hash
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - DESTROY
+      - append_file
+      - catch
+      - change_database
+      - comma_list_select
+      - dclone
+      - decrypt_string
+      - do_sql
+      - encrypt_string
+      - finally
+      - grab_column_list
+      - hash_cache
+      - list_select
+      - log_errors
+      - new
+      - nfreeze
+      - overwrite_file
+      - quick_select
+      - read_dir
+      - read_file
+      - sql_hash
+      - thaw
+      - try
+      - write_file
+      - your_birthdate
+    name: omnitool::common::db
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - append_file
+      - clean
+      - fix_latin
+      - html_body_into_text
+      - new
+      - open_email
+      - overwrite_file
+      - read_dir
+      - read_file
+      - remove_tree
+      - write_file
+    name: omnitool::common::email_unpack
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - append_file
+      - new
+      - overwrite_file
+      - read_dir
+      - read_excel
+      - read_file
+      - write_excel
+      - write_file
+    name: omnitool::common::excel_grinder
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - append_file
+      - get_stored_files_for_record
+      - load_file_info
+      - load_from_filesystem
+      - load_from_swift
+      - new
+      - overwrite_file
+      - read_dir
+      - read_file
+      - receive_from_filesystem
+      - receive_from_upload
+      - receive_from_web
+      - remove_file
+      - remove_from_filesystem
+      - remove_from_swift
+      - retrieve_file
+      - save_to_filesystem
+      - save_to_swift
+      - store_file
+      - tie_to_record
+      - total_size
+      - write_file
+    name: omnitool::common::file_manager
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - api_key_athentication
+      - new
+      - show_login_screen
+      - show_redirection_page
+      - test_their_credentials
+      - web_authentication
+    name: omnitool::common::login_system
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - change_user_session
+      - get_datatype_field_names
+      - get_datatype_names
+      - get_datatypes_hash
+      - pack_extra_luggage
+      - pack_luggage
+      - web_authentication
+    name: omnitool::common::luggage
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - new
+      - omniclass_data_extractor
+      - omniclass_object
+      - omniclass_tree
+      - tool_object
+    name: omnitool::common::object_factory
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - check_access
+      - close
+      - fetch_the_tools
+      - find_access_roles
+      - get_instance_db_object
+      - get_tools_table_columns
+      - new
+      - nfreeze
+      - save
+      - thaw
+    name: omnitool::common::session
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - add_datatype_table_column
+      - check_database_existence
+      - check_tables_existence
+      - create_baseline_tables
+      - create_database
+      - create_datatype_metainfo_table
+      - create_datatype_table
+      - create_tables
+      - figure_datatype_table_columns
+      - get_datatype_field_names
+      - get_datatype_names
+      - get_datatypes_hash
+      - new
+      - verify_datatype_table_columns
+    name: omnitool::common::table_maker
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - AUTOLOAD
+      - DESTROY
+      - append_file
+      - build_navigation
+      - error_no_access
+      - get_instance_info
+      - load_javascript
+      - new
+      - overwrite_file
+      - read_dir
+      - read_file
+      - send_jemplate
+      - signout
+      - skeleton_html
+      - tools_javascript_classes
+      - write_file
+    name: omnitool::common::ui
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - Dumper
+      - append_file
+      - asctime
+      - benchmarker
+      - comma_list
+      - commaify_number
+      - ctime
+      - datacode_query
+      - date_fix
+      - decode_json
+      - diff_percent
+      - encode_json
+      - encode_utf8
+      - figure_age
+      - figure_delay_time
+      - from_json
+      - get_datetime_object
+      - get_epoch_for_next_local_time
+      - get_instance_db_hostname
+      - get_instance_db_object
+      - get_sort_keys
+      - gunzip
+      - gunzip_file
+      - gzip
+      - gzip_file
+      - gzip_to_file
+      - jemplate_process
+      - jsonToObj
+      - json_from_perl
+      - json_to_perl
+      - logger
+      - mr_zebra
+      - new
+      - objToJson
+      - overwrite_file
+      - q_mark_list
+      - random_string
+      - range_list
+      - read_dir
+      - read_file
+      - really_in_list
+      - show_data_structure
+      - sql_list
+      - stash_some_text
+      - strftime
+      - template_process
+      - time2str
+      - time_to_date
+      - timediff
+      - timeit
+      - timestr
+      - timethese
+      - timethis
+      - to_json
+      - todays_date
+      - uniquify_list
+      - write_file
+    name: omnitool::common::utility_belt
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - change_user_session
+      - dispatch
+      - new
+      - pack_extra_luggage
+      - pack_luggage
+    name: omnitool::dispatcher
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - AUTOLOAD
+      - change_options
+      - change_user_session
+      - database_is_ready
+      - get_access_roles
+      - get_omniclass_object
+      - new
+      - pack_extra_luggage
+      - pack_luggage
+      - update_history
+      - work_history
+    name: omnitool::omniclass
+    properties: []
+
+    subclasses: 
+      - omnitool::applications::otadmin::datatypes::access_roles
+      - omnitool::applications::otadmin::datatypes::applications
+      - omnitool::applications::otadmin::datatypes::database_servers
+      - omnitool::applications::otadmin::datatypes::datatype_fields
+      - omnitool::applications::otadmin::datatypes::datatypes
+      - omnitool::applications::otadmin::datatypes::instances
+      - omnitool::applications::otadmin::datatypes::omnitool_users
+      - omnitool::applications::otadmin::datatypes::record_coloring_rules
+      - omnitool::applications::otadmin::datatypes::tool_filter_menus
+      - omnitool::applications::otadmin::datatypes::tool_mode_configs
+      - omnitool::applications::otadmin::datatypes::tools
+      - omnitool::applications::otadmin::datatypes::user_api_keys
+  - 
+    methods: 
+      - add_task
+      - cancel_task
+      - cancel_task_for_record_and_method
+      - change_user_session
+      - dclone
+      - do_task
+      - get_next_task_info
+      - nfreeze
+      - pack_extra_luggage
+      - pack_luggage
+      - retrieve_task_details
+      - retry_zombies
+      - start_now
+      - task_status
+      - thaw
+    name: omnitool::omniclass::background_task_manager
+    properties: []
+
+    subclasses: 
+      - omnitool::omniclass
+  - 
+    methods: 
+      - check_data_lock
+      - lock_data
+      - unlock_data
+    name: omnitool::omniclass::data_locker
+    properties: []
+
+    subclasses: 
+      - omnitool::omniclass
+  - 
+    methods: 
+      - delete
+      - freeze
+      - restore
+      - thaw
+    name: omnitool::omniclass::deleter
+    properties: []
+
+    subclasses: 
+      - omnitool::omniclass
+  - 
+    methods: 
+      - add_outbound_email
+      - hostdomain
+      - send_outbound_email
+    name: omnitool::omniclass::email_creator
+    properties: []
+
+    subclasses: 
+      - omnitool::omniclass
+  - 
+    methods: 
+      - email_receiver
+    name: omnitool::omniclass::email_receiver
+    properties: []
+
+    subclasses: 
+      - omnitool::omniclass
+  - 
+    methods: 
+      - access_roles_select
+      - active_status_select
+      - check_boxes
+      - color_picker
+      - file_upload
+      - password
+      - short_text_clean
+      - short_text_encrypted
+      - street_address
+      - yes_no_select
+    name: omnitool::omniclass::field_grabber
+    properties: []
+
+    subclasses: 
+      - omnitool::omniclass
+  - 
+    methods: 
+      - form
+      - options_from_directory
+      - setup_field
+    name: omnitool::omniclass::form_maker
+    properties: []
+
+    subclasses: 
+      - omnitool::omniclass
+  - 
+    methods: 
+      - altcode_to_data_code
+      - check_for_loaded_record
+      - clear_records
+      - create_resolver_hash
+      - data_code_to_altcode
+      - get_altcodes_keys
+      - load
+      - load_last_saved_record
+      - prep_menu_options
+      - send_file
+      - time_adjust
+    name: omnitool::omniclass::loader
+    properties: []
+
+    subclasses: 
+      - omnitool::omniclass
+  - 
+    methods: 
+      - change_parent
+      - children_update
+      - get_descendants
+      - get_lineage
+      - parent_string_bits
+    name: omnitool::omniclass::parent_changer
+    properties: []
+
+    subclasses: 
+      - omnitool::omniclass
+  - 
+    methods: 
+      - altcode_maker
+      - altcode_next_number
+      - do_create
+      - do_update
+      - figure_the_key
+      - not_draft
+      - save
+    name: omnitool::omniclass::saver
+    properties: []
+
+    subclasses: 
+      - omnitool::omniclass
+  - 
+    methods: 
+      - find_duplicates
+      - looks_like_number
+      - search
+    name: omnitool::omniclass::searcher
+    properties: []
+
+    subclasses: 
+      - omnitool::omniclass
+  - 
+    methods: 
+      - complex_sort
+      - simple_sort
+    name: omnitool::omniclass::sorter
+    properties: []
+
+    subclasses: 
+      - omnitool::omniclass
+  - 
+    methods: 
+      - POST
+      - decode_json
+      - encode_json
+      - from_json
+      - get_client_connection_id
+      - jsonToObj
+      - new
+      - objToJson
+      - perform_requests
+      - to_json
+    name: omnitool::sample_api_client
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - AUTOLOAD
+      - DESTROY
+      - execute_method
+      - get_omniclass_object
+      - logger
+      - new
+      - send_attributes
+      - send_tool_id
+    name: omnitool::tool
+    properties: []
+
+    subclasses: 
+      - omnitool::applications::otadmin::tools::active_sessions
+      - omnitool::applications::otadmin::tools::background_tasks
+      - omnitool::applications::otadmin::tools::create_api_key
+      - omnitool::applications::otadmin::tools::deploy_admin_database
+      - omnitool::applications::otadmin::tools::find_class_by_sub
+      - omnitool::applications::otadmin::tools::flush_datatype_hashes
+      - omnitool::applications::otadmin::tools::flush_sessions
+      - omnitool::applications::otadmin::tools::flush_user_sessions
+      - omnitool::applications::otadmin::tools::generate_application_helpers
+      - omnitool::applications::otadmin::tools::generate_crontab
+      - omnitool::applications::otadmin::tools::generate_subclasses
+      - omnitool::applications::otadmin::tools::make_tables
+      - omnitool::applications::otadmin::tools::manage_api_keys
+      - omnitool::applications::otadmin::tools::move_tool
+      - omnitool::applications::otadmin::tools::oneclick_crud
+      - omnitool::applications::otadmin::tools::order_items
+      - omnitool::applications::otadmin::tools::renew_api_key
+      - omnitool::applications::otadmin::tools::start_background_tasks
+      - omnitool::applications::otadmin::tools::tool_manager
+      - omnitool::applications::otadmin::tools::update_api_key
+      - omnitool::applications::otadmin::tools::view_dt
+      - omnitool::applications::otadmin::tools::view_module_documentation
+      - omnitool::applications::otadmin::tools::view_users_access
+      - omnitool::tool::basic_calendar
+      - omnitool::tool::basic_data_view
+      - omnitool::tool::setup_diagram
+      - omnitool::tool::singleton_data_actions
+      - omnitool::tool::standard_data_actions
+      - omnitool::tool::standard_delete
+      - omnitool::tool::view_details
+  - 
+    methods: 
+      - Dumper
+      - autocomplete_suggester
+      - figure_new_parent
+      - get_inline_actions_for_action_tool
+      - run_action
+      - unlock_data
+      - validate_form
+    name: omnitool::tool::action_tool
+    properties: []
+
+    subclasses: 
+      - omnitool::tool
+  - 
+    methods: 
+      - perform_action
+    name: omnitool::tool::basic_calendar
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - perform_action
+    name: omnitool::tool::basic_data_view
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - bookmark_manager
+    name: omnitool::tool::bookmark_manager
+    properties: []
+
+    subclasses: 
+      - omnitool::tool
+  - 
+    methods: 
+      - get_mode_config
+      - prep_fields_to_include
+      - prepare_json
+      - send_file
+      - send_jemplate
+      - send_json_data
+      - show_display_options
+    name: omnitool::tool::center_stage
+    properties: []
+
+    subclasses: 
+      - omnitool::tool
+  - 
+    methods: 
+      - clear_display_options_hash
+      - load_display_options
+      - load_display_options_hash
+      - save_display_options_hash
+    name: omnitool::tool::display_options_manager
+    properties: []
+
+    subclasses: 
+      - omnitool::tool
+  - 
+    methods: 
+      - advanced_search_form
+      - advanced_search_trigger_menu_options
+      - advanced_sort_form
+      - build_filter_menu_options
+      - find_breadcrumbs
+      - send_breadcrumbs
+      - send_html
+      - tool_controls
+    name: omnitool::tool::html_sender
+    properties: []
+
+    subclasses: 
+      - omnitool::tool
+  - 
+    methods: 
+      - Dumper
+      - build_search
+      - get_inline_actions
+      - limit_results
+      - load_one_record
+      - num2en
+      - num2en_ordinal
+      - quick_search_keyword_match
+      - record_coloring_rules
+      - search
+    name: omnitool::tool::searcher
+    properties: []
+
+    subclasses: 
+      - omnitool::tool
+  - 
+    methods: 
+      - init
+      - network_diagram_data
+      - perform_action
+    name: omnitool::tool::setup_diagram
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - generate_form
+      - perform_form_action
+    name: omnitool::tool::singleton_data_actions
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - generate_form
+      - perform_form_action
+    name: omnitool::tool::standard_data_actions
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - prepare_message
+    name: omnitool::tool::standard_delete
+    properties: []
+
+    subclasses: []
+
+  - 
+    methods: 
+      - init
+      - network_diagram_data
+      - perform_action
+    name: omnitool::tool::view_details
+    properties: []
+
+    subclasses: []
+

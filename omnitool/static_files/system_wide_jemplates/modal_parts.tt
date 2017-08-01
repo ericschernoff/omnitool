@@ -1,0 +1,66 @@
+[%#
+	Jemplate to provide decent top/bottom for modal displays.
+	Used by system modals and anywhere else you wish.
+
+	Expects 'modal_title' and 'modal_title_icon' variables.
+%]
+
+[% BLOCK modal_head %]
+	[%IF !the_tool_id %]
+		<div class="modal-dialog modal-xl">
+		<div class="modal-content">
+	[% END %]
+
+	[% IF !no_modal_header %]
+		<div class="modal-header">
+			<div class="table-header">
+			[% IF return_link_uri %]
+				<button type="button" class="close" onclick="location.hash='[%return_link_uri%]'" aria-hidden="true">
+			[% ELSIF the_tool_id %]
+				<button type="button" class="close" onclick="tool_objects['[%the_tool_id%]'].close_modal_for_screen(1);" aria-hidden="true">
+			[% ELSE %]
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+			[% END %]
+					<span class="white">&times;</span>
+				</button>
+			[% IF modal_title_icon %]
+				<i class="fa [%modal_title_icon%] white bolder"></i>
+			[% END %]
+			[% modal_title %]
+			</div>
+		</div>
+	[% END %]
+	
+	<div class="modal-body" style="max-height: calc(100vh - 212px); overflow-y: auto;">
+
+[% END %]
+
+[% BLOCK modal_foot %]
+	</div><!-- /.modal-body -->
+
+	[% IF no_close_button == '' %]
+		<div class="modal-footer no-margin-top">
+			[% IF return_link_uri %]
+				<a class="btn btn-sm btn-danger pull-right" href="[%return_link_uri%]">
+					<i class="ace-icon fa fa-times"></i>
+					Close
+				</a>
+			[% ELSIF the_tool_id %]
+				<button class="btn btn-sm btn-danger pull-right" onclick="tool_objects['[%the_tool_id%]'].close_modal_for_screen(1);">
+					<i class="ace-icon fa fa-times"></i>
+					Close [%no_close_button%]
+				</button>
+			[% ELSE %]
+				<button class="btn btn-sm btn-danger pull-right" data-dismiss="modal">
+					<i class="ace-icon fa fa-times"></i>
+					Close
+				</button>
+			[% END %]
+		</div>
+	[% END %]
+
+	[%IF !the_tool_id %]
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	[% END %]
+[% END %]

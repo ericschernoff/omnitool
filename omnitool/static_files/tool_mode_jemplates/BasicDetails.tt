@@ -1,0 +1,24 @@
+[*# must have this for jemplates to process safely *]
+
+<div class="row">
+<div class="col-xs-12">
+
+	<div class="page-header align-center">
+		<h3>
+			Details for [% data.name %]
+		</h3>
+	</div>
+
+[% FOREACH field IN field_keys %]
+	<div class="row">
+		<div class="col-xs-2 align-right">
+			[%fields.$field%]:
+		</div>
+		<div class="col-xs-10 align-left">
+			[% data.$field %]
+		</div>
+	</div>
+[% END %]
+
+</div>
+</div>

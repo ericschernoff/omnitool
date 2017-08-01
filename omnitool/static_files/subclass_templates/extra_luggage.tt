@@ -1,0 +1,26 @@
+package omnitool::applications::[%app_code_directory%]::extra_luggage;
+
+# Adds functionality to the %$luggage data structure generated when
+# you log into either of the [%app_name%] applications.
+
+$omnitool::applications::[%app_code_directory%]::extra_luggage::VERSION = '6.0';
+
+# this works for perl and not lorelei
+use strict;
+
+sub pack_extra_luggage {
+	# must receive the memory reference to the luggage we've already packed
+	my ($luggage) = @_;
+
+	if (!$$luggage{belt}->{all_hail}) {
+		die(qq{Can't use pack_extra_luggage() without first running pack_luggage().'});
+	}
+
+	# start storing special data bits here:
+	# $$luggage{company}{directory_url} = 'http://your_company_directory.company.com/details/';
+
+	# no need to return, hashref updated in place
+}
+
+
+1;

@@ -1,0 +1,9 @@
+[%#
+	Here's a silly little hack.  A jemplate which allows us to process a DIV of our choice
+	in some tool-custom javascript, using a block found in a bigger/better Jemplate file
+	which was already loaded.
+
+	For example, please see WidgetsV2.tt
+%]
+
+[% PROCESS $block_name %]

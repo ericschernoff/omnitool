@@ -1,0 +1,160 @@
+[*#
+	Template to prepare the 'table mode' display view Jemplate for a tool.
+
+	This is meant to be processed into a Jemplate file to be sent to the client,
+	who will load in data from a json call.  The server-side processing is to
+	build the structure of that template.
+
+	Very greedy template -- wants all of $self from your tool.pm class.
+
+*]
+
+<div class="row">
+<div class="col-xs-12">
+
+[%# Only display the search table if there are results to show. %]
+[% IF records_keys.0 %]
+	[% PROCESS results_table_[*tool_and_instance*] %]
+[% ELSIF error_message %]
+	<div class="center h4">
+		[% error_message.replace("\n", '<br/>') %]
+	</div>
+[% ELSE %]
+	<div class="center h4">
+		No [%datatype_name%] Results Found.  Please Adjust Your Search Options.
+	</div>
+[% END %]
+
+</div>
+</div>
+
+[%# The actual results table template starts now. %]
+
+[% BLOCK results_table_[*tool_and_instance*] %]
+
+	<!-- where export buttons go -->
+	<div class="clearfix">
+		<div class="pull-right tableTools-container"></div>
+	</div>
+
+	<!-- start the table -->
+	<div>
+	<table id="tool_results_[*tool_and_instance*]" class="table table-striped">
+
+	<!-- show headings -->
+	<thead>
+	<tr>
+		[* SET field_count = 1 *]
+		[* SET num = 0 *]
+		[* FOREACH field_name IN included_field_names *]
+			[* IF field_count > 4 *]
+				<th class="hidden-1025 omnitool-data omnitool-heading text-nowrap" data-otsortcol="[*included_records_fields.$num*]"><i class="fa fa-arrow-up"></i>[*field_name*]</th>
+			[* ELSIF field_count > 2 *]
+				<th class="hidden-480 omnitool-data omnitool-heading text-nowrap" data-otsortcol="[*included_records_fields.$num*]"><i class="fa fa-arrow-up"></i>[*field_name*]</th>
+			[* ELSE *]
+				<th class="omnitool-data omnitool-heading text-nowrap" data-otsortcol="[*included_records_fields.$num*]"><i class="fa fa-arrow-up"></i>[*field_name*]</th>
+			[* END *]
+			[* SET field_count = field_count + 1 *]
+			[* SET num = num + 1 *]
+		[* END *]
+		[% IF found_inline_actions %]
+			<th>Actions</th>
+		[% END %]
+	</tr>
+	</thead>
+
+	<!-- table body -->
+	<tbody>
+
+	[*# cycle through the records key on the client side *]
+	[% FOREACH record_key IN records_keys %]
+
+
+		[*# background color from record-coloring rules *]
+		[% IF metainfo.$record_key.record_color %]
+			[% SET row_bgcolor = metainfo.$record_key.record_color %]
+		[% ELSE %]
+			[% SET row_bgcolor = 'ffffff' %]
+		[% END %]
+
+
+		[%#
+			Let's try to have each result row handled separately, in hopes that we could process just
+			one at a time. So the 'the_result_table_row' block is below.
+		%]
+		<tr bgcolor="#[%row_bgcolor%]" style="background-color: #[%row_bgcolor%]" id="[%record_key%]_result">
+
+			[% PROCESS the_result_table_row_[*tool_and_instance*] %]
+
+		</tr>
+	[% END %]
+
+	</tbody>
+
+	<!-- end the table -->
+	</table>
+	</div>
+
+[% END %]
+
+[%# Let's try to have each result row handled separately, in hopes that we could process just one at a time. %]
+[% BLOCK the_result_table_row_[*tool_and_instance*] %]
+
+	[*# load fields on server side, and fill those on client *]
+	[*# call in the complex_field jemplate block for generated fields with multiple lines *]
+	[* SET field_count = 1 *]
+	[* FOREACH field IN included_records_fields *]
+		[* IF field_count > 4 *]
+			<td class="hidden-1025 omnitool-data">
+		[* ELSIF field_count > 2 *]
+			<td class="hidden-480 omnitool-data">
+		[* ELSE *]
+			<td class="omnitool-data">
+
+		[* END *]
+			[% IF records.$record_key.[*field*].0.text|| records.$record_key.[*field*].0.image || records.$record_key.[*field*].0.glyph %]
+				[% the_field = "[*field*]" %]
+				[% PROCESS complex_field %]
+			[% ELSE %]
+				[* IF field == 'altcode' *]
+					[% metainfo.$record_key.altcode %]
+				[* ELSE *]
+					[% records.$record_key.[*field*] %]
+				[* END *]
+			[% END %]
+		</td>
+		[* SET field_count = field_count + 1 *]
+	[* END *]
+	[% IF found_inline_actions %]
+	<td>
+		[% IF records.$record_key.inline_actions.0 %]
+			<div class="btn-group dropdown">
+			<button data-toggle="dropdown" type="button" class="btn btn-white btn-sm dropdown-toggle">
+				<i class="ace-icon fa fa-bolt"></i>
+				Actions
+				<i class="ace-icon fa fa-caret-down"></i>
+			</button>
+			<ul class="dropdown-menu dropdown-caret dropdown-close dropdown-menu-right"> <!-- style="height: auto; max-height: 144px; overflow-y: auto; overflow-x: hidden" -->
+			[% IF metainfo.$record_key.lock_user %]
+				<li>
+					<a name="lock_[%$record_key%]" class="bolder">
+						<i class="ace-icon fa fa-lock"></i> LOCKED ([%metainfo.$record_key.lock_user%])
+					</a>
+				</li>
+			[% END %]
+			[% FOREACH action IN records.$record_key.inline_actions %]
+				<li>
+					<a href="[% action.uri %]" tabindex="-1">
+						<i class="ace-icon fa [% action.icon_fa_glyph %]"></i>
+						[% action.button_name %]
+					</a>
+				</li>
+			[% END %]
+			</ul>
+			</div>
+		[% END %]
+	</td>
+	[% END %]
+
+
+[% END %]

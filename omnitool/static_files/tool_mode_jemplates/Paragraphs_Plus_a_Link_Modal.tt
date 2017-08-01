@@ -1,0 +1,36 @@
+[%#
+	A simple modal view to display a set of paragaphs, following by a link.
+%]
+
+[*# must have this for jemplates to process safely *]
+
+[%IF error_title %]
+	[% SET modal_title = error_title %]
+[% ELSE %]
+	[% SET modal_title = title %]
+[% END %]
+
+[%# from modal_parts.tt - print top of modal %]
+[% PROCESS modal_head %]
+
+[%IF error_message %]
+	<div class="h5 red">
+		[% error_message %]
+	<div>
+[% END %]
+
+[% FOREACH paragraph IN paragraphs %]
+	[% FILTER html_line_break %]
+		[% paragraph %]
+	[% END %]
+[% END %]
+
+[%# is there a link? should have a title + uri key under 'link' %]
+
+[% IF link_title %]
+	<a href="[%link_uri%]">[%link_title%]</a>
+[% END %]
+
+
+[%# from modal_parts.tt - print bottom of modal %]
+[% PROCESS modal_foot %]

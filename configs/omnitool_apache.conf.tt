@@ -1,0 +1,118 @@
+#######################################################################################
+# Apache 2.4 configuration file for OmniTool 6
+#
+# Please only modify the values between the 'START OKAY TO EDIT' and 'END OKAY TO EDIT'
+# areas below (currently, there are three).  Please copy this file to
+# [%options.othome%]/programs/apache-2.4.23/httpd.conf and customize it there.
+#
+# If you upgrade Apache, please modify the 'apache-2.4.23' strings throughout.
+#
+# This server should not support CGI or anything else exotic; it is really meant to
+# proxy out to the Plack server and serve the supporting static files.
+#######################################################################################
+
+# START OKAY TO EDIT
+ServerAdmin [%options.omnitool_admin%]
+ServerName 127.0.0.1:443
+# END OKAY TO EDIT
+
+# only HTTPS
+<VirtualHost *:80>
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI}
+</VirtualHost>
+
+# 'Main' server configuration
+<Directory />
+    AllowOverride none
+    Require all denied
+</Directory>
+
+DocumentRoot "[%options.othome%]/htdocs"
+<Directory "[%options.othome%]/htdocs">
+    Options Indexes FollowSymLinks
+    AllowOverride None
+    Require all granted
+</Directory>
+
+<IfModule dir_module>
+    DirectoryIndex index.html
+</IfModule>
+
+<Files ".ht*">
+    Require all denied
+</Files>
+
+# get ready to run SSL, which for some dumbass reason, has to be invoked in the vhost
+Listen 443
+SSLPassPhraseDialog builtin
+SSLSessionCache shmcb:[%options.othome%]/logs/ssl_cache_shmcb
+SSLSessionCacheTimeout 600
+SSLVerifyClient none
+SSLProxyEngine off
+
+####
+# OMNITOOL 6.0 VIRTUAL HOST
+###
+
+<VirtualHost *:443>
+# START OKAY TO EDIT
+	ServerName [%options.ot_primary_hostname%]
+	# ServerAlias <add aliases here>
+	ServerAdmin [%options.omnitool_admin%]
+# END OKAY TO EDIT
+
+	DocumentRoot [%options.othome%]/htdocs/omnitool
+	Options All
+
+	# enable a strong SSL server
+	SSLEngine on
+	SSLProtocol -all +TLSv1 +TLSv1.2 -SSLv3
+	SSLCipherSuite HIGH:!aNULL:+SHA1:!MD5
+	SSLCompression off
+
+	# START OKAY TO EDIT
+	SSLCertificateFile [%options.othome%]/configs/ssl_cert/[%options.ot_primary_hostname%].crt
+	SSLCertificateChainFile [%options.othome%]/configs/ssl_cert/[%options.ot_primary_hostname%].crt
+	SSLCertificateKeyFile [%options.othome%]/configs/ssl_cert/[%options.ot_primary_hostname%].key
+	# END OKAY TO EDIT
+
+	<Directory "[%options.othome%]/htdocs/omnitool">
+		Require all granted
+	</Directory>
+
+	<Proxy *>
+		Order deny,allow
+		Allow from all
+	</Proxy>
+
+	ProxyRequests Off
+	ProxyPreserveHost On
+
+	ProxyPass /omnitool !
+	ProxyPass /ace !
+	ProxyPass /non_ace_assets !
+	ProxyPass /icons !
+	ProxyPass /favicon.ico !
+	ProxyPass /ui_icons !
+
+	ProxyPass / http://127.0.0.1:6000/ keepalive=On retry=0
+	ProxyPassReverse / http://127.0.0.1:6000/
+
+	ProxyPass /index.html http://127.0.0.1:6000/ keepalive=On retry=0
+	ProxyPassReverse /index.html http://127.0.0.1:6000/
+
+	ProxyPass /ui http://127.0.0.1:6000/ui keepalive=On retry=0
+	ProxyPassReverse /ui http://127.0.0.1:6000/ui
+
+	ProxyPass /tool http://127.0.0.1:6000/tool keepalive=On retry=0
+	ProxyPassReverse /tool http://127.0.0.1:6000/tool
+
+	ProxyPass /tools http://127.0.0.1:6000/tools keepalive=On retry=0
+	ProxyPassReverse /tools http://127.0.0.1:6000/tools
+
+	RequestHeader set X-Forwarded-HTTPS "0"
+
+</VirtualHost>
+

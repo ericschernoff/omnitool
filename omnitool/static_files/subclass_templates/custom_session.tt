@@ -1,0 +1,43 @@
+package omnitool::applications::[%app_code_directory%]::custom_session;
+# custom session hooks for the [%app_name%] applications
+
+# The complete %$luggage is not ready when we get here, but
+# we do have the utility belt in $self->{belt}
+
+# is a sub-class of the main session module
+use parent 'omnitool::common::session';
+# so $self is the session object we are building, before the
+# tools are fetched
+
+# for not having any fun
+use strict;
+
+# special routine to extend session information; basically add data intelligently
+# be careful not to put business logic or hard-coded info in here; read from the DB
+sub extend_session_info {
+	my $self = shift;
+	my ($db, $belt) = @_; # db object will be tied to the instance's DB server
+						  # $belt is utility_belt.pm object
+
+	# sanity
+	# $username = $self->{username};
+
+	# add some useful data, for example
+	$self->{their_name} = 'Some Code to Determine This';
+
+}
+
+# special subroutine to build out $self->{access_info} hashref, which
+# is used by find_access_roles() in session.pm to grant/deny access to
+# access roles;  ## MAKE YOUR LOGIC / SQL CALLS INSTANCE-SPECIFIC;
+sub fetch_access_info {
+	my $self = shift;
+	my ($db, $belt) = @_; # db object will be tied to the instance's DB server
+						  # $belt is utility_belt.pm object
+
+	# add some useful data, for example
+	$self->{access_info}{my_organization} = 'Some Code to Determine This';
+
+}
+
+1;

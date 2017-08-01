@@ -1,0 +1,67 @@
+[*#
+	Template to produce two-column / horizantial forms in OmniTool.  This is the standard
+	form, and as such, it relies upon the full_screen_form.tt system-wide Jemplate.
+
+	$form = {
+		'target_url' => '/tools/some/action/method',
+		'title' => 'Title to Appear Above Form',
+		'instructions' => 'Info to appear below title and above fields.',
+		'submit_button_text' => 'Text for Submit Button',
+		'hidden_fields' => {
+			'field_name' => 'field_value',
+		},
+		'fields' => { # integer keys, easily sorted
+			1 => {
+				'title' => 'Field Name',
+				'name' => 'field_name',
+				'preset' => 'Some Pre-Saved Value',
+				'field_type' => 'type', # e.g. short_text, single_select
+				'instructions' => 'Info to appear below field.',
+				'is_required' => 1, # will be required
+			},
+			2 => {
+				'title' => 'Field Name',
+				'name' => 'field_name',
+				'preset' => 'Some Pre-Saved Value',
+				'field_type' => 'type', # e.g. short_text, single_select
+				'instructions' => 'Info to appear below field.',
+			},
+		},
+	};
+
+	Very greedy template -- wants all of $self from your tool.pm class.
+
+	Since this is a 'double' template, we need to change the directive markers
+	(delimiters) right off the bat.
+
+	- short_text
+	- long_text / rich_long_text
+	- single_select
+	- radio_buttons
+	- email_address
+	- web_url,
+	- low_integer
+	- high_integer
+	- active_status_select
+	- yes_no_select
+	- accessgroup_select
+	- check_boxes
+	- file_upload ** this is a TODO
+	- month_name
+	- multi_select  (see 'not_chosen' option to avoid using chosen features)
+	- password
+	- phone_number
+	- short_text_clean (only alphanumeric chars plus dashes and underscores)
+	- simple_date
+	- date_range
+	- street_address
+	- color_picker
+	- rich_long_text
+
+*]
+
+[%# this tells full_screen_form.tt to show question mark rollovers for instructions %]  
+[% SET display_field_instructions = 0 %]
+
+[% PROCESS full_screen_form %]
+

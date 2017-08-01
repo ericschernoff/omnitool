@@ -1,0 +1,220 @@
+[*#
+	Second attempt at a template to display search results via widgets.
+	On a larger screen, we should get two widgets per row, with the inline
+	actions appearing in the header
+
+	You can also have a 'two-column' mode for the widget boths, whereby each widget can
+	have a wide column, then a left and right column, i.e. a layout like so:
+
+		----------
+		----  ----
+		----  ----
+
+	I guess I could've just said an 'n' shape.  Please see the example on how to set which
+	columns go where below, near the widget-body.
+
+	Oh, FYI, the first included field goes in the widget-header, and should be the identifying
+	name of the data record.
+
+	Very greedy template -- wants all of $self from your tool.pm class, but remember that's
+	on the server-side.  Client side just gets json_results.
+
+*]
+
+<div class="row">
+<div class="col-xs-12">
+
+[%# Only display the search widgets if there are results to show. %]
+[% IF records_keys.0 %]
+	[% PROCESS results_widgets_[*tool_and_instance*] %]
+[% ELSIF error_message %]
+	<div class="center h4">
+		[% error_message.replace("\n", '<br/>') %]
+	</div>
+[% ELSE %]
+	<div class="center h4">
+		No [%datatype_name%] Results Found.  Please Adjust Your Search Options.
+	</div>
+[% END %]
+
+</div>
+</div>
+
+[%# The actual results widgets template starts now. %]
+
+[% BLOCK results_widgets_[*tool_and_instance*] %]
+<div class="space"></div>
+<div class="row">
+	[*# cycle through the records key on the client side *]
+
+	[% SET widget_count = 0 %]
+	[% FOREACH record_key IN records_keys %]
+
+		[* first_field = included_records_fields.shift *]
+		[* first_field_name = included_field_names.shift *]
+
+		[*# background color from record-coloring rules *]
+		[% IF metainfo.$record_key.record_color %]
+			[% SET row_bgcolor = metainfo.$record_key.record_color %]
+		[% ELSE %]
+			[% SET row_bgcolor = 'ffffff' %]
+		[% END %]
+
+		[%#
+			Let's try to have each widget handled separately, in hopes that we could process just one at a time.
+			So the 'the_result_widget' block is below.
+		%]
+
+		<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 widget-container-col" id="[%record_key%]_result">
+		[% PROCESS the_result_widget_[*tool_and_instance*] %]
+		</div>
+
+		[% SET widget_count = widget_count + 1 %]
+		[% IF widget_count == 2 %]
+			[% SET widget_count = 0 %]
+			</div>
+			<div class="space"></div>
+			<div class="row">
+		[% END %]
+
+	[% END %]
+</div>
+[% END %]
+
+[%# Let's try to have each widget handled separately, in hopes that we could process just one at a time. %]
+[% BLOCK the_result_widget_[*tool_and_instance*] %]
+
+<div class="widget-box widget-color-blue2">
+	<div class="widget-header widget-header-small">
+		<h5 class="widget-title">
+			[* IF first_field == 'altcode' *]
+				[% metainfo.$record_key.altcode %]
+			[* ELSE *]
+				[% records.$record_key.[*first_field*] %]
+			[* END *]
+		</h5>
+
+		<div class="widget-toolbar">
+			[% IF records.$record_key.inline_actions.0.button_name %]
+				<button class="btn btn-white btn-xs dropdown-toggle" data-toggle="dropdown">
+					Actions
+					<i class="ace-icon fa fa-chevron-down icon-on-right"></i>
+				</button>
+				<ul class="dropdown-menu dropdown-menu-right dropdown-light-blue dropdown-caret dropdown-closer">
+				[% IF metainfo.$record_key.lock_user %]
+					<li>
+						<a name="lock_[%$record_key%]" class="bolder">
+							<i class="ace-icon fa fa-lock"></i> LOCKED ([%metainfo.$record_key.lock_user%])
+						</a>
+					</li>
+				[% END %]
+				[% FOREACH action IN records.$record_key.inline_actions %]
+					<li>
+						<a href="[% action.uri %]">[% action.button_name %]</a>
+					</li>
+				[% END %]
+				</ul>
+			[% END %]
+		</div>
+	</div>
+
+	<div class="widget-body">
+		<div class="widget-main" style="background-color: #[%row_bgcolor%]">
+			[*# Two-column mode: allows for a wide-column first, then a left and a right-column within
+				the widget body. You will need to set up a 'jemplate_options' hash in your
+				'pre_prep_jemplate' hook, like so:
+
+				$self->{jemplate_options} = {
+					'two_column_mode' => 1,
+					# 'skip_both' => 1, # if you want to skip the 'both' column and just have left/right
+					'field_names' => {
+						'left' => ['Access Methods','Group'],
+						'right' => ['Lab','Location'],
+						'both' => ['Model/ID','Description'],
+					},
+					'fields' => {
+						'left' => ['access_methods','group_name'],
+						'right' => ['lab_name','aisle_rack_location'],
+						'both' => ['model_and_eitms_code','description'],
+					},
+				};
+
+				Remember that the first included field goes into the widget header and not
+				in the widget body.  Also, this functionality relies on config within the code,
+				but I am not yet comfortable to allow folks to write Perl code in the OT Admin
+				Web UI forms.
+			*]
+
+			[* IF jemplate_options.two_column_mode *]
+				<div class="row">
+					[* sides = [ 'both','left', 'right' ] *]
+
+					[* FOREACH side IN sides *]
+					[* NEXT IF side == 'both' && jemplate_options.skip_both != '' *]
+					[* IF side == 'both' *]
+						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+					[* ELSE *]
+						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-6">
+					[* END *]
+						[* FOREACH column_name IN jemplate_options.field_names.$side *]
+							[* record_field = jemplate_options.fields.$side.shift *]
+							[% IF records.$record_key.[*record_field*].0.text || records.$record_key.[*record_field*].0.image || records.$record_key.[*record_field*].0.glyph %]
+								[* IF column_name != 'SKIP_FIELD_NAME' *]
+									<b>[*column_name*]:</b>
+								[* END *]
+								[% the_field = "[*record_field*]" %]
+								[% PROCESS complex_field %]
+								<br/>
+							[% ELSE  %]
+								[* IF record_field == 'altcode' *]
+									[* IF column_name != 'SKIP_FIELD_NAME' *]
+										<b>[*column_name*]:</b>
+									[* END *]
+									[% metainfo.$record_key.altcode %]
+									<br/>
+								[* ELSE *]
+									[% IF records.$record_key.[*record_field*] %]
+										[* IF column_name != 'SKIP_FIELD_NAME' *]
+											<b>[*column_name*]:</b>
+										[* END *]
+										[% records.$record_key.[*record_field*] %]
+										<br/>
+									[% END %]
+								[* END *]
+							[% END %]
+						[* END *]
+						</div>
+					[* END *]
+				</div>
+
+			[* ELSE *]
+
+				[*# Regular, one-column mode. *]
+
+				[* FOREACH column_name IN included_field_names *]
+					[* record_field = included_records_fields.shift *]
+					[% IF records.$record_key.[*record_field*].0.text || records.$record_key.[*record_field*].0.image || records.$record_key.[*record_field*].0.glyph %]
+						<b>[*column_name*]:</b>
+						[% the_field = "[*record_field*]" %]
+						[% PROCESS complex_field %]
+						<br/>
+					[% ELSE  %]
+						[* IF record_field == 'altcode' *]
+							<b>[*column_name*]:</b>
+							[% metainfo.$record_key.altcode %]
+							<br/>
+						[* ELSE *]
+							[% IF records.$record_key.[*record_field*] %]
+								<b>[*column_name*]:</b>
+								[% records.$record_key.[*record_field*] %]
+								<br/>
+							[% END %]
+						[* END *]
+					[% END %]
+				[* END *]
+
+			[*END *]
+		</div>
+	</div>
+</div>
+[% END %]

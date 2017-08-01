@@ -1,0 +1,41 @@
+[*# must have this for jemplates to process safely *]
+
+[%IF error_title %]
+	[% SET modal_title = error_title %]
+[% ELSE %]
+	[% SET modal_title = title %]
+[% END %]
+
+[%# from modal_parts.tt - print top of modal %]
+[% PROCESS modal_head %]
+
+[%IF error_message %]
+	<div class="h5 red">
+		[% error_message %]
+	<div>
+[% END %]
+
+<div class="h5">
+	[% message %]
+</div>
+
+[% IF confirm_button_text && confirm_button_uri %]
+	<div class="clearfix align-center h5">
+		<br/>
+		<button class="btn btn-sm btn-white" type="button"
+			onclick="tool_objects['[%the_tool_id%]'].process_action_uri('[%confirm_button_uri%]')">
+			<i class="ace-icon fa fa-check bigger-110"></i>
+			[%confirm_button_text%]
+		</button>
+
+		&nbsp; &nbsp; &nbsp;
+
+		<a class="btn btn-sm btn-white" href="[%return_link_uri%]" role="button">
+			<i class="ace-icon fa fa-undo bigger-110"></i>
+			Cancel / Return
+		</a>
+	</div>
+[% END %]
+
+[%# from modal_parts.tt - print bottom of modal %]
+[% PROCESS modal_foot %]

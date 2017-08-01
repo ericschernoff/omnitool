@@ -1,0 +1,29 @@
+[*# must have this for jemplates to process safely *]
+
+<div class="row">
+<div class="col-xs-12">
+
+	[%IF error_title %]
+		<div class="page-header">
+			<h3 class="red">
+				[% error_title %]
+			</h3>
+		</div>
+
+		<div>
+			[% error_message %]
+		<div>
+	[% END %]
+
+	<div class="page-header">
+		<h3>
+			[% title %]
+		</h3>
+	</div>
+
+	<div>
+		[% message %]
+	</div>
+
+</div>
+</div>

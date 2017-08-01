@@ -1,0 +1,12 @@
+[*#
+	Template to produce two-column / horizantial forms in OmniTool just like ScreenForm.tt,
+	but instead to clearly display any field instructions under the field, no rollovers.
+	
+	Please see notes in ScreenForm.tt.
+*]
+
+[%# this tells full_screen_form.tt to clearly display field instructions %]  
+[% SET display_field_instructions = 1 %]
+
+[% PROCESS full_screen_form %]
+

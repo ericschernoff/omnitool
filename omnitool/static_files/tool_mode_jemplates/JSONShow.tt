@@ -1,0 +1,12 @@
+[*# View T/Jemplate to display JSON Data for a Tool; very simple,
+	client side handles this via post_data_fetch_operations(). *]
+
+<div class="row">
+<div class="col-xs-12">
+	<div id="[*tool_and_instance*]_show_json">
+		<pre>
+
+		</pre>
+	</div>
+</div>
+</div>

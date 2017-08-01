@@ -1,0 +1,193 @@
+[*#
+	Jemplate-Template to provide view for the 'Setup MySQL Tables' tool under
+	Manage Instances; specifically omnitool::applications::otadmin::tools::make_tables .
+
+	Very greedy template -- wants all of $self from your tool.pm class.
+
+	Since this is a 'double' template, we need to change the directive markers
+	(delimiters) right off the bat.
+
+*]
+
+<div class="row">
+<div class="col-xs-12">
+
+	<div class="page-header">
+		<h3>
+			[% title %]
+		</h3>
+		Database Server: [% database_hostname %]  |  Database Name: [% database_name %]
+	</div>
+
+	[% IF database_existence == '0' %]
+		<div class="center">
+
+		<h4 class="red">Database Does Not Exist</h4>
+
+		<button type="button" class="btn btn-white" onclick="tool_objects['[%the_tool_id%]'].process_action_uri('[%create_database_uri%]')">Create Here to Create</button>
+
+		</div>
+
+	[% ELSE %]
+		[% PROCESS show_tables %]
+	[% END %]
+
+</div>
+</div>
+
+[% BLOCK show_tables %]
+
+	<div class="col-md-12 align-center bolder">
+		Display: <select name="table_display" onchange="tool_objects['[%the_tool_id%]'].process_action_uri('[%tables_display_link%]'+this.options[this.options.selectedIndex].value)">
+			[% IF display == 'baseline_tables' %]
+				<option SELECTED value="baseline_tables">Baseline Tables</option>
+			[% ELSE %]
+				<option value="baseline_tables">Baseline Tables</option>
+			[% END %]
+
+			[% FOREACH dt_table_hash IN datatype_tables %]
+				[% IF display == dt_table_hash.table_name %]
+					<option SELECTED value="[%dt_table_hash.table_name%]">[%dt_table_hash.datatype_name%]</option>
+				[% ELSE %]
+					<option value="[%dt_table_hash.table_name%]">[%dt_table_hash.datatype_name%]</option>
+				[% END %]
+			[% END %]
+		</select>
+	</div>
+
+	[% IF display == 'baseline_tables' %]
+
+		<div class="col-md-12 widget-container-col">
+		<div class="widget-box widget-color-blue">
+			<div class="widget-header widget-header-flat">
+				<h4 class="widget-title lighter">
+					Baseline Tables
+				</h4>
+			</div>
+
+			<div class="widget-body">
+				<div class="widget-main no-padding">
+					<table class="table table-bordered">
+					<thead class="thin-border-bottom">
+						<tr>
+							<th>
+								TABLE NAME
+							</th>
+							<th>
+								STATUS
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						[% FOREACH baseline_table IN baseline_tables_list %]
+							<tr>
+								<td>[%baseline_table%]</td>
+								[% IF baseline_tables.$baseline_table == '1' %]
+									<td class="green">OK</td>
+								[% ELSE %]
+									<td class="red">
+										Missing -
+										<button type="button" class="btn btn-link" onclick="tool_objects['[%the_tool_id%]'].process_action_uri('[%create_table_uris.$baseline_table%]')">Create</button>
+									</td>
+								[% END %]
+							</tr>
+						[% END %]
+					</tbody>
+					</table>
+				</div><!-- /.widget-main -->
+			</div><!-- /.widget-body -->
+		</div><!-- /.widget-box -->
+		</div><!-- /.col -->
+
+	[% ELSE %]
+
+
+		<!-- now the datatype tables -->
+		[% FOREACH dt_table_hash IN datatype_tables %]
+
+			[% NEXT IF dt_table_hash.table_name != display %]
+
+				<div class="col-md-12 widget-container-col">
+					<div class="widget-box widget-color-blue">
+					<div class="widget-header widget-header-flat">
+						<h4 class="widget-title lighter">
+							[% dt_table_hash.datatype_name %] / [% dt_table_hash.table_name %]
+						</h4>
+					</div>
+
+					<div class="widget-body">
+						<div class="widget-main no-padding">
+							<table class="table table-bordered">
+							<thead class="thin-border-bottom">
+								<tr>
+									<th>
+										CONDITION
+									</th>
+									<th>
+										STATUS
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Table Exists</td>
+									[% IF dt_table_hash.table_existence == '1' %]
+										<td class="green">OK</td>
+									[% ELSE %]
+										<td class="red">
+											Missing -
+											<button type="button" class="btn btn-link" onclick="tool_objects['[%the_tool_id%]'].process_action_uri('[%dt_table_hash.create_link%]')">Create</button>
+										</td>
+									[% END %]
+								</tr>
+								<tr>
+									<td>DT-Specific Metainfo Table</td>
+									[% IF dt_table_hash.metainfo_table_needed == '0' %]
+										<td class="green">Not Needed</td>
+									[% ELSIF dt_table_hash.metainfo_table_existence == '1' %]
+										<td class="green">OK (Needed &amp;  Exists)</td>
+									[% ELSE %]
+										<td class="red">
+											Need &amp; Missing -
+											<button type="button" class="btn btn-link" onclick="tool_objects['[%the_tool_id%]'].process_action_uri('[%metainfo_table_create_link%]')">Create</button>
+										</td>
+									[% END %]
+								</tr>
+								[% IF dt_table_hash.columns_status.0 %]
+									<thead class="thin-border-bottom">
+									<tr>
+										<th>
+											COLUMN
+										</th>
+										<th>
+											STATUS
+										</th>
+									</tr>
+									</thead>
+								[% END %]
+								[% FOREACH dt_column IN dt_table_hash.columns_status %]
+									<tr>
+									<td>[%dt_column.field_name%]: [%dt_column.column_name%]</td>
+									[% IF dt_column.column_existence == '0' %]
+										<td class="red">
+											Missing -
+											<button type="button" class="btn btn-link" onclick="tool_objects['[%the_tool_id%]'].process_action_uri('[%dt_column.create_link%]')">Create</button>
+										</td>
+									[% ELSIF dt_column.column_status == 'OK' %]
+										<td class="green">OK</td>
+									[% ELSE %]
+										<td class="red">[%dt_column.column_status%]</td>
+									[% END %]
+									</tr>
+								[% END %]
+							</tbody>
+							</table>
+						</div><!-- /.widget-main -->
+					</div><!-- /.widget-body -->
+				</div><!-- /.widget-box -->
+				</div><!-- /.col -->
+
+			[% END %]
+		[% END %]
+	[% END %]
+

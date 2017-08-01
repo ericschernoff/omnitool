@@ -1,0 +1,17 @@
+[%# easy jemplate for action tools when the target data is not found %]
+
+[% BLOCK data_not_found %]
+	<div class="error-container">
+		<div class="well">
+
+			<h2 class="grey lighter smaller">
+				<span class="blue">
+					<i class="ace-icon fa fa-lock"></i>
+					Error:
+				</span>
+				[%altcode%] Was Not Found
+			</h2>
+
+		</div>
+	</div>
+[% END %]

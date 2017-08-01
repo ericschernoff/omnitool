@@ -1,0 +1,263 @@
+[%#
+	This template sets up a tool's presentation for the web UI.
+
+	It will handle the overall wrapper DIV, setting the style based on the
+	display type (screen, modal, message, inline), as well as configure the
+	'controls' area, which includes shfting the display mode (table, calendar, etc.)
+	and the search / advanced search options.
+
+	Very greedy template -- wants all of $self from your tool.pm class.
+
+	This should always be sent to the browser as HTML.	I would not expect this template
+	to change very often; only with major changes to the system.
+
+	There should be nothing above the main tool_TOOL_AND_INSTANCE div.
+%]
+
+[%# screen mode div structure %]
+[% IF attributes.tool_type.match('Screen') %]
+
+	<div id="tool_[%tool_and_instance%]">
+
+		[% IF attributes.display_description == 'Yes' %]
+			<div class="well">
+				[% attributes.description %]
+			</div>
+		[% END %]
+
+		[%# area for any notice put into json_results->top_notice %]
+		<div class="well well-sm" id="top_notice" style="display: none">
+		</div>
+
+		[%# area for tools controls %]
+		[% IF !attributes.display_tool_controls || attributes.display_tool_controls == 'Yes' %]
+			<div id="tool_controls_[%tool_and_instance%]" class="row">
+				[%# Use the block below to try and keep complexity separate	 %]
+				[% INCLUDE tool_controls  %]
+			</div>
+		[% END %]
+
+		[%# area for charting features -- see render_tool_chart() in omnitool_routines.js %]
+		<div id="chartarea_[%tool_and_instance%]" style="display:none;">
+		</div>
+
+		[%# main display area goes here %]
+		<div id="tool_display_[%tool_and_instance%]" class="row">
+			<div class="col-xs-12">
+				Loading Display Area...
+			</div>
+		</div>
+	</div>
+
+[%# modal mode div structure %]
+[% ELSIF attributes.tool_type.match('Modal') %]
+
+	<div id="tool_[%tool_and_instance%]" class="modal fade" tabindex="-1">
+		<div class="modal-dialog modal-lg">
+
+		<div id="tool_display_[%tool_and_instance%]" class="modal-content">
+		</div><!-- /.modal-content -->
+
+		</div>
+	</div><!-- /.modal-dialog -->
+
+[% END %]
+
+
+[%# Set up control areas for this tool. %]
+[% BLOCK tool_controls %]
+
+	[%# First div is four-wide and includes quick actions and change views boxes. %]
+	<div class="col-xs-12 no-padding align-left align-bottom"> <!-- style="white-space: nowrap;" -->
+
+	<!-- make sure the print button, quick actions, and view changer stays together on wrap
+	<span style="white-space: nowrap"> -->
+
+	<!-- show print button -->
+	<div class="btn-group">
+	<button class="btn btn-white btn-sm" onclick="$('#tool_display_[%tool_and_instance%]').printThis();">
+		<i class="fa fa-print"></i>
+	</button>
+	</div>
+
+	[%# Process quick actions %]
+	<!-- quick actions menu goes here -->
+	[% IF quick_actions.0 && quick_actions.1 %]
+		<div class="btn-group">
+			<button data-toggle="dropdown" class="btn btn-white btn-sm dropdown-toggle">
+				<i class="ace-icon fa fa-bolt"></i>
+				<span class="green">Quick Actions</span>
+				<i class="ace-icon fa fa-caret-down"></i>
+			</button>
+			<ul class="dropdown-menu">
+			[% FOREACH qa IN quick_actions %]
+				<li>
+					<a href="#/tools/[%luggage.session.tools.$qa.uri_path_base%]/[%display_options.altcode%]" tabindex="-1">
+						<i class="ace-icon fa [%luggage.session.tools.$qa.icon_fa_glyph%]"></i>
+						[%luggage.session.tools.$qa.button_name%]
+					</a>
+				</li>
+			[% END %]
+			</ul>
+		</div>
+
+	[%# Process quick actions - if just one %]
+	[% ELSIF quick_actions.0 %]
+
+		[% SET qa = quick_actions.0 %]
+		<div class="btn-group">
+			<a href="#/tools/[%luggage.session.tools.$qa.uri_path_base%]/[%display_options.altcode%]" class="btn btn-white btn-sm" tabindex="-1">
+				<i class="ace-icon fa [%luggage.session.tools.$qa.icon_fa_glyph%]"></i>
+				[%luggage.session.tools.$qa.button_name%]
+			</a>
+		</div>
+
+	[% END %]
+
+	[%# Secondary Quick Actions for Actions Tools which include Inline Actions %]
+	<div class="btn-group" style="display:none" id="quick_inline_actions_menu_[%tool_and_instance%]">
+	</div>
+
+	[%# Process available views. %]
+	<!-- tool mode config goes menu goes here -->
+	[% IF tool_configs_keys.tool_mode_configs.1 %]
+		<div class="btn-group">
+			<button data-toggle="dropdown" class="btn btn-white btn-sm dropdown-toggle">
+				<i class="ace-icon fa fa-tv"></i>
+				[% SET current_mode_id = display_options.tool_mode %]
+				<span id="[%tool_and_instance%]" class="hidden-1025">[%tool_configs.tool_mode_configs.$current_mode_id.name%]</span>
+				<i class="ace-icon fa fa-caret-down"></i>
+			</button>
+			<ul class="dropdown-menu">
+			[% FOREACH tool_mode IN tool_configs_keys.tool_mode_configs %]
+				<li>
+					<a href="#/[%tool_configs.tool_mode_configs.$tool_mode.uri%]" onclick="$('#[%tool_and_instance%]').text(this.innerHTML)" tabindex="-1">[%tool_configs.tool_mode_configs.$tool_mode.name%]</a>
+				</li>
+			[% END %]
+			</ul>
+		</div>
+	[% END %]
+
+	<!-- end first line-break preventer
+	</span> -->
+	[%# End quick actions and change views. %]
+
+	[%# search-related buttons %]
+
+	[%# show up to four search menus %]
+	[% FOREACH search_menu IN quick_search_menus %]
+		<div class="btn-group">
+		<!-- quick search menu -->
+			[% SET this_menu = 'menu_' _ search_menu %]
+			[% SET this_menu_link = 'menu_link_' _ search_menu %]
+			<button data-toggle="dropdown" class="btn btn-white btn-sm dropdown-toggle">
+				<!-- <i class="ace-icon fa fa-search"></i> -->
+				[% tool_configs.tool_filter_menus.$search_menu.name %]<span id="[%this_menu_link%]" class="hidden-1025">: [% tool_configs.tool_filter_menus.$search_menu.current_selected_option_name %]</span>
+				<i class="ace-icon fa fa-caret-down"></i>
+			</button>
+			<ul class="dropdown-menu">
+				[% FOREACH option_value IN tool_configs.tool_filter_menus.$search_menu.options_keys %]
+				<li>
+					<a onclick="tool_objects['[%tool_and_instance%]'].process_quick_search('[%this_menu%]','[%option_value%]'); $('#[%this_menu_link%]').text(': '+this.innerHTML)" tabindex="-1">[%tool_configs.tool_filter_menus.$search_menu.options.$option_value%]</a>
+				</li>
+				[% END %]
+			</ul>
+		</div>
+	[% END %]
+
+	<span style="white-space: nowrap">
+	[% IF attributes.tool_type.match('Search') %]
+		[% IF has_advanced_search %]
+			<div class="btn-group" id="advanced_search_features">
+			<button data-toggle="dropdown" class="btn btn-white btn-sm dropdown-toggle">
+				Adv<span class="hidden-1025">anced...</span>
+				<span class="badge badge-info" id="advanced_features_badge"></span>
+				<i class="ace-icon fa fa-caret-down"></i>
+			</button>
+			<ul class="dropdown-menu">
+				<li>
+					<a onclick="tool_objects['[%tool_and_instance%]'].show_advanced_search()">
+					<i class="ace-icon fa fa-search"></i>
+					Advanced Search
+					<span class="badge badge-info" id="advanced_search_filters_badge"></span>
+					</a>
+				</li>
+				<li>
+					<a onclick="tool_objects['[%tool_and_instance%]'].show_advanced_sort()">
+					<i class="ace-icon fa fa-arrows-alt"></i>
+					Advanced Sorting
+					<span class="badge badge-info" id="advanced_sort_options_badge"></span>
+					</a>
+				</li>
+			</ul>
+			</div>
+		[% END %]
+
+	[% END %]
+
+	<!-- show Refresh Data for all tools -->
+	<div class="btn-group">
+
+	[%# indicate if tool has a search query refresh interval %]
+	[% IF attributes.query_interval %]
+		[% SET refresh_button_title = 'title="Search auto-runs every ' _ attributes.query_interval _ ' seconds."' %]
+	[% END %]
+
+	<button class="btn btn-white btn-sm" [%refresh_button_title%] onclick="tool_objects['[%tool_and_instance%]'].refresh_json_data()">
+		<i class="fa fa-refresh green"></i>
+	</button>
+	</div>
+
+	<!-- support the 'return' links in action tools -->
+	[% IF attributes.link_type != 'Menubar' %]
+	<div class="btn-group">
+	<a class="btn btn-white btn-sm return_link" href="#" style="display: none">
+		<i class="fa fa-arrow-left blue"></i>
+		Return to
+	</a>
+	</div>
+	[% END %]
+
+	<!-- support the 'previous / next' links in action tools -->
+	<div class="btn-group">
+	<button class="btn btn-white btn-sm previous_link" style="display: none">
+		<i class="fa fa-fast-backward blue"></i>
+		Previous
+	</button>
+	</div>
+	<div class="btn-group">
+	<button class="btn btn-white btn-sm next_link" style="display: none">
+		Next
+		<i class="fa fa-fast_forward blue"></i>
+	</button>
+	</div>
+
+	<!-- Quick search box -->
+	[% IF has_search_box %]
+		<div class="btn-group">
+		<span class="input-icon">
+			<input type="text" size="12" name='quick_keyword' id="quick_keyword_[%tool_and_instance%]" class="quick_keyword_fields" placeholder="Sticky Search" value="[%display_options.quick_keyword%]"/>
+			<i class="ace-icon fa fa-search quick_keyword_fields_icon"></i>
+		</span>
+		</div>
+		<div class="btn-group" id="clear_quick_search_button_[%tool_and_instance%]">
+			<button class="btn btn-white btn-sm" onclick="tool_objects['[%tool_and_instance%]'].clear_quick_keyword()">
+				Clear
+			</button>
+		</div>
+	[% END %]
+
+	[%# Support lock counter %]
+	[% IF attributes.is_locking == 'Yes' %]
+	<div class="btn-group align-center pull-right">
+		<div id="[%tool_and_instance%]_countdown_area">
+			Screen Expires: <span id="[%tool_and_instance%]_countdown" class="bigger-120"></span>
+		</div>
+	</div>
+	[% END %]
+
+	</span>
+
+	</div>
+
+[% END %]

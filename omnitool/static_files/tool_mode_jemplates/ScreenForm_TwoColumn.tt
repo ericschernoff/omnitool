@@ -1,0 +1,101 @@
+[*#
+	Jemplate-Template to power the form / display of the 'Open an Order Service Request'
+	and 'Update an Order Service Request' tools.
+
+	There will be much hard-coding below.  Adding fields to the Order SR Type is going to
+	require updating this Jemplate.  Those the breaks.
+
+*]
+
+<div class="row">
+<div class="col-xs-12">
+
+	<div class="page-header">
+		<h3>
+			[% form.title %]
+			[% IF form.error_title %]
+				<span class="red"> - [% form.error_title %] </span>
+			[% END %]
+		</h3>
+	</div>
+
+	<form class="form-horizontal" id="[*tool_and_instance*]_form" action="[*my_json_uri*]" method="post" role="form">
+	[% FOREACH hf IN form.hidden_fields.keys %]
+		<input type="hidden" name="[%hf%]" value="[%form.hidden_fields.$hf%]" />
+	[% END %]
+
+	<div class="row">
+	[% SET n = 0 %]
+	[% FOREACH f IN form.field_keys %]
+		[% IF form.fields.$f.is_required %]
+			[% SET form.fields.$f.title = '* ' _ form.fields.$f.title %]
+		[% END %]
+
+		[% IF form.fields.$f.both_columns %]
+			<div class="col-sm-8 col-lg-8 col-lg-offset-0 col-sm-offset-0">
+		[% ELSE %]
+			<div class="col-sm-5 col-lg-5 col-lg-offset-0 col-sm-offset-0">
+		[% END %]
+			<div class="form-group" id="field_div_[%form.fields.$f.name%]">
+				<label for="form-field-[%f%]" class="col-md-4 control-label">
+					[% IF form.fields.$f.field_error %]
+						<span class="bold red">
+							[% form.fields.$f.title %]
+							<i class="ace-icon fa fa-exclamation-circle red"></i>
+						</span>
+					[% ELSE %]
+						[% form.fields.$f.title %]
+					[% END %]
+					[% IF form.fields.$f.instructions %]
+						<span class="help-button" data-rel="popover" data-trigger="hover" data-placement="right" data-content="[%form.fields.$f.instructions%]">?</span>
+					[% END %]
+				</label>
+				<div class="col-md-8">
+					[% SET field_type = form.fields.$f.field_type %]
+					[% PROCESS $field_type %]
+
+					[% IF form.fields.$f.error_instructions %]
+						<div class="space-2"></div>
+						<div class="help-block col-sm-7 bolder red">
+							[% form.fields.$f.error_instructions %]
+						</div>
+					[% END %]
+				</div>
+			</div>
+
+			[% IF !form.fields.$f.both_columns %]
+				[% SET n = n + 1 %]
+				[% IF n == 2 || form.fields.$f.clearfix %]
+					<span class="clearfix"></span>
+					[% SET n = 0 %]
+				[% END %]
+			[% END %]
+
+			</div>
+
+	[% END %]
+	</div>
+
+	<div class="clearfix form-actions">
+		<div class="col-xs-3 col-md-3"></div>
+		<div class="col-xs-6 col-md-6 center">
+			<button class="btn btn-info" type="submit">
+				<i class="ace-icon fa fa-check bigger-110"></i>
+				[%form.submit_button_text%]
+			</button>
+
+			&nbsp; &nbsp; &nbsp;
+
+			<a class="btn" href="[%return_link_uri%]" role="button">
+				<i class="ace-icon fa fa-undo bigger-110"></i>
+				Cancel / Return
+			</a>
+		</div>
+		<div class="col-xs-3 col-md-3"></div>
+	</div>
+
+	</form>
+
+</div>
+</div>
+

@@ -1,0 +1,269 @@
+package omnitool::applications::[%app_code_directory%]::tools::[%short_tool_name%];
+[%#
+	Server-side Template to generate a starter/example Tool.pm sub-class
+	for a Tool.  Utilized by 'Generate Sub-Class' sub-tool under
+	'Manage Tools'.
+%]
+# is a sub-class of Tool.pm
+use parent 'omnitool::tool';
+
+use strict;
+
+# any special new() routines
+sub init {
+	my $self = shift;
+}
+
+1;
+
+__END__
+
+Possible / example routines are below.  Please copy and paste them above the '1;' above
+to make use of them.  See Pod documentation at the end of tool.pm to see usage suggestions.
+
+Also, please be sure to save this file as $OTHOME/code/omnitool/applications/[%app_code_directory%]/tools/[%short_tool_name%].pm
+
+### GENERAL ROUTINES ###
+
+# special routine to build breadcrumbs links, which can appear above the tool controls area.
+# really only needed for tools that refer to themselves, like Manage Tools under OT Admin
+sub special_breadcrumbs {
+	my $self = shift;
+	my ($altcode) = @_; # altcode of current data point; pass as arg in case this is a recursive routine
+
+=cut
+	Fills $self->{bc_store}{breadcrumbs} as an array of hashes with three keys:
+	unshift(@{$self->{bc_store}{breadcrumbs}},{
+		'tool_name' => 'Name to Appear for Link',
+		'uri' => '#/tools/'.$self->{luggage}{session}{tools}{$tool_datacode}{uri_path_base}.'/'.$data_id_altcode,
+		'icon_fa_glyph' => $self->{luggage}{session}{tools}{$tool_datacode}{icon_fa_glyph},
+	});
+=cut
+
+}
+
+# special routine to grab an omniclass argument; only use if you have a very strong reason
+# to avoid object_factory.pm; use this rarely please ;)
+sub special_omniclass_object {
+	my $self = shift;
+	my (%args) = @_; # could be any args you'd pass to object_factory()
+				  # see where center_stage.pm calls $self->get_omniclass_object()
+
+	# return an omniclass object, to mimic behavior of object_factory
+	return $omniclass_object;
+}
+
+# routine to do extra preparation before processing the Jemplate template
+sub pre_prep_jemplate {
+	my $self = shift;
+
+	# main reason is to add elements to $self->{jemplate_options}, which
+	# your server-side processing of the template show utilize
+}
+
+# routine to modify the Jemplate text before sending to the client
+sub pre_send_jemplate {
+	my $self = shift;
+	my ($jemplate_text) = @_; # what we have so far
+
+	# return modified results
+	return $jemplate_text;
+}
+
+### SUPPORT FOR CHARTING ###
+
+# method to prepare JSON to render a chart via the Chart.js above the tool display
+# should return the data that you can use here;  var myChart = new Chart(ctx, THIS_DATA_GOES_HERE);
+# see http://www.chartjs.org/docs/latest/
+# To use this, set 'Display a Chart' to something other than No in your Tool View Mode Config.
+sub charting_json {
+	my $self = shift;
+
+	# you will need to grab the omniclass object manually, as this is not a 'core' function
+	$self->get_omniclass_object( 'dt' => $self->{target_datatype} );
+	# was placed into $self->{omniclass_object} by get_omniclass_object()
+
+	# if this is a search tool, you may want to run the search like so:
+	# $self->search();
+	# and that will put the results in $self->{json_results}{records} and
+	# $self->{json_results}{records_keys} for you to build up 'datasets' below
+
+	# handy site for hex color codes: http://htmlcolorcodes.com/
+
+	# start with eight good colors
+	$possible_colors = ['113BA4','A4114F','11A423','6611A4','D68212','D0D423','050000','D4239E'];
+
+	Example line chart:
+
+	$self->{json_results} = {
+		type => "line",
+		data => {
+			labels => ["January","February","March","April","May","June","July"],
+			datasets => [
+				{
+					label => "My First Dataset",
+					data => [65,59,80,81,56,55,40],
+					borderColor => "rgb(75, 192, 192)",
+					lineTension => 0.1
+				}
+			]
+			},
+		options => {}
+	};
+=cut
+
+	# have to send it out
+	return $self->{json_results};
+
+}
+
+
+### SEARCH TOOL ROUTINES ###
+
+# method to generate options for a filter menu, for when you select 'Method' for 'Menu Options Type'
+# when creating / updating the Tool Filter Menu
+# for this one, you want to change the subroutine name to whatever you put into 'Custom Options Method'
+sub some_filter_menu {
+	my $self = shift;
+
+	# arg is the reference to the menu for which we are building options
+	my ($this_tool_filter_menu) = @_;
+
+	# very simple example
+	foreach my $dog ('Ginger','Polly') {
+
+		$$this_tool_filter_menu{options}{$dog} = $dog;
+		push(@{$$this_tool_filter_menu{options_keys}},$dog);
+
+	}
+
+	# $this_tool_filter_menu memory reference updated in place, no need to return
+
+}
+
+# routine run in searcher.pm before the build_search() routine
+# modifies items in $self in place, likely $self->{tool_configs}{tool_filter_menus}
+sub pre_search_build {
+	my $self = shift;
+
+}
+
+# routine run in searcher.pm right before the search is executed via Omniclass's search() method
+sub pre_search_execute {
+	my $self = shift;
+
+	# you will want to modify the search criteria in $self->{searches}, which is an array of hashes
+	# built via omnitool::tool::searcher::build_search(). That method also adds 'which_search'
+	# to 'tool_filter_menus' so you can tie the search-criteria-hash to the filter menu, since you
+	# are probably here to make a filter menu work more dynamically (i.e. test different columns based on
+	# menu selection).
+	# Example:
+	# my $search_array_entry = $self->{tool_configs}{tool_filter_menus}{'some_key'}{which_search};
+	# my $search_criteria = $self->{searches}[$search_array_entry];
+	# if ($$search_criteria{match_value} eq 'my_orders') {
+	# 	$$search_criteria{operator} = '=';
+	# 	$$search_criteria{match_column} = 'client_username';
+	# }
+
+}
+
+# routine run in searcher.pm right after the search is executed.
+# good for modifying $self->{omniclass_object}->{records}; especially the inline_actions
+sub post_search_execute {
+	my $self = shift;
+
+}
+
+### ACTION TOOL ROUTINES ###
+
+# routine for performing complex actions and adding information to $self->{json_results}
+# you can cheat and use it to prepare messages
+sub perform_action {
+	my $self = shift;
+
+	# if you are using it to prepare a message; be sure to choose 'Action - Message Display'
+	# for Tool Type
+	$self->{json_results}{title} = 'MESSAGE TITLE HERE';
+	$self->{json_results}{message} = 'MESSAGE TEXT HERE';
+
+}
+
+# routine to perform quicker/simpler actions and prepare notification messsages
+sub prepare_message {
+	my $self = shift;
+
+	$self->{json_results}{title} = 'MESSAGE TITLE HERE';
+	$self->{json_results}{message} = 'MESSAGE TEXT HERE';
+
+}
+
+# routine to prepare a form data structure and load it into $self->{json_results}
+sub generate_form {
+	my $self = shift;
+
+=cut
+
+	# example one-field form
+	# please see a (pretty) complete example at the bottom of omnitool::omniclass::form_maker
+
+	# Note: the keys for the fields can be anything you like, just make sure to put them in order in
+	# 'field_keys' => [''],
+
+	$self->{json_results}{form} = {
+		'title' => 'Mood Self-Evaluation',
+		'instructions' => 'Please answer honestly',
+		'submit_button_text' => 'Send My Answer',
+		'field_keys' => ['field_key_name'],
+		'hidden_fields' => {
+			'form_submitted' => 1,
+		},
+		'fields' => { # integer keys, easily sorted
+			'field_key_name' => {
+				'title' => 'How Are You Doing?',
+				'name' => 'your_mood',
+				'field_type' => 'single_select',
+				'options' => {
+					'Great' => 'I feel great',
+					'Good' => ' I feel good',
+					'So-so' => 'I feel so-so',
+					'Not Good' => 'I don\'t feel good',
+				},
+				'options_keys' => ['Great','Good','So-so','Not Good']
+			},
+		}
+	};
+=cut
+
+}
+
+# routine to add to the standard form validation routines
+sub post_validate_form {
+	my $self = shift;
+
+	# stop the form submission in its tracks
+	$self->{stop_form_action} = 1;
+
+	# specify a field error
+	# $self->{json_results}{form}{fields}{$field_key}{field_error} = 1;
+	# $self->{json_results}{form}{fields}{$field_key}{error_instructions} = 'Issue with this input';
+
+	# or to allow it through
+	$self->{stop_form_action} = '';
+
+	# don't modify that unless you want to override what validate_form() decided in action_tool.pm
+}
+
+# routine to perform the action specified by the form from generate_form (goes hand-in-hand with that method)
+sub perform_form_action {
+	my $self = shift;
+
+	# send this upon successful submit
+	$self->{json_results}{form_was_submitted} = 1;
+
+	# if you want to convert to a pop-up notice
+	$self->{json_results}{title} = 'Records Have Been Re-Ordered';
+	$self->{json_results}{message} = $n.' '.$self->{this_omniclass_object}{datatype_info}{name}.' records re-ordered under '.$self->{omniclass_object}{data}{name};
+	$self->{json_results}{show_gritter_notice} = 1;
+
+	# otherwise, fill in some values in $self->{json_results} for your Jemplate
+}

@@ -1,0 +1,31 @@
+[*# must have this for jemplates to process safely *]
+
+<div class="modal-header">
+	<span class="blue h3">
+		Details for [% data.name %]
+	</span>
+	<!--<span class="pull-right"><a href="[%return_link_uri%]"><i class="fa fa-times-circle red fa-2x"></i></a></span>-->
+</div>
+
+<div class="modal-body">
+
+	[% FOREACH field IN field_keys %]
+		<div class="row">
+			<div class="col-xs-3 align-right">
+				[%fields.$field%]:
+			</div>
+			<div class="col-xs-9 align-left">
+				[% data.$field %]
+			</div>
+		</div>
+	[% END %]
+
+</div>
+
+<div class="modal-footer">
+	<a class="btn btn-sm btn-danger pull-right" href="[%return_link_uri%]" role="button">
+		<i class="ace-icon fa fa-times"></i>
+		Close
+	</a>
+</div>
+

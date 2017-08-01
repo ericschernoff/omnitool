@@ -1,0 +1,25 @@
+[%#
+	A simple screen view to display a glob of HTML.
+
+	Please only use this if you are storing your HTML in a database!
+	If you are putting HTML into your Perl code, you are only hurting
+	yourself.  And society.
+
+	Pack the HTML into $self->{json_results}{html_content}.
+%]
+
+[*# must have this for jemplates to process safely *]
+
+<div class="row">
+<div class="col-xs-12" style="margin-top: 10px">
+
+	[% IF title && no_title == '' %]
+		<div class="page-header">
+			<span class="h3">[% title %] </span>
+		</div>
+	[% END %]
+
+[% html_content %]
+
+</div>
+</div>

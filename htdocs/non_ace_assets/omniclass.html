@@ -1,0 +1,882 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:echernof@calo-echernof-ot5.cisco.com" />
+</head>
+
+<body>
+
+
+
+<ul id="index">
+  <li><a href="#omnitool5::omniclass">omnitool5::omniclass</a>
+    <ul>
+      <li><a href="#new">new()</a></li>
+      <li><a href="#change_options">change_options()</a></li>
+      <li><a href="#load">load()</a></li>
+      <li><a href="#send_file">send_file()</a></li>
+      <li><a href="#clear_records">clear_records()</a></li>
+      <li><a href="#search">search()</a></li>
+      <li><a href="#save">save()</a></li>
+      <li><a href="#Data-Locking-for-Tools">Data-Locking for Tools</a></li>
+      <li><a href="#Work-logging-extended-change-history">Work logging &amp; extended change history</a></li>
+      <li><a href="#change_parent">change_parent()</a></li>
+      <li><a href="#form">form()</a></li>
+      <li><a href="#options_from_directory-directory-file_extension">options_from_directory($directory,$file_extension);</a></li>
+      <li><a href="#children_update">children_update()</a></li>
+      <li><a href="#get_lineage">get_lineage()</a></li>
+      <li><a href="#get_descendants">get_descendants()</a></li>
+      <li><a href="#parent_string_bits">parent_string_bits()</a></li>
+      <li><a href="#altcode_to_data_code">altcode_to_data_code()</a></li>
+      <li><a href="#delete-restore">delete() &amp; restore()</a></li>
+      <li><a href="#Running-Background-Tasks">Running Background Tasks</a></li>
+      <li><a href="#Generating-Sending-Outbound-Email">Generating &amp; Sending Outbound Email</a></li>
+      <li><a href="#update_history">update_history()</a></li>
+      <li><a href="#get_access_roles">get_access_roles()</a></li>
+      <li><a href="#Hooks-Datatype-Specific-Sub-Classes">Hooks &amp; Datatype-Specific Sub-Classes</a></li>
+      <li><a href="#About-Dynamic-Polymorphism">About Dynamic Polymorphism</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="omnitool5::omniclass">omnitool5::omniclass</h1>
+
+<p>OK, third time trying to write this. First time was on a plane, and my laptop failed during the trip. Actually was dumb enough to try to use the same laptop on the way home. Third time is the charm.</p>
+
+<p>If there is a core/kernel module to OmniTool, this would be it. This module handles all the saving, loading, searching, and deleting of data managed via OmniTool. It is highly, highly encouraged that you utilize this module for ALL insert/update/delete commands and not send direct commands into $db-&gt;do_sql(). That goes triple for any data saved in replicated databases, as this class works with the &#39;server_id&#39; column.</p>
+
+<p>This class does not create objects representing the actual data records, but instead creates instances of datatypes as definited in OmniTool Admin and cached in the %$datatype_hash structure. Actually, it creates instances of specific combinations of datatypes, applications/databases, and save-to locations -- a combination of one each of those. For flexibility, I will make it possible to change the target save-to DB server or database, but I&#39;d recommend creating new objects for saving data to different locations.</p>
+
+<p>A note on the &#39;primary key&#39;. In all database tables managed by this system, that primary key will consist of the &#39;code&#39; column, which is an auto_increment int(11), and a &#39;server_id&#39; column, which is also an int() which reflects an entry in omnitool.database_servers. So you&#39;ll see a lot of &quot;concat(code,&#39;_&#39;,server_id)&quot; around. The server_id column will identify the database server where the data was originally written. The hope and idea is that this allows for some circular replication between your very busy servers. This &#39;server_id&#39; does not need to be a foreign key to that &#39;database_servers&#39; table, as you might bring in a copy of data written on a server from another OmniTool cluster (I should be so lucky.) We will try to set up a registry so that each cluster/install is given their own set of 1,000 database server IDs, so that every OmniTool-driven database server has a unique ID; easier said than done.</p>
+
+<p>This class will allow you to load up multiple records for its datatype/source-location, but only save and delete one at a time for sanity&#39;s sake. You&#39;ll see how to handle saving one after another below. We will also provide support for search, delete, restore, etc. Enough talk, on to the usage examples:</p>
+
+<p>(Note, you can name &#39;$dt_obj&#39; anything you want; I just use that variable name in these exmaples. Perhaps I should assume you know that, I am sorry for insulting you in this manner.)</p>
+
+<h2 id="new">new()</h2>
+
+<pre><code>        $dt_obj = omnitool::omniclass-&gt;new(
+                &#39;luggage&#39; =&gt; $luggage,  # %$luggage hash; required, can&#39;t leave home without your luggage
+                &#39;dt&#39; =&gt; $dt_id, # (generally) required; primary key of datatype being instantiated; can&#39;t do anything without this
+                                                # can be the primary key of the datatype in omnitool.datatypes or the table_name of the datatype
+                &#39;db&#39; =&gt; $db, # alternative database object; will default to $$luggage{db}
+                &#39;database_name&#39; =&gt; $database_name, # optional; name of database to save-into; will default to %$luggage{database}
+                &#39;table_name&#39; =&gt; $table_name, # optional; name of table to write into; it&#39;s on you to make sure it&#39;s identical
+                                                # to this datatype&#39;s default table;
+                                                # if you leave this off, will deftaul to $$datatype_hash{$dt_id}{table_name}
+                &#39;save_to_server&#39; =&gt; $server_id, # optional; primary key of server listed in omnitool.database_servers;
+                                                # will default to server in $$luggage{db} or provided $db
+                                                # depends on you to have the database/table set up correctly there
+                &#39;skip_hooks&#39; =&gt; 0 or 1, # optional and defaults to &#39;0&#39;; if 1, will instruct core methods to skip
+                                                # calling this datatype&#39;s hook methods (pre_load, post_save, etc)
+                                                # can also specify &#39;skip_hooks&#39; on individual methods
+                &#39;data_codes&#39; =&gt; [@list_of_ids], # optional, if filled, will call $self-&gt;load() on these ID&#39;s
+                &#39;altcodes&#39; =&gt; [@list_of_altcodes], # optional, alternative way to call $self-&gt;load() on records, and probably
+                                                # much easier for writing scripts; do not use if you are sending data_codes
+                &#39;search_options&#39; =&gt; %$search_options, # optional, if filled, will call $self-&gt;search() with these options
+                                                # as the %args; please see description of options under &#39;search()&#39;
+                                                # below; presumes auto_load=1
+                # the following options are useful if &#39;data_codes&#39; or &#39;search_options&#39; is filled
+                &#39;sort_column&#39; =&gt; $column_or_key_name, # optional; arg passwed to load() if auto_load=1
+                &#39;sort_direction&#39; =&gt; &#39;up&#39;, # optional; arg passwed to load() if auto_load=1
+                &#39;skip_metainfo&#39; =&gt; 1 or 0, # optional; arg passwed to load() if auto_load=1
+                &#39;load_fields&#39; =&gt; &#39;comma,list,of,fields&#39;, # optional; allows you to specify which table columns will be retrieved
+                                                 # and which data-massaging hooks will be run (name those &#39;field_HOOK&#39; like the methods)
+                                                 # if blank loads all columns and runs all hooks.
+                                                 # useful to avoid loading big fields for screen/action display
+                                                 # be careful not to sabotage hooks which rely on certain fields
+                # optional value if calling from a Tool.pm object:
+                &#39;tool_and_instance&#39; =&gt; $tool_and_instance,  # optional, the tool_id value to use to create JS links
+                                                # passed in when tool-&gt;get_omniclass_object() creates the object
+        );</code></pre>
+
+<p>new() is the only part which returns a value. The rest of these will update data stored inside our object created by new(). Details on that data will be under relevent method usages. Continuing...</p>
+
+<p>Note on &#39;dt&#39; option: If creating via a datatype-specific subclass, you can have a package-specific &#39;dt&#39; variable defined at the top of that subclass, i.e.:</p>
+
+<pre><code>        $omnitool::applications::my_family::datatype_modules::family_member::dt = &#39;2_1&#39;</code></pre>
+
+<p>And then not pass the &#39;dt&#39; argument to new(); otherwise, be sure to send the &#39;dt&#39; argument.</p>
+
+<p>Also, you can pass the &#39;table_name&#39; value for the datatype in omnitool.datatypes; this presumes that your table names are unique within your applications.</p>
+
+<p>If this datatype accepts file uploads, omnitool::common::file_manager will be instantiated into $self-&gt;{file_manager}.</p>
+
+<p>** Note: You will almost certainly want to use the methonds in common::object_factory to create OmniClass objects, rather than call OmniClass directly. That will be sure to pull in any defined subclass for the datatype, plus it opens up the tree-building and data-extracting methods. Check it out ;)</p>
+
+<h2 id="change_options">change_options()</h2>
+
+<p>You can change the save-to-targets / data-source info and skip_hooks anytime like so:</p>
+
+<pre><code>        $dt_obj-&gt;change_options(
+                &#39;db&#39; =&gt; $db, # alternative database object; will default to $$luggage{db}
+                &#39;database_name&#39; =&gt; $database_name, # optional; name of database to save-into; will default to %$luggage{database}
+                &#39;table_name&#39; =&gt; $table_name, # optional; name of table to write into; it&#39;s on you to make sure it&#39;s identical
+                                           # to this datatype&#39;s default table;
+                                           # if you leave this off, will deftaul to $$datatype_hash{$dt_id}{table_name}
+                &#39;save_to_server&#39; =&gt; $server_id, # optional; primary key of server listed in omnitool.database_servers;
+                                                # will default to server in $$luggage{db} or provided $db
+                                                # depends on you to have the database/table set up correctly there
+                &#39;skip_hooks&#39; =&gt; 0 or 1, # optional and defaults to &#39;0&#39;; if 1, will instruct core methods to skip
+                                                # calling this datatype&#39;s hook methods (pre_load, post_save, etc)
+        );</code></pre>
+
+<h2 id="load">load()</h2>
+
+<p>To load up data from our MySQL database:</p>
+
+<pre><code>        $dt_obj-&gt;load(
+                &#39;data_codes&#39; =&gt; [@list_of_data_codes], # semi-required; arrayref of primary keys for data to load up
+                        # send &#39;all&#39; to load up all records for the datatype
+                &#39;altcodes&#39; =&gt; [@list_of_altcodes], # optional; can use instead of data_codes for sending values from metainfo.altcode column
+                &#39;do_clear&#39; =&gt; 1 or 0, # optional, defaults to 0, which indicates clear previously-loaded records first
+                &#39;skip_metainfo&#39; =&gt; 1 or 0, # optional, defaults to 0; filling-in will skip loading in data from &#39;metainfo&#39; table
+                &#39;skip_hooks&#39; =&gt; 0 or 1, # optional; if &#39;1&#39;, skip pre_load or post_load hooks as well as any routines
+                        # and any hooks named for the columns
+                &#39;load_fields&#39; =&gt; &#39;comma,list,of,fields&#39;, # optional; allows you to specify which table columns will be retrieved
+                        # and which data-massaging hooks will be run (name those &#39;field_HOOK&#39; like the methods)
+                        # if blank loads all columns and runs all hooks.
+                        # useful to avoid loading big fields for screen/action display
+                        # be careful not to sabotage hooks which rely on certain fields
+                &#39;sort_column&#39; =&gt; $column_or_key_name, # optional, sorts the data by that named column/key
+                        # default is the order of @$data_codes
+                        # if you want to sort by a column in the metainfo table, specify this as &#39;metainfo.column_name&#39;,
+                        # e.g. &#39;metainfo.create_time&#39;
+                &#39;sort_direction&#39; =&gt; &#39;up&#39; or &#39;down&#39; or &#39;Ascending&#39; or &#39;Descending&#39;, # optional, only use with &#39;sort_columns&#39;,
+                        # default is &#39;asc&#39; and up=asc and down=desc
+        );</code></pre>
+
+<p>This method will populate the data into these attributes of the object:</p>
+
+<p>$dt_obj-&gt;{records}{$primary_key}{column1_name} = &#39;column1_value&#39;; # column from DB table; includes &#39;name&#39; and &#39;parent&#39; $dt_obj-&gt;{records}{$primary_key}{column2_name} = &#39;column2_value&#39;; $dt_obj-&gt;{metainfo}{$primary_key}{column1_name} = &#39;column1_value&#39;; # column would be &#39;create_time&#39; or &#39;originator&#39;, etc.</p>
+
+<p>and the keys for the $dt_obj-&gt;{records} hash will be in:</p>
+
+<p>$dt_obj-&gt;{records_keys}[key1,key2,key3]; # will be in format of concat(code,&#39;_&#39;,server_id)</p>
+
+<p>If you specify values for &#39;sort_column&#39; and &#39;sort_direction&#39;, those will be rememebered for the next time you call $dt_obj-&gt;load(), which makes auto-loading on updates/deletes kind of nice ;)</p>
+
+<p>In order to act more like an object, the first record found (after sorting) will be loaded into $dt_obj-&gt;{data}, such that:</p>
+
+<pre><code>        $dt_obj-&gt;{data} = $dt_obj-&gt;{records}{ $dt_obj-&gt;{records_keys}[0] };
+        $dt_obj-&gt;{data}{metainfo} = $dt_obj-&gt;{metainfo}{ $dt_obj-&gt;{records_keys}[0] };</code></pre>
+
+<p>Under the &#39;metainfo&#39; sub-hashes, you will have all the columns in the metainfo table, plus &#39;nice_create_time&#39; and &#39;nice_update_time&#39;, which will be human-friendly date/time strings for the create and update times, unless you have turned on &#39;skip_hooks&#39;.</p>
+
+<p>Speaking of hooks, so long as &#39;skip_hooks&#39; is off, all the &#39;virtual&#39; fields will be loaded in under the &#39;records&#39; sub-hashes. You set up the virtual Datatype Fields via the OmniTool Admin interface, then you will need to set up a custom class for this datatypes with methods named for the &#39;table_column&#39; values of any virtual fields, such that &#39;field_birthday&#39; would tie to a virtual Datatype Field with a table_column of &#39;birthday.&#39; That would load the value into $object-&gt;{records}{$r}{birthday}, and for the first one, $object-&gt;{data}{birthday}.</p>
+
+<h2 id="send_file">send_file()</h2>
+
+<p>Small method meant to output the contents of an uploaded file to the web client. This file will be associated with an OmniClass-managed data record, via a &#39;file_upload&#39; Datatype field. This is called from Tool.pm&#39;s send_file() method.</p>
+
+<p>Calls mr_zebra() via omnitool::common::file_manager::retreive_file() to output the file, MIME-type, and filename, and then exit.</p>
+
+<p>Required argument is the primary key for the OmniClass data record which will reference the uploaded file. If your record only has one file_upload field, then that&#39;s all you need. If you have multiple file_upload fields and need to specify which one to use, set that via $self-&gt;{luggage}{params}{file_field}, and it should be the name of the table column for that field.</p>
+
+<p>Usage:</p>
+
+<pre><code>        $dt_obj-&gt;send_file($data_code);</code></pre>
+
+<p>If you set $self-&gt;{luggage}{params}{file_field} to &#39;attached_file&#39;, then the above will send out the &#39;attached_file&#39; file in the record ID&#39;ed by $data_code; otherwise it will look for the first field set as a file_upload.</p>
+
+<h2 id="clear_records">clear_records()</h2>
+
+<p>To clear out the loaded records in $dt_obj-&gt;{records} &amp; $dt_obj-&gt;{records_keys}, just use this:</p>
+
+<pre><code>        $dt_obj-&gt;clear_records();</code></pre>
+
+<p>Also clears out $dt_obj-&gt;{data}.</p>
+
+<h2 id="search">search()</h2>
+
+<p>To search for records:</p>
+
+<pre><code>        $dt_obj-&gt;search(
+                &#39;search_options&#39; =&gt; [{
+                        &#39;database_name =&gt; &#39;some_database&#39;, #optional; defaults to $dt_obj default or the database in $dt_obj-&gt;{database_name})
+                        &#39;table_name&#39; =&gt; &#39;some_table&#39;, # optional; defaults to dt&#39;s table or the table in $dt_obj-&gt;{table_name})
+                        &#39;relationship_column&#39; =&gt; &#39;column_name&#39;, # used when specifying the &#39;database&#39; and &#39;table&#39; options;
+                                # if &#39;table&#39; is &#39;metainfo,&#39; will default to data_code
+                                # and in that case, limit to records for this $self-&gt;{dt}.
+                                # if it is &#39;parent,&#39; will look for parent values with the prefix of
+                                # this obj&#39;s datatype ID
+                                # otherwise, if leave blank, defaults to &#39;concat(code,&#39;_&#39;,server_id)&#39;
+                        &#39;match_column&#39; =&gt; &#39;col_name_to_search&#39;, # defaults to &#39;name&#39;; otherwise provide the column name
+                        &#39;operator&#39; =&gt; &#39;=&#39;, # defaults to &#39;=&#39;; options are: =, !=, &lt;, &gt;, &gt;=, &lt;=,like, not like, regexp, not regexp, in, not in, between
+                                # if the operator is &#39;in&#39; or &#39;not in,&#39; will assume a proper comma or &#39;,&#39;-separated list but will wrap in ()&#39;s
+                                # if the operator is &#39;like&#39; or &#39;not like,&#39; will wrap in %&#39;s
+                                # if the operator is &#39;between&#39;, that&#39;s for date ranges.  Provide two dates in &#39;match_value&#39;
+                                #       like so:  YYYY-MM-DD---YYYY-MM-DD, i.e. &#39;1976-09-04---1999-08-01&#39;
+                        &#39;match_value&#39; =&gt; &#39;abc&#39;, # required; use arrayref for &#39;in&#39; and &#39;not in&#39; options
+                                # like/not like match_values automatically have % put at start/end
+                        &#39;additonal_logic&#39; =&gt; qq{some more sql logic, beginning with &#39;and&#39; or &#39;or&#39;), # optional
+                                # this last bit is useful for sending something fancier than these options will allow, and
+                                # especially if you need to do some &#39;or&#39; stuff; a lot of &#39;or&#39; logic can be handled with an IN
+                                # list or a regexp -- if the &#39;or&#39; is testing values of the same &#39;match_column,&#39;
+                                # but if you need to have &quot;name=&#39;eric&#39; or type=&#39;dog&quot;, then you&#39;d probably set this to
+                                # qq{or type=&#39;dog&#39;); definitely more manual, but at least gives you options
+                                # remember you can mangle these options a bit in &#39;pre_search&#39;
+                                # USE PLACEHOLDERS IN YOUR QUERY TO GENERATE THE &#39;additonal_logic&#39; IF VALUES ARE USER-PROVIDED
+                }],
+                &#39;limit_results&#39; =&gt; blank or an integer, # default blank; if filled, limits the number of results found to value
+                &#39;auto_load&#39;     =&gt; 0 or 1, # default is 0; if filled, calls $dt_obj-&gt;load() on my results
+                &#39;skip_hooks&#39; =&gt; 0 or 1, # optional; if &#39;1&#39;, skip pre_search and post_search
+                &#39;sort_column&#39; =&gt; $column_or_key_name, # optional; arg passwed to load() if auto_load=1
+                &#39;sort_direction&#39; =&gt; &#39;up&#39;, # optional; arg passwed to load() if auto_load=1
+                &#39;do_clear&#39; =&gt; 1 or 0, # optional; arg passwed to load() if auto_load=1
+                &#39;skip_metainfo&#39; =&gt; 1 or 0, # optional; arg passwed to load() if auto_load=1
+                &#39;load_fields&#39; =&gt; &#39;comma,list,of,fields&#39;, # optional; allows you to specify which table columns will be retrieved
+                        # and which data-massaging hooks will be run (name those &#39;field_HOOK&#39; like the methods)
+                        # if blank loads all columns and runs all hooks.
+                        # useful to avoid loading big fields for screen/action display
+                        # be careful not to sabotage hooks which rely on certain fields
+        );</code></pre>
+
+<p>Note that allows you to search any table across the database and relate it back to your records. This just fetches an array of the primary keys, &#39;concat(code,&#39;_&#39;,server_id)&#39;, and saves them here:</p>
+
+<pre><code>        $dt_obj-&gt;{search_results} = [@found_data_codes];</code></pre>
+
+<p>Also, the number of matches found will be in $dt_obj-&gt;{search_found_count}.</p>
+
+<p>One more cool bit, after the initial run-through, you can just call $dt_obj-&gt;search() and it will use all the arguments which were sent before. At this point, you have to change all of them to change any of them, but the most useful bit is being able to call the same exact search over and over; nice for keeping multiple folks&#39; screens updated as they both make changes.</p>
+
+<h2 id="save">save()</h2>
+
+<p>To create/update a data record:</p>
+
+<pre><code>        $dt_obj-&gt;save(
+                &#39;data_code&#39; =&gt; $data_code, # optional; if filled, will update; if blank, will create
+                &#39;params_key&#39; =&gt; &#39;string&#39;, # optional; prepend this string to all $$luggage{params} records
+                        # used to build record, i.e. &#39;string_status&#39; for &#39;status&#39; colun;
+                        # useful when you are saving one record after another and have submitted
+                        # a spreadsheet-style form
+                &#39;skip_hooks&#39; =&gt; 0 or 1, # optional; if &#39;1&#39;, skip pre_save and post_save
+                &#39;parent&#39; =&gt; $parrent_string, # optional for update / required for create
+                        # DT_ID:DATA_CODE string for record which will become the parent
+                        # of the data; can also set to &#39;top&#39; for top-level
+                &#39;auto_load&#39;     =&gt; 0 or 1, # default is 0; if filled, calls $dt_obj-&gt;load() on the target record (update only)
+                &#39;is_draft&#39; =&gt; 0|1,                      # optional and for creates only; if filled, will set the &#39;is_draft&#39; column
+                        # on the metainfo table to &#39;Yes&#39;, which can be useful for excluding in searches
+                        # Most useful in conjunction with a datatype with a bunch of non-required fields
+                        # and a well-crafted pre_save() hook.
+                        # To later un-set the &#39;is_draft&#39; column (aka &#39;publish&#39; the record), use
+                        # $dt_obj-&gt;not_draft($data_code);
+                &#39;skip_blanks&#39; =&gt; 0|1,   # optional / defaults to 0 / used for updates only
+                        # if filled, will only update fields for which you sent a value in %$params
+                        # (including a value of 0, so it literally skips blanks).  Useful for 1- or 2-field edits
+        );</code></pre>
+
+<p>Note this allows you to save one record at a time, and if you have a batch-entry form, utilize a &#39;params_key&#39; sub-key and cycle through the forms submissions in group by key (&#39;record1,&#39; record2&#39;, etc....you get the idea, I mean really, why am I am typing so many comments.)</p>
+
+<p>The data-code of the last-saved record will be placed into $dt_obj-&gt;{last_saved_data_code}.</p>
+
+<p>If the datatype has the &#39;skip_metainfo&#39; option set to &#39;Yes,&#39; this routine will not write to the &#39;metainfo&#39; table; otherwise, that table is used to store useful data about this data, including the username of the creating user (the &#39;originator&#39;), the username of the last user to update the data (&#39;updater&#39;), the unix epoch of creation (create_time), epoch for update (update_time), the data_code (code+&#39;_&#39;+server_id) of the record in its table, the data_code of its parent, the list of data_codes which are its children (in order), and a list of data_codes for access lists which are used to restrict access to that data. Does not add too much overhead versus the usefulness.</p>
+
+<p>The metainfo table also has that &#39;altcode&#39; column, which is meant to be a somewhat-unique and human-friendly identifier. In the saver.pm module, we have a basic &#39;altcode_maker()&#39; method which will create an altcode based on the current month, username, datatype&#39;s table name, and last insert ID of that table. It&#39;s OK, but for important data, you will want to put an &#39;altcode_maker&#39; method in the datatype&#39;s class/perl_module to override this generic method. This is only used on create; if you want to change it for an update, please do so in your post_save() hook.</p>
+
+<p>The save_data.pm are going to have more comments about the field types that a datatype may have and how they work.</p>
+
+<h2 id="Data-Locking-for-Tools">Data-Locking for Tools</h2>
+
+<p>For creating, checking, and removing locks, we have the functions in the data_locker.pm sub-class. These locks are checked, set, and respected both within the Action Tool &#39;orchestrator&#39; module, omnitool::tool::actioner, as well as in our &#39;save()&#39; and &#39;change_parent()&#39; methods.</p>
+
+<p>Usage for each lock-related method:</p>
+
+<pre><code>        $result = $dt_obj-&gt;lock_data(
+                &#39;data_code&#39; =&gt; &#39;string&#39;, # required; data_code or altcode of record to lock, required
+                &#39;lifetime&#39; =&gt; integer, # number of minutes to live; optional and defaults to datatypes.default_lock_lifetime
+                        # probably coming from tool.lock_lifetime
+                &#39;force&#39; =&gt; &#39;1&#39;,         # optional/discouraged; if filled, will overwrite active locks for other people
+        );
+
+        Returns 0 on failure, and you can check the last entry in $self-&gt;{status} for reason.
+        Returns 1 on success.
+
+        $result = $dt_obj-&gt;unlock_data(
+                &#39;data_code&#39; =&gt; &#39;string&#39;, # required; data_code or altcode of record to un-lock, required
+                &#39;force&#39; =&gt; &#39;1&#39;,         # optional/discouraged; if filled, will remove active locks for other people
+        );
+
+        Returns 0 on failure, and you can check the last entry in $self-&gt;{status} for reason.
+        Returns 1 on success.
+
+        ($lock_user,$lock_remaining_minutes) = $dt_obj-&gt;check_data_lock($data_code);
+
+        Only arg is required data_code or altcode of data to check on locks for.
+        If the lock is under the name of $self-&gt;{luggage}{username} or &#39;None&#39; then it returns blank.
+        If any other lock is found, you receive the username and number of minutes remaining for the lock.</code></pre>
+
+<h2 id="Work-logging-extended-change-history">Work logging &amp; extended change history</h2>
+
+<p>This method, as well as change_parent(), delete() and restore() will add entries to the $dt_obj-&gt;{status} associative array in order of earliest to latest changes, like so:</p>
+
+<pre><code>        $dt_obj-&gt;{status}-&gt;[0]-&gt;{success} = 1; #  1 or 0; 1=success
+        $dt_obj-&gt;{status}-&gt;[0]-&gt;{message} = qq{&#39;Beach Trip&#39; Calendar Event Has Been Updated};  # one liner, no HTML
+        $dt_obj-&gt;{status}-&gt;[0]-&gt;{detail} = &quot;&quot;; # longer text goes here; good place for error text
+        $dt_obj-&gt;{status}-&gt;[0]-&gt;{data_code} = &#39;1_10&#39;; # primary key of record created/updated</code></pre>
+
+<p>If the datatype has &#39;extended_change_history&#39; set to &#39;Yes,&#39; then actions will be saved to a to an &#39;update_history&#39; table within the target database (which should be auto-created for any new OmniTool application/database). This update history looks like:</p>
+
+<pre><code>        CREATE TABLE `update_history` (
+          `code` int(11) NOT NULL AUTO_INCREMENT,
+          `server_id` int(11) NOT NULL DEFAULT &#39;1&#39;,
+          `data_code` varchar(30) NOT NULL,
+          `datatype` varchar(30) NOT NULL,
+          `updater` varchar(25) NOT NULL,
+          `update_time` int(11) NOT NULL DEFAULT &#39;0&#39;,
+          `changes` mediumtext,
+          PRIMARY KEY (`code`,`server_id`),
+          KEY `data_code` (`data_code`)
+        ) ENGINE=InnoDB;</code></pre>
+
+<p>For updates, it will try to save the pre/post values of smaller columns (not text/longtext) in &#39;changes&#39;.</p>
+
+<p>Note that enabling this option will really slow down your application; use it sparingly.</p>
+
+<h2 id="change_parent">change_parent()</h2>
+
+<p>To move data from under parent record to another:</p>
+
+<pre><code>        $dt_obj-&gt;change_parent(
+                &#39;data_code&#39; =&gt; $data_code,   # required; primary key of data for which to change parent
+                &#39;new_parent_id&#39; =&gt; $parent_id, # required; primary key of proud new parent
+                &#39;new_parent_type&#39; =&gt; $parent_datatype_id, # required; the datatype ID of the proud new paremt
+        );</code></pre>
+
+<p>Will update $dt_obj-&gt;{status} as well as the &#39;update_history&#39; table if the &#39;extended_change_history&#39; option is &#39;Yes&#39; for that datatype.</p>
+
+<h2 id="form">form()</h2>
+
+<p>Use to generate a data structure representing a form which is to be rendered by our UI (one of Template-Toolkit, Jemplate, or our API interpreter). Does not generate HTML, but just an instructive hash. Returns a reference for that hash and does not store in $self. Please see the bottom of form_maker.pm for a complete example of a hashref which could be returned.</p>
+
+<p>This is meant to be called from a sub-class of Tool.pm driving an action tool. I would think 95% of the time, it would be via omnitool::tools::standard_forms.</p>
+
+<p>Usage:</p>
+
+<pre><code>        $form = $dt_obj-&gt;form(
+                &#39;action&#39; =&gt; &#39;create&#39;,   # &#39;create&#39; or &#39;update&#39;, defaulting to &#39;create&#39; unless &#39;data_code&#39; is filled
+                &#39;data_code&#39; =&gt; &#39;string&#39;,        # data_code or altcode of record to load as presets for form; assumes &#39;update&#39;
+                &#39;new_parent&#39; =&gt; &#39;string&#39;,       # parent string of the data under which we will create data; for creates only
+                &#39;target_url&#39; =&gt; &#39;string&#39;, # target URI to submit the form into; defaults to $self-&gt;{luggage}{uri}
+                &#39;title&#39;  =&gt; &#39;string&#39;,   # Text to display above form; defaults to: ucfirst($args{action}.&#39; a &#39;.$self-&gt;{datatype_info}{name}
+                                                                        datatype_hash tries to calculate &#39;a&#39; or &#39;an&#39;
+                &#39;submit_button_text&#39; =&gt; &#39;string&#39;, # I bet you can guess; defaults to &#39;title&#39; without the a/an
+                &#39;instructions&#39;  =&gt; &#39;long_string&#39;, # text to display above form; defaults to $self-&gt;{datatype_info}{description}
+                &#39;hidden_fields&#39; =&gt; {                            # ref to associative array of name=value pairs for the hidden fields
+                        &#39;field_name&#39; =&gt; &#39;field_value&#39;,  # &#39;data_code&#39; and &#39;action&#39; will be included by default
+                },
+                &#39;use_params_key&#39; =&gt; &#39;string&#39; or 1,  # if 1, will pre-pend record datacode (or &#39;new1&#39;) to field names
+                        # useful for multi-record forms; if otherwise filled (not 0), will
+                        # append that value to the field names
+                &#39;show_fields&#39;   =&gt; [field_data_keys]    # optional: comma-separated list of data_code ID&#39;s for the datatype_fields
+                        # to build, and you should have &#39;name,&#39; at the front to include the name
+                        # If blank, all fields are brought in; use this to create a &#39;mini&#39; form.
+                        # ** If you use this, be sure to fill the &#39;skip_blanks&#39; arg for saver(). **
+        );</code></pre>
+
+<h2 id="options_from_directory-directory-file_extension">options_from_directory($directory,$file_extension);</h2>
+
+<p>Builds options for the &#39;options_&#39; datatype hooks based on the contents of a provided directory. The second argument is a file extension (txt, docx, or similiar) or &#39;dir&#39;, indicating to search for sub-directories.</p>
+
+<p>Returns a hashref for the options plus an arrayref of the keys, suitable to be passed right into form().</p>
+
+<h2 id="children_update">children_update()</h2>
+
+<p>To update the &#39;children&#39; metainfo column for a record, particuarly after moving it under a new parent, just do:</p>
+
+<pre><code>        $dt_obj-&gt;children_update($new_parent_string);</code></pre>
+
+<p>$new_parent_string takes the form of DATATYPE_DATA_CODE:PARENT_DATA_CODE, i.e. 4_3:5_8 where &#39;4_3&#39; is the primary key for the datatype, and &#39;5_8&#39; is the primary key for the record who is the parent for which we are updating its children list. This maybe doesn&#39;t make sense. The record being updated here is the &#39;parent&#39; of the &#39;children&#39; of whom we are updating the list.</p>
+
+<p>This probably only gets used within these omniclass methods, so I am just mentioning it so we know it&#39;s there.</p>
+
+<p>FYI, you can use this method to update the &#39;metainfo.children&#39; column for ANY record in the selected database, not just records for the selected datatype in $self-&gt;{dt}.</p>
+
+<h2 id="get_lineage">get_lineage()</h2>
+
+<p>This method returns a array reference listing the parents of a record, from the &#39;top&#39; level all the way to the immediate parent. Use it like so:</p>
+
+<pre><code>        @$lineage = $dt_obj-&gt;get_lineage(
+                &#39;data_code&#39; =&gt; $primary_key, # required; concat(code,&#39;_&#39;,server_id) value of record
+        );</code></pre>
+
+<p>That @$lineage array will look like: top, 2_1:4_1, 5_1:18_1</p>
+
+<p>In this example, the record is positioned three levels from the top. It&#39;s immediate parent is the 18_1 record of datatype 5_1, then it&#39;s &#39;grand-parent&#39; is record 4_1 of datatype 2_1, and then it&#39;s great-grand-parent is the top-level of the database.</p>
+
+<h2 id="get_descendants">get_descendants()</h2>
+
+<p>This method returns a (complex) hash of all the records which are saved under a record, all the way to the &#39;bottom&#39; of the tree. It depends on the metainfo table, so datatypes set with skip_metainfo=Yes will not work.</p>
+
+<pre><code>        %$descendants = $dt_obj-&gt;get_descendants(
+                &#39;data_code&#39; =&gt; $primary_key, # required; concat(code,&#39;_&#39;,server_id) value of record
+        );</code></pre>
+
+<p>That %$descendants hash will look like this</p>
+
+<pre><code>        $descendants = {
+                &#39;1_1:2_1&#39; =&gt; {
+                        &#39;children&#39; =&gt; [
+                                &#39;6_1:2_1&#39;,
+                                &#39;6_1:3_1&#39;,
+                                &#39;5_1:2_1&#39;,
+                        ],
+                        &#39;6_1:3_1&#39; =&gt; {
+                                &#39;children&#39; =&gt; [
+                                        &#39;7_1:3_1&#39;
+                                ]
+                        },
+                        &#39;6_1:2_1&#39; =&gt; {
+                                &#39;children&#39; =&gt; [
+                                        &#39;7_1:1_1&#39;,
+                                        &#39;7_1:2_1&#39;,
+                                        &#39;7_1:116_1&#39;
+                        ]
+                },
+        };</code></pre>
+
+<p>Really recommended for when data is only two or three layers deep, but will go as low as you like. Basically, each level has a &#39;children&#39; entry with a list of the children ID&#39;s, and you can cycle through those at that level to see if they have a children &#39;subkey.&#39; This is kind of evil because it invites recursive subroutines.</p>
+
+<h2 id="parent_string_bits">parent_string_bits()</h2>
+
+<p>This method tabkes a parent string, which would appear in the &#39;parent&#39; column of either the record&#39;s primary/datatype-specific table or in metainfo.parent, and convert that to the primary key of the datatype, followed by the &#39;code&#39; and &#39;server_id&#39; bits of the parent&#39;s primary key. So for instance:</p>
+
+<pre><code>        ($datatype,$code,$server_id) = $dt_obj-&gt;parent_string_bits(&#39;4_1:10_1&#39;);</code></pre>
+
+<p>The result would be $datatype would be &#39;4_1&#39;, $code would be &#39;10&#39; and $server_id would be &#39;1&#39;.</p>
+
+<p>Useful for preparing to pull the name of the parent.</p>
+
+<h2 id="altcode_to_data_code">altcode_to_data_code()</h2>
+
+<p>Small utility method to resolve an altcode to a data_code. For form_maker and data_locker methods, but useful everywhere.</p>
+
+<p>Usage:</p>
+
+<pre><code>        $data_code = $dt_obj-&gt;altcode_to_data_code($altcode);</code></pre>
+
+<p>$data_code will be empty if nothing found. This is not fancy ;)</p>
+
+<h2 id="delete-restore">delete() &amp; restore()</h2>
+
+<p>To delete a record:</p>
+
+<pre><code>        $dt_obj-&gt;delete(
+                &#39;data_code&#39; =&gt; $data_code, # required; primary key of record to remove
+                &#39;skip_hooks&#39; =&gt; 0 or 1, # optional; if &#39;1&#39;, skip pre_delete and post_delete
+        );</code></pre>
+
+<p>Will update $dt_obj-&gt;{status} as well as the &#39;update_history&#39; table if the &#39;extended_change_history&#39; option is &#39;Yes&#39; for that datatype.</p>
+
+<p>If the record had previously been loaded into $dt-obj-&gt;{records} and $dt_obj-&gt;{metainfo} by load(), those hash entries will be removed (i.e. it&#39;ll be taken out of there) and the key removed from $dt_obj-&gt;{records_keys}</p>
+
+<p>If datatype has &#39;arhive_deletes&#39; set to &#39;Yes,&#39; then we will try to save the deleted record to the datatype&#39;s database, under &#39;deleted_data,&#39; which looks like:</p>
+
+<pre><code>        CREATE TABLE `deleted_data` (
+        `code` int(11) NOT NULL AUTO_INCREMENT,
+        `server_id` int(11) NOT NULL DEFAULT &#39;1&#39;,
+        `data_code` varchar(30) NOT NULL DEFAULT &#39;0&#39;,
+        `datatype` varchar(30) NOT NULL,
+        `delete_time` int(11) NOT NULL DEFAULT &#39;0&#39;,
+        `deleter` varchar(30) NOT NULL,
+        `data_record` longblob,
+        `metainfo_record` longblob,
+        PRIMARY KEY (`code`,`server_id`),
+        KEY `data_code` (`data_code`),
+        KEY (`data_code`,`datatype`)
+        ) ENGINE=MyISAM;</code></pre>
+
+<p>We make that a MyISAM table to keep it out of the InnoDB buffer pool for this database. The &#39;data_record&#39; is a Storable-serialized version of the record from its primary table; the &#39;metainfo_record&#39; is a Storable-serialized version of the data&#39;s record from &#39;metainfo.&#39; We just use &#39;sql_hash&#39; to pull out these records to save.</p>
+
+<p>Use this feature for only the most important data ;) If it gets used a lot, then we need to circle back to this feature and turn it into more of a full mirror of the source databases with all table structures being kept up to date.</p>
+
+<p>To restore a record from deleted_data:</p>
+
+<pre><code>        $dt_obj-&gt;restore(
+                &#39;data_code&#39; =&gt; $data_code, # required; primary key of record to restore
+                &#39;new_parent&#39; =&gt; $new_parent_string, # optional; new parent identifier if we want to restore under a new parent
+                        # otherwise, will try to go under former parent
+        );</code></pre>
+
+<p>This will attempt to restore the record to the tables (primary table and metainfo) in the current database, and will remove the saved record from archive.deleted_data. Will update $dt_obj-&gt;{status} as well as the &#39;update_history&#39; table if the &#39;extended_change_history&#39; option is &#39;Yes&#39; for that datatype.</p>
+
+<h2 id="Running-Background-Tasks">Running Background Tasks</h2>
+
+<p>There are certain tasks which should be run in the background, either because it&#39;s a heavy task or because it interacts with external resources. For this, we have the background_task_manager.pm portion of this kit. The idea is to queue up a task to be run via a Perl script, which is executed either by a every-X minute cron task or from another external process-spawning program.</p>
+
+<p>I should mention here that in order to use this feature, you have to have &#39;Supports Email &amp; Background Tasks&#39; set to &#39;Yes&#39; for this Datatype.</p>
+
+<p>A background task should represent a call to a method in your OmniClass sub-class, which should respond with a two-item array; first item is a &#39;1&#39; for success or &#39;0&#39; for fail; second item is the error or results messages. Error messages are logged into &#39;background_tasks&#39; and &#39;task_execute_errors_DB-NAME&#39; log files. Successful tasks&#39; status messages will bobe logged to the &#39;task_execute_success_DB-NAME&#39; log files.</p>
+
+<p>There is an &#39;example_background_task&#39; method in the Datatype sub-classes you can generate with the &#39;Get Sub-Class&#39; button under &#39;Manage Datatypes.&#39;</p>
+
+<p>When you need to spawn background tasks, you call &#39;add_task&#39; like so:</p>
+
+<pre><code>        $new_task_id = $dt_obj-&gt;add_task(
+                &#39;method&#39; =&gt; &#39;method_name&#39; # required: the method in your sub-class which will be performed in the background
+                &#39;data_code&#39; =&gt; &#39;DATA_CODE&#39;, # optional; the primary key of a target data record
+                &#39;delay_hours&#39; =&gt; some_integer, # number of hours from now to wait before performing task; the background
+                        # script may perform it a bit later than these number of hours due to a
+                        # backlog, but it will not do so before these hours have past
+                        # optional, and default is 0
+                &#39;args_hash&#39; =&gt; \%args, # optional: a hash reference of arguments to pass to the method we are calling
+        );</code></pre>
+
+<p>If you wish to cancel that task later, you just need to do:</p>
+
+<pre><code>        $dt_obj-&gt;cancel_task($new_task_id);</code></pre>
+
+<p>You can get or set the task&#39;s status as such</p>
+
+<pre><code>        $current_status = $dt_obj-&gt;task_status($new_task_id);
+
+        $dt_obj-&gt;task_status($new_task_id,&#39;Completed&#39;);
+
+        $dt_obj-&gt;task_status($new_task_id,&#39;Error&#39;,&#39;Error reason / message&#39;);</code></pre>
+
+<p>Valid statuses for tasks are &#39;Pending&#39;,&#39;Completed&#39;,&#39;Cancelled&#39;,&#39;Error&#39;,&#39;Hold&#39;, and &#39;Retry&#39;.</p>
+
+<p>When you want to run a script, you can either:</p>
+
+<pre><code>        $dt_obj-&gt;do_task($specific_task_id);</code></pre>
+
+<p>to run a specific task or better yet:</p>
+
+<pre><code>        $dt_obj-&gt;do_task();</code></pre>
+
+<p>to run the next task which is eligible to be run, meaning (a) it is in &#39;Pending&#39; or &#39;Retry&#39; status and (b) it either had no delay or the delay has passed.</p>
+
+<p>To put this in action, you would write a script for each OmniClass Datatype which utilizes background tasks. Here is a script I might use to complete tasks in the background:</p>
+
+<pre><code>        # get signed in as the admin user
+        use omnitool::common::luggage;
+        $luggage = pack_luggage(
+                &#39;username&#39; =&gt; &#39;eric&#39;, # no caps; required
+                &#39;hostname&#39; =&gt; &#39;gingerpraise.omnitool.org&#39;,
+        );
+
+        # grab the object for the datatype that has background tasks
+        $ginger_qualities_obj = $$luggage{object_factory}-&gt;omniclass_object(
+                &#39;dt&#39; =&gt; &#39;ginger_qualities&#39;,
+        );
+
+        # cycle forever
+        while (1) {
+                # run the next task
+                $ginger_qualities_obj-&gt;do_task();
+                # little rest,
+                sleep(5);
+        }</code></pre>
+
+<p>One might put in a check to have the script exit out every 15 minutes or so if you were worried about memory leaks.</p>
+
+<p>Please note that do_task() will not do anything if the &#39;pause_background_tasks&#39; column is set to &#39;Yes&#39; for the current Application Instance. This allows for code deploys without breaking background tasks, and can be set via the OmniTool Admin UI when updating an Instance.</p>
+
+<p>Also, do_task() will periodically delete tasks marked Completed more than 30 days ago. This will happen every 500-1000 seconds.</p>
+
+<h2 id="Generating-Sending-Outbound-Email">Generating &amp; Sending Outbound Email</h2>
+
+<p>Similar to how background tasks can be spawn and run, you can generate outbound emails to be sent in the background. Also to use this feature, you have to have &#39;Supports Email &amp; Background Tasks&#39; set to &#39;Yes&#39; for this Datatype.</p>
+
+<p>You must also configure the &#39;Info for Sending Email&#39; field for each Application Instance which uses this Datatype. If you utilize the &#39;Gmail&#39; server name, you may need to visit this URL to &#39;unlock&#39; the email account you wish to use: https://accounts.google.com/b/0/DisplayUnlockCaptcha FYI, the &#39;Gmail&#39; function is not really recommended, as Google might change everything at their whim.</p>
+
+<p>Outgoing emails are sent as HTML, and they are generated via Template-Toolkit templates, to prevent you/me from stuffing a bunch of HTML into our sub-classes. There is a way to send in a glob of HTML to be used as the body, discussed below, but please instead build out your system-wide email templates under $OTPERL/static_files/email_templates and the App-specific templates in $OTPERL/applications/$app_code_directory/email_templates</p>
+
+<p>Here is how you queue a new outgoing email to send in the background:</p>
+
+<pre><code>        $new_email_id = $dt_obj-&gt;add_outbound_email(
+                &#39;to_addresses&#39; =&gt; &#39;list,of,email,addresses&#39;, # required, comma-separated list of valid email addresses
+                        # you can just send base names, and we will add the suffix from $ENV{OT_COOKIE_DOMAIN}
+                &#39;subject&#39; =&gt; &#39;Subject Line&#39;, # required, the subject line of the email
+                &#39;from_address&#39; =&gt; &#39;someone@email-domain.com&#39;, # optional; sender&#39;s email address; defaults to contact email for this app instance
+                        # and then fails over to application contact, finally to $ENV{OTADMIN}
+                &#39;template_filename&#39; =&gt; &#39;email_template.tt&#39;, # optional/recommended; a template-toolkit template which will should be under either
+                        # $OTPERL/static_files/email_templates or $OTPERL/applications/$app_code_directory/email_templates
+                        # if blank, defaults to very-basic $OTPERL/static_files/email_templates/non_template.tt, which
+                        # expects a glob of HTML in $self-&gt;{email_vars}{message_body}
+                &#39;data_code&#39; =&gt; $record_id, # optional/recommended, a primary key for a target data record for your email template to utilize
+                &#39;email_vars&#39; =&gt; {}, # optional/recommended; extra variables to send into your email template.  If you are using the plain / pass-through
+                          # non_template.tt, then put a glob of HTML into the &#39;message_body&#39; key under here;
+                          # this gets put into $self-&gt;{email_vars} for the template
+                &#39;attached_files&#39; =&gt; &#39;list,of,file,ids&#39;, # optional; a comma-separted list of primary keys from the stored_files DB table for this app instance
+        );</code></pre>
+
+<p>So if you want to make the very sad and disappointing decision to send in the message body already prepared, place that into email_vars =&gt; { message_body =&gt; &#39;your body HTML&#39; } } and leave &#39;template_filename&#39; blank.</p>
+
+<p>To send a specific email, you just:</p>
+
+<pre><code>        $dt_obj-&gt;send_outbound_email($email_id);</code></pre>
+
+<p>That $email_id would be the primary key of the record in the &#39;email_outbound&#39; table in our Instance&#39;s database.</p>
+
+<p>To send up to the next 20 emails waiting to be sent (status = &#39;Pending or &#39;Retry&#39;), you would:</p>
+
+<pre><code>        $dt_obj-&gt;send_outbound_email();</code></pre>
+
+<p>When sending email, we will attempt to send to each recipient separately, so there is no need for BCC, and one bad recipient will not fail the whole message. If any recipient fails, the status of the record will be marked &#39;Error,&#39; and the errors will be logged into the &#39;email_errors&#39; log file for this App Instance. Successful sends will be logged to the &#39;email_sends&#39; log file for this Instance, and if all recipients are successful -- just that the messages went out, not delivered -- then the &#39;email_outbound.status&#39; column will be set to &#39;Completed.&#39;</p>
+
+<p>If you want to retry a message later, set the status to &#39;Retry&#39;. Be careful: some recipients may have already received their copy. Better to spawn a new message for the missed recipients.</p>
+
+<p>To put this in action, you would write a script for each OmniClass Datatype which supports background tasks and emails. Here is a script I might use to send out emails in the background:</p>
+
+<pre><code>        # get signed in as the admin user
+        use omnitool::common::luggage;
+        $luggage = pack_luggage(
+                &#39;username&#39; =&gt; &#39;eric&#39;, # no caps; required
+                &#39;hostname&#39; =&gt; &#39;gingerpraise.omnitool.org&#39;,
+        );
+
+        # grab the object for the datatype that has background tasks
+        $ginger_qualities_obj = $$luggage{object_factory}-&gt;omniclass_object(
+                &#39;dt&#39; =&gt; &#39;ginger_qualities&#39;,
+        );
+
+        # cycle forever
+        while (1) {
+                # run the next task
+                $ginger_qualities_obj-&gt;send_outbound_email();
+                # little rest,
+                sleep(5);
+        }</code></pre>
+
+<p>One might put in a check to have the script exit out every 15 minutes or so if you were worried about memory leaks.</p>
+
+<p>Also, send_outbound_email() will also periodically delete email_outbound records marked Completed more than 30 days ago. This will happen every 500-1000 seconds.</p>
+
+<h2 id="update_history">update_history()</h2>
+
+<p>Saves detail entries on data modification to the &#39;update_history&#39; table within $self-&gt;{database}. Used as needed within these methods, and available for your use elswehwere.</p>
+
+<pre><code>        $self-&gt;update_history($update_detail_text);</code></pre>
+
+<p>$update_detail_text can be quite long, but I would suggest limiting it somewhat.</p>
+
+<h2 id="get_access_roles">get_access_roles()</h2>
+
+<p>Returns a key-value hash of this Application&#39;s Access Roles, along with arrayref of keys, sorted by the names of the Roles. Mainly used for the access_roles_select menus, but can have other uses, so shared as a main method.</p>
+
+<pre><code>        Usage:  ($access_roles,$role_keys) = get_access_roles();</code></pre>
+
+<h2 id="Hooks-Datatype-Specific-Sub-Classes">Hooks &amp; Datatype-Specific Sub-Classes</h2>
+
+<p>The base OmniClass module is pretty nice, but the real fun starts when you prepare a sub-class for your new Datatypes. This allows you to use any or all of the special &#39;hook&#39; rountines below as well as to add any method you like to the sub-class for added functionality.</p>
+
+<p>Once you create the new datatype, you can generate a starter / example sub-class via the &#39;Get Sub-Class&#39; option next to the Datatype in the Manage Datatypes tool. It will show you precisely what&#39;s needed. The key is &quot;use parent &#39;omnitool::omniclass;&quot; of course. Also, your sub-class should not have it&#39;s own &#39;new()&#39; routine, as so much goes on above. You can have an &#39;init()&#39; in there to be called at the end of new().</p>
+
+<p>The hooks detailed below will be automatically called at the right times if they appear in your sub-classes. If you add other methods, then your Tool.pm sub-classes will need to specifically call for those special methods.</p>
+
+<p>Remember that when instantiating the OmniClass object, or in calling load(), save(), search(), and delete(), you can set a &#39;skip_hooks&#39; argument to prevent the execution of the hook methods, even if they exist.</p>
+
+<p>Here is a brief discussion of the hook methods you can create:</p>
+
+<pre><code>        - pre_load(%$args): Called at the start of load() before loading records from the database.
+                Useful to adjust which records will be loaded or in fetching extra data to prepare
+                for the Virtual Field Hooks.  Receives a reference to the arguments hash passed
+                into the load() method.
+
+        - field_XYZ(%$args): These &#39;field_*&#39; hooks are called during the load() process to
+                implement the &#39;virtual fields&#39; functionality.  You are able to add a Datatype Field
+                with &#39;Virtual Field&#39; set to &#39;Yes&#39;, in which case you should set up a method in
+                your sub-class named as &#39;field_&#39; plus the &#39;MySQL Table Column&#39; value of your
+                Datatype Field, aka the &#39;table_column&#39; entry.  So if your Table Column is &#39;color&#39;
+                then this method would be named &#39;field_color&#39;.
+
+                This hook can do anything you want, actually, but it should setup a value for its
+                &#39;table_column&#39; for each of the loaded records under $self-&gt;{records}.  For this example,
+                it would build up $self-&gt;{records}{$id}{ginger}.  The values added to the records could be
+                either (a) a text string or (b) an array of hashes, like so:
+
+                        $self-&gt;{records}{$id}{ginger} = [{
+                                &#39;text&#39; =&gt; &#39;Some Text&#39;,
+                                &#39;uri&#39; =&gt; &#39;tool_uri&#39;,
+                                &#39;glyph&#39; =&gt; &#39;font-awesome icon&#39;,
+                                &#39;image&#39; =&gt; &#39;/path/to/image&#39;,
+                                &#39;class&#39; =&gt; &#39;css_class_name_for_div&#39;,
+                                }, # can have more of the same
+                        ];
+
+                This structure is used for the view mode Jemplates to build nice columns for display.
+                None of those keys are required; you can have any combination of them that you wish/need
+                for your Jemplate; you can also add other keys if you need.
+
+                Receives a reference to the arguments hash passed into the load() method.
+
+        - pre_virtual_fields(%$args):  Called load(), after loading records from the database but before
+                running the virtual fields&#39; methods (which would be in your OmniClass sub-class).
+                Useful to load up additional data or modify your loaded DB data before building the virtual fields.
+                Receives a reference to the arguments hash passed into the load() method.
+
+        - post_load(%$args): Called at the end of load(), after loading records from the database and
+                executing any virtual fields&#39; methods.  Useful to alter or trim the loaded data, or for actions
+                which can only occur when all records are loaded. Receives a reference to the arguments hash passed
+                into the load() method.
+
+        - pre_save(%$args): Called at the start of save(), before creating or updating the record(s).
+                Useful for altering the data you are going to use for the save, or to stop the save
+                in its tracks by setting &#39;cancel_save&#39; into the reference it receives to the arguments
+                hash passed into save().  So the right place for a sanity check.
+
+        - post_save(%$args): Called at the end of save().  Good for any clean-up actions from a save,
+                or for setting/sending notifications of the data create/update.  Receives a reference to the
+                arguments hash passed into the save() method.
+
+        - pre_search(%$args): Called at the start of search(), before setting up and executing a search
+                for records in the database.  Useful for modifying (or adding to) the arguments passed into
+                the search.  Receives a reference to the arguments hash passed into the search() method.
+                Remember that any previously run search&#39;s args will be available in $self-&gt;{prior_search_args}.
+                Can also set $self-&gt;{cancel_search} to stop the search from executing.
+
+        - post_search(%$args): Called at towards the end of search(), after the search was executed but before
+                the records are auto-loaded, if the &#39;auto_load&#39; arg was set.  Can modify the search results within
+                $self-&gt;{search_results} (which is an arrayref of the data codes of the matching records.).
+                Receives a reference to the arguments hash passed into the search() method.
+
+        - pre_delete(%$args): Called before a record is deleted, but after the data lock is checked.  Can
+                set $$args{cancel_delete} to stop the deletion from happening.  May also be useful for sending
+                out any notices of the deletion while the data still exists.  Receives a reference to the
+                arguments hash passed into the delete() method.
+
+        - post_delete(%$args):  Called after the deletion has occurred.  Useful for performing any data
+                actions to adjust to the new world without the removed record.  Receives a reference to the
+                arguments hash passed into the delete() method.
+
+        - prepare_for_form_fields($form):  Runs towards the middle of the form() routine, after the
+                general preparation of the form is complete but before each form field&#39;s sub-structure
+                is built.  Receives the $form hashref, which includes the arguments passed into the form()
+                method as well as the form&#39;s structure so far.  Useful to prepare data which will be shared
+                between the &#39;options_*&#39; hooks described below.  Could also adjust the fields which shall
+                be built.
+
+        - options_XYZ($data_code):  Used to prepare the options to be presented for a select, checkout, or
+                radio buttons field.  &#39;XYZ&#39; is the DB table column for the Datatype field which will be
+                represented by this form field.  The &#39;$data_code&#39; is the primary key for the record being
+                updated in the field, if we are updating.  This hook should return a hashref to a simple
+                key=value structure with the option values and names, along with an arrayref to the keys
+                for that simple hash, in the order you wish to display.
+
+        - options_from_directory($directory,$file_ext,$keep_ext): This method is inside form_maker.pm
+                and called from your &#39;options_XYZ&#39; hooks.  It returns the hashref/arrayref combo for
+                options based on files in the directory you specify.  First argument is required and is
+                the full path to the directory; second argument is optional and is the file extension
+                of the files to list (defaults to &#39;pm&#39; for Perl modules); third option is optional, if
+                filled will prevent the file extension from being trimmed from the filenames.
+
+        - post_form_operations($form): Called at the end of form(), and is useful to modify the %$form
+                structure before sending it back to the browser.  Receives a reference to the %$form structure.
+
+        - post_validate_form($form): Kind of an oddball for being called from omnitool::tool::action_tool
+                and not an OmniClass module.  Meant to do form validation for a Tool.  The good and proper
+                reason for allowing a direct hook from Tool.pm sub-classes is to push the Datatype logic
+                under the OmniClass sub-classes.  However, the real reason is to allow for the &#39;standard_data_actions&#39;
+                to utilize post_validate_form() hooks.  If an value for a field &#39;fails&#39; validation,
+                $self-&gt;{stop_form_action} should be set to &#39;1&#39;, along with $self-&gt;{json_results}{form}{fields}{$field}{field_error}
+                where $field is the key of the incorrect field.  The omnitool::tool::action_tool routines will take
+                it from there.
+
+        - time_adjust(%args): This is a nice subroutine included in loader.pm meant to make it very easy to
+                convert UNIX epoch values into human-readable formats, time offset based on the user&#39;s timezone
+                (which is snagged into their luggage, see the notes at the bottom of pack_luggage.pm).  Here
+                is the usage:
+
+                $formatted_time = $self-&gt;time_adjust(
+                        &#39;unix_timestamp&#39; =&gt; $epoch, # required arg, the unix epoch to adjust
+                        &#39;time_to_date_task&#39; =&gt; $task, # optional, a task to use to pass this epoch through utility_belt.pm&#39;s time_to_date()
+                                # defaults to &#39;to_date_human_time&#39;
+                        &#39;timezone&#39; =&gt; $timezone,        # optional, an alternative timezone (EST, PDT, etc), if we don&#39;t want to
+                                # use $self-&gt;{luggage}{timezone}
+                );</code></pre>
+
+<p>All of these are able to modify $self, so please be careful.</p>
+
+<h2 id="About-Dynamic-Polymorphism">About Dynamic Polymorphism</h2>
+
+<p>It pained me to write that heading, as it is way too jargony. What I mean to say is &quot;extending your OmniClass subclass on the fly.&quot; There may come a time when you want to add features and capabilities (methods) to your subclass based on some logic. Since this is Perl, it&#39;s really easy.</p>
+
+<p>For example, let&#39;s say your Application is for kitchen appliances, and you have a nice Datatype named Kitchen Appliance with an OmniClass subclass at omnitool::applications::kitchen::appliance. This subclass would naturally have methods for power_on() and power_off and maybe get_cleaned(). (I see now what a terrible example this is, but let&#39;s press ahead.) The Kitchen Appliance Datatype has a single-select field set up for &#39;Type&#39; and your options are &#39;Oven&#39;, &#39;Fridge&#39;, &#39;Microwave&#39; and so forth. If that choice is set to &#39;Fridge&#39;, you may want your omnitool::applications::kitchen::datatypes::appliance object to morph into a omnitool::applications::kitchen::datatypes::appliance::fridge object, with cool new methods for cool_food_down() and light_on() and leak_all_over_the_nice_hardwood_floors() -- but still have all of the capabilities of the original omnitool::applications::kitchen::datatypes::appliance object.</p>
+
+<p>You can totally do this, so long as omnitool::applications::kitchen::datatypes::appliance::fridge is a subclass of omnitool::applications::kitchen::datatypes::appliance. You can even change it to a omnitool::applications::kitchen::appliance::oven object later on, although that would be weird.</p>
+
+<p>Note: This kind of morphing-around should be rare, as you&#39;d really want to have different Datatypes and subclasses set up for materially different things. This comes into play more when you are trying to manage related-but-different data as one Datatype and via one Tool and you need to shoehorn it together to work. Only do this when it&#39;s really necessary.</p>
+
+<p>Second note: You should only do this if there is one record loaded in the object, as if there are multiple records, they may not all qualify for the new subclass. Handle this in your code, and maybe test multiple records if you so dare.</p>
+
+<p>Here is how I would do it:</p>
+
+<p>1. In the primary Datatype subclass (appliance.pm), import the possible sub-subclass(es) at the top: use omnitool::applications::kitchen::datatypes::appliance::fridge; use omnitool::applications::kitchen::datatypes::appliance::oven;</p>
+
+<p>2. In the fridge.pm and oven.pm packages, identify the primary Datatype subclass as the parent: use parent &#39;omnitool::applications::kitchen::datatypes::appliance&#39;;</p>
+
+<pre><code>        This is quite important so you don&#39;t lose your parent&#39;s methods and attributes.</code></pre>
+
+<p>3. Back in appliance.pm, add a method which will re-bless the object based on logic:</p>
+
+<pre><code>        sub choose_appliance_subclass {
+                my $self = shift;
+
+                #  only do this if there is one record loaded, no more and no less
+                return &#39;Unchanged&#39; if $self-&gt;{records_keys}[1] || !$self-&gt;{records_keys}[0];
+
+                # proceed based on our &#39;Type&#39; field
+
+                # rebless as a Fridge
+                if ($self-&gt;{data}{appliance_type} eq &#39;Fridge&#39;) {
+                        bless $self, &#39;omnitool::applications::kitchen::datatypes::appliance::fridge&#39;;
+                        return &#39;Now a Fridge&#39;;
+
+                # rebless into an Oven ?
+                } elsif ($self-&gt;{data}{appliance_type} eq &#39;Oven&#39;) {
+                        bless $self, &#39;omnitool::applications::kitchen::datatypes::appliance::oven&#39;;
+                        return &#39;Now an Oven&#39;;
+
+                # no change
+                } else {
+                        return &#39;Unchanged&#39;;
+                }
+
+                # the return is totally optional
+        }</code></pre>
+
+<p>Here is a more dynamic way, if you feel snarky:</p>
+
+<pre><code>        sub choose_appliance_subclass {
+                my $self = shift;
+
+                #  only do this if there is one record loaded, no more and no less
+                return &#39;Unchanged&#39; if $self-&gt;{records_keys}[1] || !$self-&gt;{records_keys}[0];
+
+                # calculate the class_name based on the field
+                my $class_name = lc($self-&gt;{data}{appliance_type});
+
+                # we need its path in the file system
+                my $class_path = $ENV{OTHOME}.&#39;/code/omnitool/applications/kitchen/datatypes/appliances/&#39;.$class_name.&#39;.pm&#39;;
+
+                # return if module does not exist
+                return &#39;Unchanged&#39; if !(-e &quot;$class_path&quot;);
+
+                # load it in - log out if error
+                my $the_class_name = &#39;omnitool::applications::kitchen::datatypes::appliance::&#39;.$class_name;
+                unless (eval &quot;require $the_class_name&quot;) {
+                        $self-&gt;{luggage}{belt}-&gt;logger(&quot;Could not import $the_class_name: &quot;.$@,&#39;superfatals&#39;);
+                }
+
+                # and finally rebless it
+                bless $self, &quot;$the_class_name&quot;;
+                return &#39;Now an &#39;.$self-&gt;{data}{appliance_type};
+
+        }</code></pre>
+
+<p>I am really not sure which is best. The second reduces your need to re-code choose_appliance_subclass() as you add options for the Appliance Type, but perhaps that&#39;s minimal compared to creating a whole other class.</p>
+
+<p>You would probably want to call choose_appliance_subclass() as part of your post_load() hook so that it happens automatically if there is just recorded loaded.</p>
+
+<p>If your Search Tool is set up to only show one sub-type of your Datatype at once (i.e. only Ovens or only Fridges), then you could dispense with the requirement to only have one record loaded - or override that policy via an argument. Otherwise, this will work great for Action Tools.</p>
+
+
+</body>
+
+</html>
+
+

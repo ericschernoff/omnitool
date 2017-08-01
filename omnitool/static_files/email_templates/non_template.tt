@@ -1,0 +1,7 @@
+[%#
+	A 'non-template' email template, which will just pass through your glob of HTML.
+	Not very much fun.
+%]
+
+
+[% email_vars.message_body %]

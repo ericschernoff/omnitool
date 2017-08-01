@@ -1,0 +1,9 @@
+# bash env-vars to allow OmniTool scripts can be run via CLI
+export DATABASE_SERVER='[%options.database_server%]'
+export PERL5LIB='[%options.othome%]/code'
+export OTHOME='[%options.othome%]'
+export OTLOG='[%options.othome%]/log'
+export OTPERL='[%options.othome%]/code/omnitool'
+
+# set this to see script errors on screen and not in logs
+# export OT_DEVELOPER=1

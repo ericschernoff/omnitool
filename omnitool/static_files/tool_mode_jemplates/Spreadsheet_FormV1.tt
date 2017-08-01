@@ -1,0 +1,24 @@
+[*#
+
+	First attempt at a spreadsheet-style update form.  Presents a table, one form per table.
+
+	One day, we hope to have a core tool.pm module for building these forms.  For now, we will
+	have to write custom tools which take advantage of the params keys prefixes.
+
+	Expects JSON that includes:
+
+	'headings' => ['Array','Of','Table','Headings'],
+	'instructions' => "Instructions for this Tool',
+	'submit_button_text' => 'Submit Button Text',
+	'forms' => [
+		Array of hashes prepared by omniclass->form_maker()
+	],
+	'success_message' => 'Any error title you want to display.',
+	'error_title' => 'Any error title you want to display.',
+	'error_message' => 'Any error message you want to display.',
+*]
+
+[% PROCESS spreadsheet_form_entries %]
+
+[*# using a shared template for easier portability between templates / jemplates *]
+[* INCLUDE shared/spreadsheet_forms_shared.tt *]

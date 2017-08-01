@@ -1,0 +1,49 @@
+[%#
+	RETIRED JULY 15:  Instead using inline_actions_menu.tt
+
+	Client-side template for presenting a row of buttons for 'inline_actions' links, pointing
+	too Tools marked as 'inline action,' meaning they are displayed next to search results.
+
+	Action Tools can share the inline actions tools links with their parent searching tools,
+	which allows you to easy open a 'view details' page for a piece of data and jump to other,
+	more update-y tools for that same data piece.
+
+	The block below is called from complex_details_tabs_shared.tt, and will be called from
+	other places very soon.
+%]
+
+[% BLOCK inline_action_buttons %]
+	[% IF inline_actions.0.button_name %]
+		<div class="space-4"></div>
+		<div class="row widget-header">
+		<div class="col-sm-12 align-right">
+		[% IF lock_user %]
+			<span class="red">Locked by [%lock_user%].</span>
+		[% END %]
+		<button data-toggle="dropdown" type="button" class="btn btn-white btn-sm dropdown-toggle">
+			<i class="ace-icon fa fa-bolt"></i>
+			Other Actions
+		</button>
+		<ul class="dropdown-menu dropdown-caret dropdown-close dropdown-menu-right"> <!-- style="height: auto; max-height: 144px; overflow-y: auto; overflow-x: hidden" -->
+			[% FOREACH action IN inline_actions %]
+				<li>
+					[% IF action.refresh_link == 1 %]
+						<a onclick="tool_objects['[%tool_and_instance%]'].refresh_json_data()" tabindex="-1">
+							<i class="ace-icon fa [% action.icon_fa_glyph %]"></i>
+							[% action.button_name %]
+						</a>
+					[% ELSE %]
+						<a href="[% action.uri %]" tabindex="-1">
+							<i class="ace-icon fa [% action.icon_fa_glyph %]"></i>
+							[% action.button_name %]
+						</a>
+					[% END %]
+				</li>
+			[% END %]
+
+		</ul>
+		</div>
+		</div>
+		<div class="space-6"></div>
+	[% END %]
+[% END %]

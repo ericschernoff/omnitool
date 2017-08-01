@@ -1,0 +1,161 @@
+[%#
+	full_screen_form.tt
+
+	The most usual / common format for forms in this system.  Used in the
+	ScreenForm.tt template, among others.  Promoted to a UI Component, as it is
+	used everywhere.  No server-side tags allowed.  Please see the notes
+	in ScreenForm.tt for how to prepare forms JSON.  Also, called in via
+	omnitool_specific_css_and_js.tt under 'skeletons/required_parts', and
+	sent via ui::AUTOLOAD().
+%]
+
+[% BLOCK full_screen_form %]
+
+<div class="row">
+<div class="col-xs-12">
+
+	[% IF form_was_submitted %]
+
+		[%IF error_title %]
+			<div class="page-header">
+				<h3 class="red">
+					[% error_title %]
+				</h3>
+			</div>
+			[% IF error_message %]
+				<div>
+					[% error_message %]
+				<div>
+			[% END %]
+		[% END %]
+
+		[% IF title %]
+			<div class="page-header center h3">
+					[% title %]
+			</div>
+		[% END %]
+
+		[% IF message %]
+			<div class="center">
+				[% message %]
+			</div>
+		[% END %]
+
+		<div class="clearfix center h4">
+			<a href="[%return_link_uri%]">Return to [%return_link_title%]</a>
+		<div>
+
+	[% ELSE %]
+		<!-- need to display the form -->
+
+		[% IF form.display_title %] <!-- mostly for complex_details_plus_form -->
+			<div class="page-header">
+				<h3>
+					[% form.display_title %]
+				</h3>
+			</div>
+		[% END %]
+
+		[% IF form.error_title %]
+			<div class="page-header">
+				<h3 class="red">
+					[% form.error_title %]
+				</h3>
+				[% IF form.error_message %]
+					<div>
+						[% form.error_message %]
+					<div>
+				[% END %]
+			</div>
+		[% END %]
+
+		[% IF form.instructions %]
+			<div class="alert alert-block">
+				[% form.instructions %]
+			</div>
+		[% ELSE %]
+			<div class="space-4 clearfix"></div>
+		[% END %]
+
+		<form class="form-horizontal" id="[%the_tool_id%]_form" action="[%my_json_uri%]" method="post" role="form">
+		[% FOREACH hf IN form.hidden_fields.keys %]
+			<input type="hidden" name="[%hf%]" value="[%form.hidden_fields.$hf%]" />
+		[% END %]
+
+		[% FOREACH f IN form.field_keys %]
+
+			[% IF form.fields.$f.is_required %]
+				[% SET form.fields.$f.title = '* ' _ form.fields.$f.title %]
+			[% END %]
+
+			<div class="form-group" id="field_div_[%form.fields.$f.name%]">
+				<label class="col-sm-3 control-label no-padding-right" for="form-field-[%f%]">
+					[% IF form.fields.$f.field_error %]
+						<span class="bold red">
+							[% form.fields.$f.title %]
+							<i class="ace-icon fa fa-exclamation-circle red"></i>
+						</span>
+					[% ELSE %]
+						[% form.fields.$f.title %]
+					[% END %]
+
+					[%# default behavior to hide/popover the field instructions %]
+					[% IF form.fields.$f.instructions && !display_field_instructions %]
+						<span class="help-button" data-rel="popover" data-trigger="hover" data-placement="right" data-content="[%form.fields.$f.instructions%]">?</span>
+					[% END %]
+
+				</label>
+				<div class="col-sm-7">
+					<div class="clearfix">
+					[% SET field_type = form.fields.$f.field_type %]
+					[% PROCESS $field_type %]
+					</div>
+
+					[%# maybe they want to clearly display the field instructions %]
+					[% IF form.fields.$f.instructions && display_field_instructions %]
+						<div class="space-2"></div>
+						<div class="help-block ">
+							[% form.fields.$f.instructions %]
+						</div>
+					[% END %]
+
+
+					[% IF form.fields.$f.error_instructions %]
+						<div class="space-2"></div>
+						<div class="help-block col-sm-7 bolder red">
+							[% form.fields.$f.error_instructions %]
+						</div>
+					[% END %]
+
+				</div>
+			</div>
+		[% END %]
+
+		<div class="clearfix form-actions">
+			<div class="col-xs-3 col-md-3"></div>
+			<div class="col-xs-6 col-md-6 center">
+				<button class="btn btn-info" type="submit" [%form.submit_button_hover%]>
+					<i class="ace-icon fa fa-check bigger-110"></i>
+					[%form.submit_button_text%]
+				</button>
+
+				&nbsp; &nbsp; &nbsp;
+
+				[% IF return_link_uri %]
+					<a class="btn hidden-1025" href="[%return_link_uri%]" role="button">
+						<i class="ace-icon fa fa-undo bigger-110"></i>
+						Cancel / Return
+					</a>
+				[% END %]
+			</div>
+			<div class="col-xs-3 col-md-3"></div>
+		</div>
+
+		</form>
+
+	[% END %]
+
+</div>
+</div>
+
+[% END %]

@@ -1,0 +1,19 @@
+[%#
+	A simple paragraph to accept a set of paragaphs, following by a link.
+%]
+
+[% FOREACH paragraph IN email_vars.paragraphs %]
+
+	[% paragraph %]
+	<br/><br/>
+
+[% END %]
+
+[%# is there a link? should have a title + uri key under 'link' %]
+
+[% IF email_vars.link.title %]
+	[%email_vars.link.title%]:
+	<br/><a href="[%email_vars.link.uri%]">[%email_vars.link.uri%]</a>
+[% END %]
+
+

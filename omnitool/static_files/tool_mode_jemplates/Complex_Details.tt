@@ -1,0 +1,68 @@
+[*#
+
+	Jemplate Template for viewing details for complex data (e.g. datatypes or service requests).
+	Expects the $self->{json_results} hash to look like this:
+
+	$self->{json_results} = {
+		altcode => $case_altcode, # set by center_stage.pm
+		case_title => $name_from_case_main_record,
+		message => 'Message to appear above the tabs',
+		tab_info => { # sortable keys
+			1 => ['tag_id','tag_title'],
+			2 => ['tag_id','tag_title'],
+		},
+		tabs => { # keys should match their peers in tab_info{}
+			1 => {
+				'type' => 'info_groups', # will display groups of short data, i.e. title, status, requester
+				'data' => [
+					[
+						[ 'Priority', $priority_info ],
+						[ 'Requster', $requester_info ],
+						[ 'Created', $self->{data}{metainfo}{nice_create_age}.' ago' ],
+					],
+				],
+				# optional if you want to put some text blocks below these info groups, usefule
+				# since most of the time, the frontmost tab will be info groups
+				'text_blocks' => [
+					'Title One' => 'Text One',
+					'Title Two' => 'Text Two',
+				],
+			},
+			2 => {
+				'type' => 'text_blocks', # for displaying longer blocks of text
+				'data' => [
+					[ 'Block One Title', $block_one_long_text ],
+					[ 'Block Two Title', $block_two_long_text ],
+				],
+			},
+			3 => {
+				'type' => 'table', # for displaying data in a grid / datatable
+								 	# be sure to include the 'make_inline_data_table' function in your tool mode config
+				'data' => [ # first arrayref is for table headings, remaining are for record sets.
+					['Heading One','Heading Two','Heading Three'],
+					['Record One - First Column','Record One - Second Column','Record One - Third Column'],
+					['Record Two - First Column','Record Two - Second Column','Record Two - Third Column'],
+				],
+			},
+		},
+	};
+
+*]
+
+[% IF data_not_found %]
+
+	[% PROCESS data_not_found %]
+
+[% ELSE %]
+
+	[% PROCESS complex_details_tabs_shared_[*tool_and_instance*] %]
+
+[% END %]
+
+[*# using a shared template for easier portability between templates / jemplates *]
+[* INCLUDE shared/complex_details_tabs_shared.tt *]
+
+[*# safety jemplate in case they try to load a bad record *]
+[* INSERT shared/data_not_found.tt *]
+
+

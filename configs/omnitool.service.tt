@@ -1,0 +1,22 @@
+[Unit]
+Description=OmniTool/Plack Application Server
+After=network.target
+After=syslog.target
+
+[Service]
+
+# change 'prod' to 'dev' for your development environments
+ExecStart=[%options.othome%]/configs/start_omnitool.bash start prod
+ExecReload=[%options.othome%]/configs/start_omnitool.bash restart
+ExecStop=[%options.othome%]/configs/start_omnitool.bash stop
+Restart=on-failure
+PIDFile=[%options.othome%]/log/starlet.pid
+KillSignal=SIGTERM
+PrivateTmp=true
+Type=forking
+
+# change to your username for development
+User=[%options.omnitool_username%]
+
+[Install]
+WantedBy=multi-user.target

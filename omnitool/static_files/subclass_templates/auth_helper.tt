@@ -1,0 +1,39 @@
+package omnitool::applications::auth_helper;
+# Place a modified version of this package into your 'applications' directory if you don't
+# want to rely on use the 'omnitool_users' table in your omnitool admin DB, and instead
+# want to use another table in your DB or an external authentication service.
+
+# This would go directly under omnitool::applications and assist your system
+# in testing username/password credentials.  You can only use one of these
+# per OmniTool installation/system.
+
+# Having this in place will remove the 'Change my password' options and will
+# negate the 'Require Password Change' selector in Manage Users.
+
+# should say 11,000.0
+$omnitool::applications::auth_helper::VERSION = '6.0';
+
+# load exporter module and export the subroutines
+use Exporter;
+@ISA = qw(Exporter);
+@EXPORT = qw( authentication_helper );
+
+# Time to put childish things away...
+use strict;
+
+# the very easy routine to test their credentials
+sub authentication_helper {
+	my ($luggage) = @_;
+
+	# the supplied username/password is now in $$luggage{params}{username}, $$luggage{params}{password}
+	# and test their credentials
+	#### my $result = some_test_method();
+	# $result should be a 1 or 0, where 1 is success.
+	# if the authentication needs to be different per application or instance,
+	# you'd have an if/elsif/else block here, obviously
+
+	# return that
+	return $result;
+}
+
+1;

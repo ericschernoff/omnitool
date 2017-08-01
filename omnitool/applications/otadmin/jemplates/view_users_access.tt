@@ -1,0 +1,50 @@
+[*#
+	Jemplate for View User's Access Profile Tool.
+
+	Meant to be shown as a screen.
+ *]
+
+[*# first part is to display the results, if they submitted the form *]
+
+[% IF username %]
+
+	<div class="page-header">
+		<h1>
+			Access for '[%username%]' User in [% instance_name %].
+		</h1>
+	</div>
+
+	[% IF no_access %]
+
+		<div class="alert alert-block">
+			[% no_access %]
+		</div>
+
+	[% ELSE %]
+
+		<table class="table table-bordered">
+		<thead>
+		<tr>
+			<th>Access Role</th>
+			<th>Membership Type</th>
+		</tr>
+		</thead>
+		<tbody>
+
+		[% FOREACH role IN access_roles %]
+			<tr>
+				<td>[%role.name%]</td>
+				<td>[%role.match_text%]</td>
+			</tr>
+		[% END %]
+
+		</tbody>
+		</table>
+
+	[% END %]
+
+[% END %]
+
+[*# call the mainline ScreenForm template to display the form, even if already submitted. *]
+
+[* INCLUDE ScreenForm.tt *]

@@ -1,0 +1,44 @@
+package omnitool::applications::[%app_code_directory%]::common::daily_routines;
+# subclass for instances.pm to run the daily/weekly tasks for the [%app_name%]
+
+# is a sub-class of OmniClass
+use parent 'omnitool::applications::otadmin::datatypes::instances';
+our @ISA = (
+	'omnitool::applications::otadmin::datatypes::instances',
+);
+
+# put your big kid pants on
+use strict;
+
+# this is kicked off via the 'Start Daily BG Tasks' action in Manage Instances
+
+# run_daily_routines is executed as a daily task via daily_routines() in
+# omnitool::applications::otadmin::datatypes::instances.
+sub run_daily_routines {
+	my $self = shift;
+
+	# receive the args sent to the the background task plus the
+	# instance for the specific instance we are running against
+	my ($args, $luggage) = @_;
+
+	# maybe only do this stuff on Saturday, for now
+	my $day_of_the_week = $$luggage{belt}->time_to_date(time(),'to_day_of_week');
+	if ($day_of_the_week ne 'Saturday') {
+		return ('Success','Tasks will be done on Saturday, but today is '.$day_of_the_week);
+	}
+
+	# best to just set up background tasks in the parent instance
+=cut
+	my $product_info_object = $$luggage{object_factory}->omniclass_object(
+		'dt' => 'product_information',
+	);
+	my $new_task_id = $product_info_object->add_task(
+		'method' => 'update_product_database',
+	);
+=cut
+
+	# report success
+	return ('Success','Daily/Weekly tasks were completed');
+}
+
+1;

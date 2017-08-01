@@ -1,0 +1,43 @@
+<div class="space-4 clearfix"></div>
+
+<div class="row">
+<div class="col-xs-12">
+
+
+<div class="tabbable">
+	<ul class="nav nav-tabs" id="super_tabs">
+	<li class="active">
+		<a data-toggle="tab" href="#form">
+			<i class="blue ace-icon fa fa-pencil bigger-110"></i>
+			Active Records
+		</a>
+	</li>
+	<li>
+		<a data-toggle="tab" href="#details">
+			<i class="blue ace-icon fa fa-info bigger-110"></i>
+			Details
+		</a>
+	</li>
+
+	</ul>
+
+	<div class="tab-content">
+		<div id="form" class="tab-pane in active">
+			[*# share the great info in WidgetsV3.tt *]
+			[* INCLUDE WidgetsV3.tt *]
+
+		</div>
+
+		<div id="details" class="tab-pane">
+			[% PROCESS complex_details_tabs_shared_[*tool_and_instance*] %]
+		</div>
+
+</div>
+
+[% END %]
+
+</div>
+</div>
+
+[*# share the great info in complex_details_tabs_shared.tt *]
+[* INCLUDE shared/complex_details_tabs_shared.tt *]

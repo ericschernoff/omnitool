@@ -1,0 +1,227 @@
+[%#
+	shareable jemplate code for printable / email-able complex details screens.
+
+	Basically the same as complex_details_printable_tabs, but no tabs ;)
+
+	No server-side tags here
+
+%]
+
+[% BLOCK complex_details_printable_shared %]
+
+	<div class="space-6"></div>
+
+	<div class="page-header h3">
+		[% IF !hide_altcode && altcode %]
+			[%altcode%]: [% data_title %]
+		[% ELSE %]
+			[% data_title %]
+		[% END %]
+	</div>
+
+	[% IF message %]
+		<div class="page-header h4 red">
+			[% message %]
+		</div>
+	[% END %]
+
+	[% FOREACH tab_key IN tab_info.sort %]
+
+		[% NEXT IF !tabs.$tab_key.data.0 %]
+
+		<div class="page-header h4 blue">
+			[%tab_info.$tab_key.1%]
+
+			[% IF tabs.$tab_key.type == 'activity_table' %]
+				<label class="inline ">
+				<small class="muted">Show:</small>
+					<input onchange="$('#[%tab_info.$tab_key.0%]').toggle()" id="hide_[%$tab_key%]" checked="" type="checkbox" class="ace ace-switch ace-switch-3" />
+					<span class="lbl middle"></span>
+				</label>
+			[% END %]
+		</div>
+
+		<div class="row" id="[%tab_info.$tab_key.0%]">
+			[% IF tabs.$tab_key.type == 'info_groups' %]
+
+				[% IF n == 0 && tags_keys.0 %]
+					<div class="profile-info-row">
+					<div class="profile-info-name"> Tags </div>
+					<div class="profile-info-value">
+					[% FOREACH tag IN tags_keys %]
+						<span class="label label-lg label-info arrowed arrowed-in-right">[% tags.$tag.name %]</span>
+					[% END %]
+					</div>
+					</div>
+				[% END %]
+
+				[% FOREACH data_set IN tabs.$tab_key.data %]
+					<div class="col-xs-12 col-lg-4 col-md-4 col-sm-6">
+						<div class="profile-user-info">
+						[% FOREACH data_pair IN data_set %]
+							<div class="profile-info-row">
+								<div class="profile-info-name"> [% data_pair.0 %] </div>
+								<div class="profile-info-value">
+								[% IF data_pair.1.0.uri != '' %]
+									[% FOREACH link_set IN data_pair.1 %]
+										<span><a href="[%link_set.uri%]" target="_blank">[%link_set.text%]</a></span>
+									[% END %]
+								[% ELSIF data_pair.1.uri != '' %]
+									<span><a href="[%data_pair.1.uri%]" target="_blank">[%data_pair.1.text%]</a></span>
+								[% ELSIF data_pair.1 != '' %]
+									<span>[% data_pair.1.replace("\n", '<br/>') %]</span>
+								[% END %]
+								</div>
+							</div>
+						[% END %]
+
+						</div>
+					</div>
+				[% END %]
+				
+				[%# let them add some text blocks to display under the info groups,
+					since the primary screen will almost always be info groups %]
+				[% IF tabs.$tab_key.text_blocks && tabs.$tab_key.text_blocks.0.1 %]
+					<div class="col-xs-12" style="margin-right: 10pt; margin-left: 10pt">
+					[% FOREACH text_block_pair IN tabs.$tab_key.text_blocks %]
+						[% IF text_block_pair.1 %]
+							<h4>[% text_block_pair.0 %]</h4>
+							[% IF text_block_pair.1.match('<br') %]
+								[% text_block_pair.1 %]
+							[% ELSE %]
+								[% text_block_pair.1.replace("\n", '<br/>') %]
+							[% END %]
+						[% END %]	
+					[% END %]
+					</div>
+				[% END %]
+
+				
+
+			[% ELSIF tabs.$tab_key.type == 'text_blocks' %]
+				<div class="col-xs-12">
+				[% FOREACH data_pair IN tabs.$tab_key.data %]
+					[% IF data_pair.1 %]
+					[% IF data_pair.0 != tab_info.$tab_key.1 %]
+						<h4>[% data_pair.0 %]</h4>
+					[% END %]
+					<ul>
+						[% IF !(matches = data_pair.1.match('<br/>')) %]
+							[% data_pair.1.replace("\n", '<br/>') %]
+						[% ELSE %]
+							[% data_pair.1 %]
+						[% END %]
+					</ul>
+					[% END %]
+				[% END %]
+				</div>
+
+			[% ELSIF tabs.$tab_key.type == 'table' && !tabs.$tab_key.data.1 %]
+				<div class="col-xs-10 col-xs-offset-1 red">
+					No [%tab_info.$tab_key.1%] records found at this time.
+				</div>
+
+			[% ELSIF tabs.$tab_key.type == 'table' %]
+				<div class="col-xs-12">
+				<table class="table table-bordered" style="width: 100%">
+
+				[% SET num = 0 %]
+				[% FOREACH data_row IN tabs.$tab_key.data %]
+					<!-- first row is headings -->
+					[% IF num == 0 %]
+						<thead>
+						<tr>
+						[% SET field_count = 0 %]
+						[% FOREACH heading IN data_row %]
+							[% IF field_count > 2 %]
+								<th class="omnitool-data omnitool-heading hidden-480">
+							[% ELSE %]
+								<th class="omnitool-data omnitool-heading">
+							[% END %]
+								[%heading%]
+							</th>
+							[% SET field_count = field_count + 1 %]
+						[% END %]
+						</tr>
+						</thead>
+						<tbody>
+					[% ELSE %]
+						<tr>
+							[% SET field_count = 0 %]
+							[% FOREACH heading IN data_row %]
+								[% IF field_count > 2 %]
+									<td class="hidden-480 omnitool-data">
+								[% ELSE %]
+									<td class="omnitool-data">
+								[% END %]
+									<!-- Perhaps they set an array of links? -->
+									[% IF heading.0.uri != '' %]
+										[% SET counter = 0 %]
+										[% FOREACH link_set IN heading %]
+											[% IF link_set.uri.match('javascript') %]
+												<span><a href="[%link_set.uri%]">[%link_set.text%]</a></span>
+											[% ELSE %]
+												<span><a href="[%link_set.uri%]" target="_blank">[%link_set.text%]</a></span>
+											[% END %]
+											[% SET counter = counter + 1 %]
+											[% IF heading.$counter.uri %]
+												,
+											[% END %]
+										[% END %]
+									<!-- Or just plain text -->
+									[% ELSE %]
+										[%heading%]
+									[% END %]
+								</td>
+								[% SET field_count = field_count + 1 %]
+							[% END %]
+						</tr>
+					[% END %]
+
+					[% SET num = num + 1 %]
+				[% END %]
+
+				</tbody>
+				</table>
+				</div>
+
+			[% ELSIF tabs.$tab_key.type == 'activity_table' %]
+				<div class="col-xs-12">
+					<div class="dialogs">
+					[% FOREACH data_row IN tabs.$tab_key.data %]
+						<div class="itemdiv dialogdiv">
+						<div class="user">
+							<img src="[%data_row.updater_picture_link%]" />
+						</div>
+						<div class="body">
+						<div class="text">
+							<span class="label label-info arrowed-right">[% data_row.updater_type %]</span>
+							<a href="[%data_row.updater_directory_page%]" target="_new">[% data_row.updater_name %]</a> posted [% data_row.nice_create_age %]. <i class="ace-icon fa fa-clock-o"></i>
+							<span class="black">
+								<br/>Status: [% data_row.new_status %]  |  Priority: [% data_row.new_priority %]  | Location: [% data_row.lab_location %]
+							</span>
+						</div>
+						<div class="text">
+							[% IF data_row.attachment_link.uri %]
+								<p style="margin-left: 20px">
+									<i class="ace-icon fa fa-file"></i>
+									Attachment: <a href="[%data_row.attachment_link.uri%]">[%data_row.attachment_link.text%]</a>
+								</p>
+							[% END %]
+							<p style="margin-left: 20px">
+								[% data_row.notes %]
+							</p>
+						</div>
+						</div>
+					[% END %]
+					</div>
+				</div>
+
+			[% END %]
+
+		</div><!-- /.row -->
+		<div class="hr"></div>
+	[% END %]
+
+[% END %]
+

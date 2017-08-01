@@ -1,0 +1,55 @@
+CODING CONVENTIONS
+
+It would be nice for this system to be maintainable and easy-to-follow.  To that end,
+I have followed the following 'rules' and encourage you to do the same.  Here they are:
+
+1. All subroutine names, variable names and hash keys should:
+	- Be all lower-case
+	- Have_underscores_separating_words; no camelCase
+	- Spell-out clearly what is in the variable and avoid funny nicknames and shorthand
+		- Nicknames should be memorable and related to what the item is.
+		- If you are going to be witty, actually be witty ;)
+
+	Good variable examples:
+		$this_documents_name = 'code_conventions.txt';
+		$$luggage{application_instance} = '1_1';
+
+	- The '->' notation is reserved for accessing methods/attributes of objects and should
+		not be used for accessing values in plain/unblessed hashes.  Hopefully, this makes
+		it easier to tell if something is just a data structure or has been blessed into
+		an object:
+
+			print $$family{daughter}[1]{name}; # plain data structure / hash
+
+			$family->print_daughter_name(2); # object for family, with a method for
+									   # printing the second daughter's name
+
+	- Always use the curly brackets {} for object variable names, so that you can tell
+		the difference between a variable and a method:
+
+			$object->{definitely_a_variable} = 1;
+			$object->{definitely_an_array}[0] = 1;
+			$object->this_is_a_method();
+
+2. MySQL table names are always plurals of the data they represent.
+	- Use plural form of datatype name, i.e. 'family_members' for 'Family Member' datatype
+
+3. Extensive comments and notes!  The perldoc notes under omniclass.pm is a great example.
+	Bonus points if you proofreaded them.  Please consider documentation to be required for
+	any module in the main omnitool:: namespace or under omnitool::common.
+
+4. All SQL commands/code must be contained in modules under omnitool::common or omnitool::omniclass.
+	The 'common' modules are meant to be system-level and often un before the %$luggage or user
+	session is constructed.  These common modules are the only appropriate place to manage data not
+	represented by OmniClass Datatypes, and that should be only a very, very specific types of data.
+	The OmniClass modules must contain SQL, since that's where we actually load/save the data.
+	Note: SQL does not belong in the OmniClass Packages, only under omnitool::omniclass.
+
+5. No HTML, CSS, or JavaScript embedded in the Perl!  All of that goes under omnitool::static_files.
+	Another way to say this:  The only other language allowed in your Perl code is SQL, subject
+	to rule #4 above.
+
+6. No code golf -- limit complex one-liners unless they provide a speed boost.  Try to keep code
+	as readable as possible, and use consistent indents to indicate which scope you are within.
+
+7. This is an object-oriented system, with the exception of omnitool::common::pack_luggage.

@@ -1,0 +1,297 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no" />
+	<title></title>
+	<style type="text/css">
+		body {
+			width: 100%;
+			margin: 0;
+			padding: 0;
+			-webkit-font-smoothing: antialiased;
+		}
+	@media only screen and (max-width: 600px) {
+		table[class="table-row"] {
+			float: none !important;
+			width: 98% !important;
+			padding-left: 20px !important;
+			padding-right: 20px !important;
+		}
+		table[class="table-row-fixed"] {
+			float: none !important;
+			width: 98% !important;
+		}
+		table[class="table-col"], table[class="table-col-border"] {
+			float: none !important;
+			width: 100% !important;
+			padding-left: 0 !important;
+			padding-right: 0 !important;
+			table-layout: fixed;
+		}
+		td[class="table-col-td"] {
+			width: 100% !important;
+		}
+		table[class="table-col-border"] + table[class="table-col-border"] {
+			padding-top: 12px;
+			margin-top: 12px;
+			border-top: 1px solid #E8E8E8;
+		}
+		table[class="table-col"] + table[class="table-col"] {
+			margin-top: 15px;
+		}
+		td[class="table-row-td"] {
+			padding-left: 0 !important;
+			padding-right: 0 !important;
+		}
+		table[class="navbar-row"] , td[class="navbar-row-td"] {
+			width: 100% !important;
+		}
+		img {
+			max-width: 100% !important;
+			display: inline !important;
+		}
+		img[class="pull-right"] {
+			float: right;
+			margin-left: 11px;
+            max-width: 125px !important;
+			padding-bottom: 0 !important;
+		}
+		img[class="pull-left"] {
+			float: left;
+			margin-right: 11px;
+			max-width: 125px !important;
+			padding-bottom: 0 !important;
+		}
+		table[class="table-space"], table[class="header-row"] {
+			float: none !important;
+			width: 98% !important;
+		}
+		td[class="header-row-td"] {
+			width: 100% !important;
+		}
+	}
+	@media only screen and (max-width: 480px) {
+		table[class="table-row"] {
+			padding-left: 16px !important;
+			padding-right: 16px !important;
+		}
+	}
+	@media only screen and (max-width: 320px) {
+		table[class="table-row"] {
+			padding-left: 12px !important;
+			padding-right: 12px !important;
+		}
+	}
+	@media only screen and (max-width: 608px) {
+		td[class="table-td-wrap"] {
+			width: 100% !important;
+		}
+	}
+</style>
+</head>
+<body style="font-family: Arial, sans-serif; font-size:13pt; color: #444444; min-height: 200px;" bgcolor="#ffffff" leftmargin="0" topmargin="0" marginheight="0" marginwidth="0">
+<table width="100%" height="100%" bgcolor="#ffffff" cellspacing="0" cellpadding="0" border="0">
+<tr><td width="100%" align="center" valign="top" bgcolor="#ffffff" style="background-color:#ffffff; min-height: 200px;">
+<table><tr><td class="table-td-wrap" align="center" width="608">
+
+<table width="800" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;"><tbody><tr><td width="100%" style="font-family: Arial, sans-serif; line-height: 26px; color: #444444; font-size: 24px; font-weight: 500; margin-top: 0px; margin-right: 0px; margin-left: 0px; padding-bottom: 16px; padding-top: 7px; border-bottom-width: 1px; border-bottom-style: dotted; border-bottom-color: #e2e2e2;" valign="top" align="left">
+	[%email_vars.altcode%]: [% email_vars.data_title %]
+</td></tr></tbody></table>
+
+[% IF email_vars.message %]
+	<table width="800" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;"><tbody><tr><td width="100%" style="font-family: Arial, sans-serif; line-height: 22px; color: green; font-size: 18px; font-weight: 500; margin-top: 0px; margin-right: 0px; margin-left: 0px; padding-bottom: 16px; padding-top: 7px; border-bottom-width: 1px; border-bottom-style: dotted; border-bottom-color: #e2e2e2;" valign="top" align="left">
+		[% email_vars.message %]
+	</td></tr></tbody></table>
+[% END %]
+
+[% IF email_vars.regular_size_message %]
+	<table width="800" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;"><tbody><tr><td width="100%" style="font-family: Arial, sans-serif; line-height: 19px; color: #000000; font-size: 13pt; font-weight: 300; margin-top: 0px; margin-right: 0px; margin-left: 0px; padding-bottom: 16px; padding-top: 7px; border-bottom-width: 1px; border-bottom-style: dotted; border-bottom-color: #e2e2e2;" valign="top" align="left">
+		[% email_vars.regular_size_message %]
+	</td></tr></tbody></table>
+[% END %]
+
+
+[% FOREACH tab_key IN email_vars.tabs.keys.sort %]
+	[%# skip if not supported type %]
+	[% NEXT IF !email_vars.tabs.$tab_key.type.match('table|info|text|sub_records') %]
+
+	<table width="100%" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;"><tbody><tr><td width="100%" style="font-family: Arial, sans-serif; line-height: 20px; color: #478fca; font-size: 18pt; font-weight: 500; margin-top: 0px; margin-right: 0px; margin-left: 0px; padding-bottom: 16px; padding-top: 7px; border-bottom-width: 1px; border-bottom-style: dotted; border-bottom-color: #e2e2e2;" valign="top" align="left">
+		[% email_vars.tab_info.$tab_key.1 %]
+
+	</td></tr></tbody></table>
+
+	[% IF email_vars.tabs.$tab_key.type == 'info_groups' %]
+		<table class="table-row" width="800" bgcolor="#FFFFFF" style="table-layout: fixed; background-color: #ffffff;" cellspacing="0" cellpadding="0" border="0"><tbody><tr><td class="table-row-td" style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13pt; font-weight: normal; padding-left: 36px; padding-right: 36px;" valign="top" align="left">
+		<table class="table-col" align="left" width="700" style="padding-right: 16px; table-layout: fixed;" cellspacing="0" cellpadding="0" border="0"><tbody><tr><td class="table-col-td" width="496" style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13pt; font-weight: normal; width: 496px;" valign="top" align="left">
+		<div style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13pt; width: calc(-24px + 100%); margin-top: 0px; margin-bottom: 0px;">
+			[% FOREACH data_set IN email_vars.tabs.$tab_key.data %]
+				[% FOREACH data_pair IN data_set %]
+				<div style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13pt;">
+					<table width="100%" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;">
+					<tbody>
+						<tr>
+						<td width="20%" align="left" bgcolor="transparent" valign="middle" style="font-family: Arial, sans-serif; line-height: 19px; color: #667e99; font-size: 13pt; font-weight: normal; text-align: left; padding: 6px 10px 6px 4px; border-top-width: 0px; border-top-style: none; border-top-color: #667e99; width: 20%; vertical-align: middle; background-color: transparent;">
+							[% data_pair.0 %]
+						 </td>
+						<td width="80%" align="left" bgcolor="transparent" valign="middle" style="font-family: Arial, sans-serif; line-height: 19px; color: #000000; font-size: 13pt; font-weight: normal; text-align: left; padding: 6px 10px 6px 4px; border-top-width: 0px; border-top-style: none; border-top-color: #667e99; width: 80%; vertical-align: middle; background-color: transparent;">
+							[% IF data_pair.1.0.uri != '' %]
+								[% FOREACH link_set IN data_pair.1 %]
+									<span><a href="[%link_set.uri%]" target="_blank">[%link_set.text%]</a></span>
+								[% END %]
+							[% ELSIF data_pair.1.uri != '' %]
+								<span><a href="[%data_pair.1.uri%]" target="_blank">[%data_pair.1.text%]</a></span>
+							[% ELSE %]
+								<span>[% data_pair.1.replace("\n", '<br/>') %]</span>
+							[% END %]
+						</td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+				[% END %]
+			[% END %]
+		</div>
+		</td></tr></tbody></table>
+		</td></tr></tbody></table>
+
+		[%# let them add some text blocks to display under the info groups,
+			since the primary screen will almost always be info groups %]
+		[% IF email_vars.tabs.$tab_key.text_blocks && email_vars.tabs.$tab_key.text_blocks.0.1 %]
+
+			[% FOREACH data_pair IN email_vars.tabs.$tab_key.text_blocks %]
+				[% IF data_pair.1 != '' %]
+
+				<table width="100%" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;"><tbody><tr><td width="100%" style="font-family: Arial, sans-serif; line-height: 20px; color: #478fca; font-size: 18pt; font-weight: 500; margin-top: 0px; margin-right: 0px; margin-left: 0px; padding-bottom: 16px; padding-top: 7px; border-bottom-width: 1px; border-bottom-style: dotted; border-bottom-color: #e2e2e2;" valign="top" align="left">
+					[% data_pair.0 %]
+				</td></tr></tbody></table>
+
+				<table class="table-col" align="left" width="760" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;">
+				<tbody><tr><td class="table-col-td" width="760" style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13pt; font-weight: normal; width: 760px;" valign="top" align="left">
+					[% data_pair.1.replace("\n", '<br/>') %]
+					<br/><br/>
+				</td></tr></tbody></table>
+				[% END %]
+			[% END %]
+			<br/>
+		[% END %]
+
+	[% ELSIF email_vars.tabs.$tab_key.type == 'text_blocks' %]
+		<br/>
+		<table class="table-row" width="800" bgcolor="#FFFFFF" style="table-layout: fixed; background-color: #ffffff;" cellspacing="0" cellpadding="0" border="0"><tbody><tr><td class="table-row-td" style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13pt; font-weight: normal; padding-left: 36px; padding-right: 36px;" valign="top" align="left">
+		[% FOREACH data_pair IN email_vars.tabs.$tab_key.data %]
+			[% IF data_pair.1 != '' %]
+			<table class="table-col" align="left" width="760" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;">
+			<tbody><tr><td class="table-col-td" width="760" style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13pt; font-weight: normal; width: 760px;" valign="top" align="left">
+				[% IF email_vars.tab_info.$tab_key.1 != data_pair.0 %]
+					<span style="font-weight:bold">[% data_pair.0 %]</span>
+					<br/><br/>
+				[% END %]
+				[% data_pair.1.replace("\n", '<br/>') %]
+				<br/><br/>
+			</td></tr></tbody></table>
+			[% END %]
+		[% END %]
+		</td></tr></table>
+
+	[% ELSIF email_vars.tabs.$tab_key.type == 'table' && email_vars.tabs.$tab_key.data.1 %]
+
+		<table class="table-row" width="800" bgcolor="#FFFFFF" style="table-layout: fixed; background-color: #ffffff;" cellspacing="0" cellpadding="0" border="0"><tbody><tr><td class="table-row-td" style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13pt; font-weight: normal; padding-left: 36px; padding-right: 36px;" valign="top" align="left">
+		<br/>
+		<table class="table-col" align="left" width="800" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;"><tbody><tr><td class="table-col-td" width="700" style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13pt; font-weight: normal; width: 800px;" valign="top" align="left">
+		<table bgcolor="transparent" width="800" style="width: 800; border: 1px solid #dddddd; table-layout: fixed; background-color: transparent;" cellspacing="0" cellpadding="0" border="0">
+
+			[% SET num = 0 %]
+			[% FOREACH data_row IN email_vars.tabs.$tab_key.data %]
+				<!-- first row is headings -->
+				[% IF num == 0 %]
+					<thead>
+					<tr style="color: #707070; background-color: #f2f2f2;">
+					[% FOREACH heading IN data_row %]
+						<th style="padding: 8px; text-align: left; font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: bold; vertical-align: middle; border-width: 0px 1px 2px; border-style: none solid solid; border-color: #444444 #dddddd #dddddd;">[% heading %]</th>
+					[% END %]
+					</tr>
+					</thead>
+				<tbody>
+				[% ELSE %]
+					<tr>
+						[% FOREACH heading IN data_row %]
+							<td valign="top" style="padding: 8px; font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: normal; vertical-align: top; border: 1px solid #dddddd;" align="left">[% heading %]</td>
+						[% END %]
+					</tr>
+				[% END %]
+
+				[% SET num = num + 1 %]
+			[% END %]
+
+		</tbody>
+		</table>
+		<br/>
+		</td></tr></tbody></table>
+		</td></tr></tbody></table>
+
+	[% ELSIF email_vars.tabs.$tab_key.type == 'activity_table' %]
+
+		[% IF email_vars.tabs.$tab_key.data.0.notes %]
+			[% FOREACH data_row IN email_vars.tabs.$tab_key.data %]
+				<table><tr><td class="table-td-wrap" align="center" width="800">
+				<table width="100%" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;"><tbody><tr><td width="100%" style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: normal; width: 100%;" valign="top" align="left">
+				<table width="100%" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;"><tbody><tr><td width="100%" style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: normal; padding: 9px;" valign="top" align="left">
+				<table width="100%" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;"><tbody><tr><td width="100%" style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: normal; padding-right: 3px; padding-bottom: 0px;" valign="top" align="left">
+					<table width="100%" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;"><tbody><tr><td width="100%" style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: normal; width: 100%; border-width: 1px 1px 1px 2px; border-style: solid; border-color: #dde4ed; padding: 5px 8px 8px;" valign="top" align="left">
+					<div style="font-family: Arial, sans-serif; line-height: 19px; color: #999999; font-size: 13px;">
+						<img src="[%data_row.updater_picture_link%]" style="border: 2px solid #c9d6e5; float: left" hspace="10" vspace="0" border="0">
+						<span style="font-family: Arial, sans-serif; line-height: 14px; color: #ffffff; font-size: 12px; padding: 2.4px 7.2px 3.6px; text-align: center; vertical-align: baseline; height: 20px; background-color: #3a87ad;">[% data_row.updater_type %]</span>
+						<a href="[%data_row.updater_directory_page%]" target="_new" style="color: #337ab7; text-decoration: none; background-color: transparent;">[% data_row.updater_name %]</a>
+							posted [% data_row.nice_create_age %].
+						<span style="font-family: Arial, sans-serif; line-height: 19px; color: #a069c3; font-size: 13px;">
+							<br/>Status: [% data_row.new_status %]  |  Priority: [% data_row.new_priority %]  | Location: [% data_row.lab_location %]
+						</span>
+					</div>
+					<div style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; padding-bottom: 0px; padding-left: 0px; border-bottom-width: 0px; border-bottom-style: none; border-bottom-color: #444444;">
+						[% data_row.notes %]
+					</div>
+					</td></tr></tbody></table>
+				</td></tr></tbody></table>
+				</td></tr></tbody></table>
+				</td></tr></tbody></table>
+				</td></tr></table>
+			[% END %]
+
+		[% ELSE %]
+			<table><tr><td class="table-td-wrap" align="center" width="800">
+				<i>No Activity Log Entries At This Time.</i>
+			</td></tr></table>
+		[% END %]
+
+	[% ELSIF email_vars.tabs.$tab_key.type == 'sub_records' && email_vars.records %]
+
+		[% FOREACH record_key IN email_vars.records_keys %]
+			<table><tr><td class="table-td-wrap" align="center" width="800">
+			<table width="100%" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;"><tbody><tr><td width="100%" style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: normal; width: 100%;" valign="top" align="left">
+			<table width="100%" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;"><tbody><tr><td width="100%" style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: normal; padding: 9px;" valign="top" align="left">
+			<table width="100%" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;"><tbody><tr><td width="100%" style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: normal; padding-right: 3px; padding-bottom: 0px;" valign="top" align="left">
+
+			<div style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; padding-bottom: 0px; padding-left: 0px; border-bottom-width: 0px; border-bottom-style: none; border-bottom-color: #444444;">
+				[% FOREACH field_key IN email_vars.tabs.$tab_key.fields_for_email %]
+				<div style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; padding-bottom: 0px; padding-left: 0px; border-bottom-width: 0px; border-bottom-style: none; border-bottom-color: #444444;">
+					[% email_vars.records.$record_key.$field_key %]
+				</div>
+				[% END %]
+			</div>
+			</td></tr></table>
+			</td></tr></table>
+			</td></tr></table>
+			</td></tr></table>
+		[% END %]
+
+
+	[% END %]
+<br/>
+[% END %]
+
+</td></tr>
+</table>
+</body>
+</html>

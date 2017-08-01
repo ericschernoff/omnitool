@@ -1,0 +1,55 @@
+[*#
+
+	FormToDetails.tt
+
+	Jemplate to allow you to display a full screen form, and then display
+	the complex details of the data which was created.  Relies on your
+	Tool.pm sub-class to build a 'details_hash' upon create/save.
+
+*]
+[% IF error_title %]
+	<div class="row">
+	<div class="col-xs-12">
+
+		<div class="page-header">
+			<h3 class="red">
+				[% error_title %]
+			</h3>
+		</div>
+		[% IF error_message %]
+			<div>
+				[% error_message %]
+			<div>
+		[% END %]
+	</div>
+	</div>
+
+[% ELSIF !form_was_submitted || form.error_title %]
+
+	[% PROCESS full_screen_form %]
+
+[% ELSE %]
+	<div class="row">
+	<div class="col-xs-12">
+		<div class="row">
+		<div class="h3 green col-xs-6">
+			[% title %]
+		</div>
+		<div class="col-sm-6 align-right">
+			<button class="btn btn-white btn-sm" onclick="tool_objects['[%the_tool_id%]'].refresh_json_data()">
+				[% button_text %]
+				<i class="fa fa-refresh green"></i>
+			</button>
+		</div>
+	</div>
+	<div class="space-6"></div>
+
+	[% PROCESS complex_details_tabs_shared_[*tool_and_instance*] %]
+
+	</div>
+	</div>
+
+[% END %]
+
+[*# call in the shared complex_details_tabs_shared jemplate for processing upon successful submit *]
+[* INCLUDE shared/complex_details_tabs_shared.tt *]

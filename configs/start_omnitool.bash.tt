@@ -1,0 +1,81 @@
+#!/bin/bash
+# Script to control the OmniTool 6 application server via Plack / Starlet
+#
+# Usage:
+#	start_omnitool.bash start
+#		- Starts the Starlet / Plack server against main.psgi
+#
+#	start_omnitool.bash restart
+#		- Gracefully starts and stops the Starlet / Plack server
+#		- Used to load in new code changes
+#
+#	start_omnitool.bash stop
+#		- Stops the Starlet / Plack server
+#		- OmniTool will stop working
+#
+# 	Add 'prod' as a second argument to start 100 worker threads
+#
+# Adjust the 'configuration area' below for your server / system
+#
+# This whole thing depends on Plack (http://plackperl.org/) and
+# 'start_server' (http://search.cpan.org/~kazuho/Server-Starter-0.32/script/start_server)
+# I am a dwarf standing on the shoulers of giants.
+
+# BEGIN CONFIGURATION AREA -- if any of these change, you have to stop then start the server, no 'restart'
+export PERL5LIB='[%options.othome%]/code'
+export HOSTPORT='127.0.0.1:6000'
+export OTHOME='[%options.othome%]'
+export OMNITOOL_ADMIN='[%options.omnitool_admin%]'
+export OT_COOKIE_DOMAIN='[%options.ot_cookie_domain%]'
+
+# EDIT AND UNCOMMENT TO USE THE 'recaptcha' FIELDS TO VERIFY HUMANS
+# export RECAPTCHA_SITEKEY=''
+# export RECAPTCHA_SECRET=''
+# please see https://www.google.com/recaptcha
+
+# For MySQL encryption -- set in installation, DO NOT CHANGE WITHOUT UNENCYRPTING ANY ENCRYPTED FIELDS!
+export SALT_PHRASE='[%options.salt_phrase%]'
+export INIT_VECTOR='[%options.init_vector%]'
+
+# if system is under maintenance, set this to the ending epoch that work
+# export OT_MAINTENANCE='1471927186'
+# END CONFIGURATION AREA - NO CHANGES BELOW HERE PLEASE
+
+# number of workers depends on prod (100) vs. dev (10)
+# also set the default DB server and the ID for the cookie name
+case "$2" in
+	prod)
+		export WORKERS='100'
+		export DATABASE_SERVER='[%options.database_server%]'
+		export OT_COOKIE_ID='prod'
+	;;
+	*)
+		export WORKERS='10'
+		export DATABASE_SERVER='[%options.database_server%]'
+		export OT_COOKIE_ID='dev'
+		export OT_DEVELOPER=1
+
+		# uncomment this to never cache user sessions -- DEVELOPER MODE ONLY!!
+		# export FORCE_FRESH_SESSIONS='1'
+esac
+
+case "$1" in
+	start)
+		echo "Starting OT6"
+		/usr/local/bin/start_server --enable-auto-restart --auto-restart-interval=300 --port=$HOSTPORT --dir=$OTHOME/code/omnitool --log-file="| /usr/bin/rotatelogs $OTHOME/log/starlet.log 86400" --daemonize --pid-file=$OTHOME/log/starlet.pid -- /usr/local/bin/plackup -s Starlet --max-workers=$WORKERS main.psgi
+	;;
+	stop)
+		OT_PID=$(<$OTHOME/log/starlet.pid)
+		kill -s TERM $OT_PID
+		echo "Stopped OmniTool App Server (Starlet)"
+	;;
+	restart)
+		OT_PID=$(<$OTHOME/log/starlet.pid)
+		kill -s HUP $OT_PID
+		echo "Restarted OmniTool App Server (Starlet)"
+	;;
+	*)
+		echo "Usage: start_omnitool.bash start|stop|restart"
+		exit 1
+esac
+

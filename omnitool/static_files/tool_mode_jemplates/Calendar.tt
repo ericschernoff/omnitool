@@ -1,0 +1,15 @@
+[*#
+	Make sure your Tool View Mode has 'start_calendar' for the 'Run JS Function on Load'
+	field -- or the function you do call runs start_calendar().
+
+	When you select the 'Fields to Include' for this Tool View Mode, make sure to set the
+	Name value first and the date or date/time field second.
+*]
+
+<div class="row">
+<div class="col-xs-12">
+
+<div id="[*tool_and_instance*]_calendar"></div>
+
+</div>
+</div>

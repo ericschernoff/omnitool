@@ -1,0 +1,211 @@
+[*#
+	Jemplate to display results via wider / full-screen widgets.  Meant to be kind of like a table,
+	but more fun and engaging ;)
+
+	The actions are display in the left-column (col-lg-3) with the record info on the right.  Really works
+	best when there are inline actions.
+
+	Since these are wide widgets, you may want to combine a few record fields onto one line, rather than have
+	breaks between each field.  Not having 'super' fields allows us to keep the field names, as well as the
+	ability to search on those specific fields.  What you will do is specify a 'jemplate_options' in your
+	pre_prep_jemplate() hook to specify which fields won't get line breaks, like so:
+
+		$self->{jemplate_options} = {
+			'no_break_fields' => { # instruction to put certain fields on one line
+				'lab_name' => 1,
+				'aisle_rack_location' => 1,
+			},
+		};
+
+	Just add an entry for each field that will not have a break AFTER it -- so the last field in the
+	line should NOT get an entry in this 'no_break_fields' hashref.
+
+	Oh, FYI, the first and second included fields go intothe widget-headers, and should be identifying
+	information on the record.
+
+	Very greedy template -- wants all of $self from your tool.pm class, but remember that's
+	on the server-side.  Client side just gets json_results.
+
+*]
+
+[* IF !jemplate_options.has_subrecords *]
+	[% PROCESS main_wide_widgets_[*tool_and_instance*] %]
+[* END *]
+
+[% BLOCK main_wide_widgets_[*tool_and_instance*] %]
+<div class="row">
+<div class="col-xs-12">
+[%# Only display the search widgets if there are results to show. %]
+[% IF records_keys.0 %]
+	[% PROCESS results_wide_widgets_[*tool_and_instance*] %]
+[% ELSIF error_message %]
+	<div class="center h4">
+		[% error_message.replace("\n", '<br/>') %]
+	</div>
+[% ELSE %]
+	<div class="center h4">
+		No [%datatype_name%] Results Found.
+		<br/>Please Adjust Your Search Options.
+	</div>
+[% END %]
+
+</div>
+</div>
+
+<div class="space"></div>
+
+[% END %]
+
+[%# The actual results widgets template starts now. %]
+
+[% BLOCK results_wide_widgets_[*tool_and_instance*] %]
+	[*# cycle through the records key on the client side *]
+
+	[% FOREACH record_key IN records_keys %]
+
+		[* first_field = included_records_fields.shift *]
+		[* first_field_name = included_field_names.shift *]
+
+		[*# background color from record-coloring rules *]
+		[% IF metainfo.$record_key.record_color %]
+			[% SET row_bgcolor = metainfo.$record_key.record_color %]
+		[% ELSE %]
+			[% SET row_bgcolor = 'ffffff' %]
+		[% END %]
+
+		[%#
+			Let's try to have each widget handled separately, in hopes that we could process just one at a time.
+			So the 'the_result_wide_widget_' block is below.
+		%]
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 widget-container-col" id="[%record_key%]_result">
+		[% PROCESS the_result_wide_widget_[*tool_and_instance*] %]
+		</div>
+	[% END %]
+
+[% END %]
+
+[%# Let's try to have each widget handled separately, in hopes that we could process just one at a time. %]
+[% BLOCK the_result_wide_widget_[*tool_and_instance*] %]
+
+<div class="widget-box widget-color-blue2">
+	<div class="widget-header widget-header-small">
+		<h5 class="widget-title smaller">
+			[* IF first_field == 'altcode' *]
+				[% metainfo.$record_key.altcode %]
+			[* ELSE *]
+				[% records.$record_key.[*first_field*] %]
+			[* END *]
+		</h5>
+		<div class="widget-toolbar">
+		</div>
+	</div>
+
+	[*# remember to put the separator after the tool they want *]
+	[* IF jemplate_options.tool_separator *]
+		[% SET tool_separator = '[*jemplate_options.tool_separator*]' %]
+	[* END *]
+
+	<div class="widget-body">
+		[%# actions, if there are any %]
+		[% IF records.$record_key.inline_actions.0.button_name %]
+			<div class="widget-toolbox" id="widget-toolbox-1">
+			<div class="btn-toolbar">
+				[% IF metainfo.$record_key.lock_user %]
+					<button class="btn btn-sm btn-white btn-info">
+						<i class="ace-icon fa fa-lock"></i> LOCKED ([%metainfo.$record_key.lock_user%])
+					</button>
+				[% END %]
+
+				<div class="btn-group" style="margin-right: 20px">
+
+				[% FOREACH action IN records.$record_key.inline_actions %]
+					<a href="[% action.uri %]" class="btn btn-sm btn-white btn-info" data-rel="popover" data-placement="bottom" data-trigger="hover" data-content="[% action.button_name %]">
+					<!--data-rel="tooltip" data-placement="bottom" title="[% action.button_name %]"-->
+						<i class="ace-icon fa [% action.icon_fa_glyph %]"></i>
+					</a>
+					[% IF tool_separator && tool_separator == action.key %]
+						</div>
+						<div class="btn-group" style="margin-right: 20px">
+					[% END %]
+					
+				[% END %]
+				</div>
+			</div>
+			</div>
+		[% END %]
+
+
+		<div class="widget-main" style="background-color: #[%row_bgcolor%]">
+			<div class="row">
+			[%# and now the fields %]
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			[* FOREACH column_name IN included_field_names *]
+				[* record_field = included_records_fields.shift *]
+
+				[*# Inclusion in the 'no_break_fields' sub-hash in pre_prep_jemplate() will tell us to keep some fields on the same line *]
+				[* IF jemplate_options.no_break_fields.$record_field == '' *]
+					[* SET field_separator = '<br/>' *]
+				[* ELSE *]
+					[* SET field_separator = ' | ' *]
+				[* END *]
+
+				[% IF records.$record_key.[*record_field*].0.text || records.$record_key.[*record_field*].0.image || records.$record_key.[*record_field*].0.glyph %]
+					<b>[*column_name*]:</b>
+					[% the_field = "[*record_field*]" %]
+					[% PROCESS complex_field %]
+					[* field_separator *]
+				[% ELSE  %]
+					[* IF record_field == 'altcode' *]
+						<b>[*column_name*]:</b>
+						[% metainfo.$record_key.altcode %]
+						[* field_separator *]
+					[* ELSE *]
+						[% IF records.$record_key.[*record_field*] %]
+							<b>[*column_name*]:</b>
+							[% records.$record_key.[*record_field*] %]
+							[* field_separator *]
+						[% END %]
+					[* END *]
+				[% END %]
+			[* END *]
+
+
+			[%# HERE IS WHERE WE WILL ALLOW FOR SUB-WIDGETS --
+				this is quite nasty; to utilize it, have one of your virutal fields
+				build out an array of data_codes for the sub-data (which must of like-kind, same datatype)
+				and place that array into a 'sub_data_records' field.
+				Best not to use this, really.
+			%]
+			[% IF records.$record_key.sub_data_records && !skip_subdata %]
+				<a href="javascript:show_sub_data_widgets('sub_data_widgets_[%record_key%]','show_sub_data_button_[%record_key%]')" id="show_sub_data_button_[%record_key%]" class="btn btn-white btn-sm show_sub_data_button">[*jemplate_options.sub_data_link_text*]</a>
+				<div class="row" id="sub_data_widgets_[%record_key%]" class="display: none">
+				[% FOREACH pod_member_id IN records.$record_key.pod_member_devices %]
+					<div class="col-xs-12 sub_data_widget" id="sub_data_[%pod_member_id%]">
+					</div>
+				[% END %]
+				</div>
+			[% END %]
+
+			</div>
+			</div>
+		</div>
+	</div>
+</div>
+[% END %]
+
+[%# what if we get one record and want to squeze it within another record?%]
+[% BLOCK sub_data_widget_[*tool_and_instance*] %]
+	[% SET record_key = records_keys.0 %]
+	<div class="row">
+	<div class="col-xs-10 col-xs-offset-1">
+		[% PROCESS the_result_wide_widget_[*tool_and_instance*] %]
+	</div>
+	</div>
+[% END %]
+
+[%# what if we get one record and want to throw it into a modal? %]
+[% BLOCK singleton_wide_widget_[*tool_and_instance*] %]
+	[% SET record_key = records_keys.0 %]
+	[% SET skip_subdata = 1 %]
+	[% PROCESS the_result_wide_widget_[*tool_and_instance*] %]
+[% END %]

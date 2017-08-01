@@ -1,0 +1,33 @@
+[% IF inline_actions.0.button_name %]
+
+	<button data-toggle="dropdown" class="btn btn-white bolder btn-sm dropdown-toggle">
+		<i class="ace-icon fa fa-bolt"></i>
+		<span class="green">Quick Actions</span>
+		<i class="ace-icon fa fa-caret-down"></i>
+	</button>
+	<ul class="dropdown-menu">
+	[% IF lock_user %]
+		<li>
+			<a name="lock_[%lock_user%]" class="bolder">
+				<i class="ace-icon fa fa-lock"></i> LOCKED ([%lock_user%])
+			</a>
+		</li>
+	[% END %]
+	[% FOREACH action IN inline_actions %]
+		<li>
+			[% IF action.refresh_link == 1 %]
+				<a onclick="tool_objects['[%the_tool_id%]'].refresh_json_data()" tabindex="-1">
+					<i class="ace-icon fa [% action.icon_fa_glyph %]"></i>
+					[% action.button_name %]
+				</a>
+			[% ELSE %]
+				<a href="[% action.uri %]" tabindex="-1">
+					<i class="ace-icon fa [% action.icon_fa_glyph %]"></i>
+					[% action.button_name %]
+				</a>
+			[% END %]
+		</li>
+	[% END %]
+	</ul>
+
+[% END %]

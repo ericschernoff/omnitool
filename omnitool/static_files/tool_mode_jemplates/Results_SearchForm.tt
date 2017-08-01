@@ -1,0 +1,154 @@
+[*#
+
+	Tool Jemplate to allow searching by a form with printing of a table of results.
+
+	Somewhat a copy of ScreenForm.tt with some alterations to print out a results
+	table.  The 'json_results' hash should include:
+
+		'form' => a complete form data structure, best to keep it to 1-3 feeds.
+		'hide_keys' => set to '1' if we don't want to show the row keys
+		'results' => the hashref of results.  Either a two-dimensional hash or a
+						hash of hashes, keyed by result ID.
+		'results_keys' => the top keys for %$results
+		'results_headings' => arrayref of the headings for the results table.
+		'results_sub_keys' => if %$results has a second-level, the sub-keys to dispay
+
+	The first column will be the top-level key for each entry in %$results, in numeric order.
+
+	When you use this for a Tool Mode, use 'interactive_form_elements' for the 'Run Function On Load'
+	to make the form work. You can also call make_inline_data_tables in your run-on-load JS function to
+	make the results table a datatable.
+*]
+
+<div class="row">
+<div class="col-xs-12" style="margin-top: 10px">
+
+	[% IF form.error_title %]
+		<div class="page-header">
+			<span class="red h3">[% form.error_title %] </span>
+		</div>
+	[% ELSIF error_title %]
+		<div class="page-header">
+			<span class="red h3">[% error_title %] </span>
+		</div>
+	[% END %]
+
+	[% IF form.submit_button_text %]
+		<form class="form-inline center" id="[*tool_and_instance*]_form" action="[*my_json_uri*]" method="post" role="form">
+		[% FOREACH hf IN form.hidden_fields.keys %]
+			<input type="hidden" name="[%hf%]" value="[%form.hidden_fields.$hf%]" />
+		[% END %]
+		[% FOREACH f IN form.field_keys %]
+			[% IF form.fields.$f.is_required %]
+				[% SET form.fields.$f.title = '* ' _ form.fields.$f.title %]
+			[% END %]
+			[% IF form.fields.$f.break_here %]
+				<div class="clearfix"></div>
+			[% END %]
+			<label class="inline" for="form-field-[%f%]">
+				[% IF form.fields.$f.field_error %]
+					<span class="bold red">
+						[% form.fields.$f.title %]
+						<i class="ace-icon fa fa-exclamation-circle red"></i>
+					</span>
+				[% ELSE %]
+					[% form.fields.$f.title %]
+				[% END %]
+				[% IF form.fields.$f.instructions %]
+					<span class="help-button" data-rel="popover" data-trigger="hover" data-placement="right" data-content="[%form.fields.$f.instructions%]">?</span>
+				[% END %]
+
+			</label>
+			[% SET field_type = form.fields.$f.field_type %]
+			[% PROCESS $field_type %]
+			&nbsp; &nbsp; &nbsp;
+		[% END %]
+
+		<button class="btn btn-white" type="submit">
+			[%form.submit_button_text%]
+		</button>
+
+		[% IF form.instructions %]
+			<div class="center">
+				[% form.instructions %]
+			</div>
+		[% END %]
+
+		</form>
+		<br/>
+
+	[% END %]
+
+	<table class="table table-striped table-bordered table-hover datatable_ready" id="tool_results_[*tool_and_instance*]">
+	[% IF results_keys.0 %]
+		<thead>
+			<tr>
+			[% FOREACH heading IN results_headings %]
+				<th class="omnitool-data" nowrap>[% heading %]</th>
+			[% END %]
+			</tr>
+		<thead>
+		<tbody>
+		[% FOREACH result IN results_keys %]
+			<tr>
+			[% IF !hide_keys %]
+				<td class="omnitool-data">[% result %]</td>
+			[% END %]
+			[% IF results_sub_keys.0 %]
+				[% FOREACH sub_key IN results_sub_keys %]
+					<td class="omnitool-data">
+					[% IF results.$result.$sub_key.0.text || results.$result.$sub_key.0.image || results.$result.$sub_key.0.glyph %]
+						[% PROCESS complex_results_columns_[*tool_and_instance*] %]
+					[% ELSE %]
+						[% results.$result.$sub_key %]
+					[% END %]
+					</td>
+				[% END %]
+			[% ELSE %]
+				<td>[% results.$result %]</td>
+			[% END %]
+			</tr>
+		[% END %]
+		</tbody>
+	[% END %]
+	</table>
+
+	[% IF error_message %]
+		<div class="center h3 red">
+			[% error_message %]
+		</div>
+	[% END %]
+
+</div>
+</div>
+
+[%# for complete results - mimics the 'complex_field' jemplate for the search tools %]
+[% BLOCK complex_results_columns_[*tool_and_instance*] %]
+	[% FOREACH line IN results.$result.$sub_key %]
+		[% IF line.class %]
+			<div class="[%line.class%]">
+		[% ELSE %]
+			<div>
+		[% END %]
+		[% IF line.uri.match('http') %]
+			<a href="[%line.uri%]" target="_blank">
+		[% ELSIF line.uri %]
+			<a href="[%line.uri%]">
+		[% ELSIF line.action_uri %]
+			<a href="javascript:tool_objects['[%the_tool_id%]'].process_action_uri('[%line.action_uri%]')">
+		[% ELSIF line.message_uri %]
+			<a href="javascript:tool_objects['[%the_tool_id%]'].simple_message_modal('[%line.message_uri%]')">
+		[% END %]
+		[% IF line.glyph %]
+			<i class="ace-icon fa [% line.glyph %]"></i>
+		[% END %]
+		[% IF line.image %]
+			<img src="[%line.image%]"/>
+		[% END %]
+		[% line.text %]
+		[% IF line.uri || line.action_uri || line.message_uri %]
+			</a>
+		[% END %]
+		</div>
+	[% END %]
+[% END %]

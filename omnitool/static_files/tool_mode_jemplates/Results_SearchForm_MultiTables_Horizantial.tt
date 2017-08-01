@@ -1,0 +1,209 @@
+[*#
+
+	Tool Jemplate to allow searching by a form with the ability to output multiple results tables.
+
+	** Derivative of Results_SearchForm_MultiTables.tt and meant to show the tables in a much wider
+	fashion.  Work in progress. **
+
+	For example, you could have a search to output sales reports by salesperson, with each
+	salesperson having their own table.  We use it to report spending information by company sites.
+
+	The 'json_results' hash should include:
+
+		'form' => a form hash for your search form, please see ScreenForm.tt for details
+		'result_tables_headings' => array of headings for the results tables.  All tables will have
+			the same headings.
+		'result_tables_keys' => an array of keys identifying the individual tables' hashes under 'result_tables'
+		'result_tables' => a set of hashes, each representing a results table, and containing these sub-hashes:
+			'results_keys' => array of keys for the rows ('results') in the results table
+			'results_sub_keys' => array of keys for the columns/cells
+			'results' => hash representing the content of this results table.  top-key is the row, second-level
+				key is the columns.
+
+	The first column will usually be the top-level key for each entry in $$result_tables{$key}{results}, unless
+	you set the 'key_is_not_first_column' under 'result_tables'.
+
+	This defininetely supports complex fields like Results_SearchForm.tt and Table.tt.
+
+	When you use this for a Tool Mode, use 'interactive_form_elements' for the 'Run Function On Load'
+	to make the form work. You can also call make_inline_data_tables in your run-on-load JS function to
+	make the results tables into datatables.
+
+*]
+
+<div class="row">
+	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+		<form id="[*tool_and_instance*]_form" action="[*my_json_uri*]" method="post" role="form">
+		[% FOREACH hf IN form.hidden_fields.keys %]
+			<input type="hidden" name="[%hf%]" value="[%form.hidden_fields.$hf%]" />
+		[% END %]
+		<div class="widget-box">
+			<div class="widget-header">
+				<h4 class="widget-title">[% form.title %]</h4>
+
+				<div class="widget-toolbar">
+					<div class="widget-menu">
+						<a href="#" data-action="collapse"><i class="ace-icon fa fa-chevron-up"></i></a>
+					</div>
+				</div>
+
+			</div> <!-- / widget-header -->
+			<div class="widget-body">
+				<div class="widget-main">
+
+					[% IF form.instructions %]
+						<div class="center">
+							[% form.instructions %]
+						</div>
+					[% END %]
+
+					[% IF form.error_title %]
+						<div class="center">
+							<span class="red">[% form.error_title %] </span>
+						</div>
+					[% ELSIF error_title %]
+						<div class="center">
+							<span class="red">[% error_title %] </span>
+						</div>
+					[% END %]
+
+					[%# Process fields %]
+					[% FOREACH f IN form.field_keys %]
+						[% IF form.fields.$f.is_required %]
+							[% SET form.fields.$f.title = '* ' _ form.fields.$f.title %]
+						[% END %]
+
+						<div id="field_div_[%form.fields.$f.name%]">
+							<br/>
+							<label for="form-field-[%f%]">
+								[% IF form.fields.$f.field_error %]
+									<span class="bold red">
+										[% form.fields.$f.title %]
+										<i class="ace-icon fa fa-exclamation-circle red"></i>
+									</span>
+								[% ELSE %]
+									[% form.fields.$f.title %]
+								[% END %]
+								[% IF form.fields.$f.instructions %]
+									<span class="help-button" data-rel="popover" data-trigger="hover" data-placement="right" data-content="[%form.fields.$f.instructions%]">?</span>
+								[% END %]
+							</label>
+							<br/>
+							[% SET field_type = form.fields.$f.field_type %]
+							[% PROCESS $field_type %]
+
+							[% IF form.fields.$f.error_instructions %]
+								<div class="space-2"></div>
+								<div class="help-block col-sm-7 bolder red">
+									[% form.fields.$f.error_instructions %]
+								</div>
+							[% END %]
+						</div>
+					[% END %]
+
+					[%# Submit button %]
+					<div class="center">
+						<button class="btn btn-white" type="submit">
+							[%form.submit_button_text%]
+						</button>
+					</div>
+				</div> <!-- / widget-main -->
+			</div> <!-- / widget-body -->
+		</div> <!-- / widget-box -->
+		</form>
+	</div> <!-- / col-xs-12 col-sm-4 -->
+</div>
+
+
+
+<div class="row">
+	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+		<div class="row">
+			[% FOREACH table_key IN result_tables_keys %]
+
+				<div class="col-md-12 widget-container-col">
+				<div class="widget-box widget-color-blue">
+					<div class="widget-header widget-header-flat">
+						<h4 class="widget-title lighter">
+							[% result_tables.$table_key.name %]
+						</h4>
+					</div>
+
+					<div class="widget-body">
+						<div class="widget-main no-padding">
+						[% IF result_tables.$table_key.results_keys.0 %]
+							<table class="table table-bordered datatable_ready">
+							<thead class="thin-border-bottom">
+								<tr>
+									[% FOREACH heading IN result_tables_headings %]
+										<th class="omnitool-data">
+											[% heading %]
+										</th>
+									[% END %]
+								</tr>
+							</thead>
+							<tbody>
+							[% FOREACH row_key IN result_tables.$table_key.results_keys %]
+								<tr>
+									[% IF result_tables.key_is_not_first_column == '' %]
+										<td class="omnitool-data">[% row_key %]</td>
+									[% END %]
+									[% FOREACH cell_key IN result_tables.$table_key.results_sub_keys %]
+										<td class="omnitool-data">
+										[% IF result_tables.$table_key.results.$row_key.$cell_key.0.text || result_tables.$table_key.results.$row_key.$cell_key.0.image || result_tables.$table_key.results.$row_key.$cell_key.0.glyph %]
+											[% PROCESS complex_results_columns_[*tool_and_instance*] %]
+										[% ELSE %]
+											[% result_tables.$table_key.results.$row_key.$cell_key%]
+										[% END %]
+										</td>
+									[% END %]
+								</tr>
+							[% END %]
+							</tbody>
+							</table>
+						[% ELSE %]
+							<div class="center h4">No Results Found</div>
+						[% END %]
+						</div><!-- /.widget-main -->
+					</div><!-- /.widget-body -->
+				</div><!-- /.widget-box -->
+				</div><!-- /.col -->
+
+				<div class="space-12"></div>
+
+			[% END %]
+		</div>
+	</div>
+</div>
+
+
+[%# for complete results - mimics the 'complex_field' jemplate for the search tools %]
+[% BLOCK complex_results_columns_[*tool_and_instance*] %]
+	[% FOREACH line IN result_tables.$table_key.results.$row_key.$cell_key %]
+		[% IF line.class %]
+			<div class="[%line.class%]">
+		[% ELSE %]
+			<div>
+		[% END %]
+		[% IF line.uri.match('http') %]
+			<a href="[%line.uri%]" target="_blank">
+		[% ELSIF line.uri %]
+			<a href="[%line.uri%]">
+		[% ELSIF line.action_uri %]
+			<a href="javascript:tool_objects['[%the_tool_id%]'].process_action_uri('[%line.action_uri%]')">
+		[% ELSIF line.message_uri %]
+			<a href="javascript:tool_objects['[%the_tool_id%]'].simple_message_modal('[%line.message_uri%]')">
+		[% END %]
+		[% IF line.glyph %]
+			<i class="ace-icon fa [% line.glyph %]"></i>
+		[% END %]
+		[% IF line.image %]
+			<img src="[%line.image%]"/>
+		[% END %]
+		[% line.text %]
+		[% IF line.uri || line.action_uri || line.message_uri %]
+			</a>
+		[% END %]
+		</div>
+	[% END %]
+[% END %]

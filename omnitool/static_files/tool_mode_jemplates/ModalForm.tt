@@ -1,0 +1,207 @@
+[*#
+	Template to produce two-column / horizantial forms in OmniTool.
+
+	$form = {
+		'target_url' => '/tools/some/action/method',
+		'title' => 'Title to Appear Above Form',
+		'instructions' => 'Info to appear below title and above fields.',
+		'submit_button_text' => 'Text for Submit Button',
+		'hidden_fields' => {
+			'field_name' => 'field_value',
+		},
+		'fields' => { # integer keys, easily sorted
+			1 => {
+				'title' => 'Field Name',
+				'name' => 'field_name',
+				'preset' => 'Some Pre-Saved Value',
+				'field_type' => 'type', # e.g. short_text, single_select
+				'instructions' => 'Info to appear below field.',
+				'is_required' => 1, # will be required
+			},
+			2 => {
+				'title' => 'Field Name',
+				'name' => 'field_name',
+				'preset' => 'Some Pre-Saved Value',
+				'field_type' => 'type', # e.g. short_text, single_select
+				'instructions' => 'Info to appear below field.',
+			},
+		},
+	};
+
+	Very greedy template -- wants all of $self from your tool.pm class.
+
+	Since this is a 'double' template, we need to change the directive markers
+	(delimiters) right off the bat.
+
+	- short_text
+	- long_text / rich_long_text
+	- single_select
+	- radio_buttons
+	- email_address
+	- web_url,
+	- low_integer
+	- high_integer
+	- active_status_select
+	- yes_no_select
+	- accessgroup_select
+	- check_boxes
+	- file_upload ** this is a TODO
+	- month_name
+	- multi_select
+	- password
+	- phone_number
+	- short_text_clean (only alphanumeric chars plus dashes and underscores)
+	- simple_date
+	- date_range
+	- street_address *** this is a TODO
+
+*]
+
+[%#
+	Template to prepare the 'table mode' display view Jemplate for a tool.
+
+	This is meant to be processed into a Jemplate file to be sent to the client,
+	who will load in data from a json call.  The server-side processing is to
+	build the structure of that template.
+
+	Very greedy template -- wants all of $self from your tool.pm class.
+
+	Since this is a 'double' template, we need to change the directive markers
+	(delimiters) right off the bat.
+%]
+
+[%# from modal_parts.tt - print top of modal %]
+[% PROCESS modal_head %]
+
+<div class="row">
+<div class="col-xs-12">
+
+[% IF form_was_submitted %]
+
+	[%IF error_title %]
+		<div class="page-header">
+			<h3 class="red">
+				[% error_title %]
+			</h3>
+		</div>
+
+		<div>
+			[% error_message %]
+		<div>
+	[% END %]
+
+
+	[%IF message %]
+		<div>
+			[% message %]
+		</div>
+	[% END %]
+
+	<div class="clearfix">
+		<br/><br/>
+		<a href="[%return_link_uri%]">Return to [%return_link_title%]</a>
+	<div>
+
+[% ELSE %]
+	<!-- need to display the form -->
+
+	<div id="[%the_tool_id%]_countdown_area" class="align-right align-middle">
+		Form Expiration: <span id="[%the_tool_id%]_countdown"></span>
+	</div>
+
+	<!-- only show the title if they explicitly want us to do so -->
+	[% IF form.show_title %]
+		<div class="page-header">
+			<h3>
+				[% form.title %]
+			</h3>
+		</div>
+	[% END %]
+
+	[% IF form.error_title %]
+		<div class="alert alert-danger">
+			[% form.error_title %]
+		</div>
+	[% END %]
+
+	[% IF form.instructions %]
+		<div class="row"><div class="col-xs-12 alert">
+			[% form.instructions %]
+		</div></div>
+	[% END %]
+
+	<form class="form-horizontal" id="[*tool_and_instance*]_form" action="[*my_json_uri*]" method="post" role="form">
+	[% FOREACH hf IN form.hidden_fields.keys %]
+		<input type="hidden" id="[%hf%]" name="[%hf%]" value="[%form.hidden_fields.$hf%]" />
+	[% END %]
+
+	[% FOREACH f IN form.field_keys %]
+		[% IF form.fields.$f.is_required %]
+			[% SET form.fields.$f.title = '* ' _ form.fields.$f.title %]
+		[% END %]
+
+		<div class="form-group" id="field_div_[%form.fields.$f.name%]">
+			<label class="col-sm-3 control-label no-padding-right" for="form-field-[%f%]">
+				[% IF form.fields.$f.field_error %]
+					<span class="bold red">
+						[% form.fields.$f.title %]
+						<i class="ace-icon fa fa-exclamation-circle red"></i>
+					</span>
+				[% ELSE %]
+					[% form.fields.$f.title %]
+				[% END %]
+				[% IF form.fields.$f.instructions %]
+					<span class="help-button" data-rel="popover" data-trigger="hover" data-placement="right" data-content="[%form.fields.$f.instructions%]">?</span>
+				[% END %]
+			</label>
+			<div class="col-sm-7">
+				<div class="clearfix">
+				[% SET field_type = form.fields.$f.field_type %]
+				[% PROCESS $field_type %]
+				</div>
+
+				[% IF form.fields.$f.error_instructions %]
+					<div class="space-2"></div>
+					<div class="help-block col-sm-7 bolder red">
+						[% form.fields.$f.error_instructions %]
+					</div>
+				[% END %]
+
+			</div>
+		</div>
+	[% END %]
+
+	<div class="clearfix form-actions">
+		<div class="col-xs-12 col-md-12 center">
+			<button class="btn btn-info" type="submit">
+				<i class="ace-icon fa fa-check bigger-110"></i>
+				[%form.submit_button_text%]
+			</button>
+
+			&nbsp; &nbsp; &nbsp;
+
+			<a class="btn" href="[%return_link_uri%]" role="button">
+				<i class="ace-icon fa fa-undo bigger-110"></i>
+				Cancel / Return
+			</a>
+		</div>
+	</div>
+
+	</form>
+
+[% END %]
+
+</div>
+</div>
+
+[%# from modal_parts.tt - print bottom of modal %]
+[%# leaving off for now PROCESS modal_foot %]
+
+</div><!-- /.modal-body -->
+
+[%IF !the_tool_id %]
+	</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+[% END %]
+
+
