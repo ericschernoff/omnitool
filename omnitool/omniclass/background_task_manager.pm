@@ -491,7 +491,15 @@ sub do_task {
 
 	# if we have a frozen arguments hash, thaw it out
 	if ($args_hash && $args_hash ne 'None') {
-		$arguments = thaw($args_hash);
+		eval {
+			$arguments = thaw($args_hash);
+		};
+		# if it hit an eval{} error, then we failed and have a message to log
+		if ($@) {
+			$self->task_status($task_id, 'Error', 'Error un-packing args hash: '.$@);
+			$self->clear_records();
+			return;
+		}
 	}
 
 	# if there is a data_code, add it to our $arguments hashref, which may have nothing else
