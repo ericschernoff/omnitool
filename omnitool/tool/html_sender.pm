@@ -338,7 +338,7 @@ sub build_filter_menu_options {
 	my $self = shift;
 	my ($filter_menu_keys) = @_;
 
-	my ($the_value, $current_selected_option, $value_key, $result, $filter_menu, $method, $name, $option, $possible_options, $this_tool_filter_menu, $value, @placeholder_values, @rest);
+	my ($datatype_table_name,$display_field_name,$menu_omniclass_object, $the_value, $current_selected_option, $value_key, $result, $filter_menu, $method, $name, $option, $possible_options, $this_tool_filter_menu, $value, @placeholder_values, @rest);
 
 	# we shall cycle thru and add the options under $self->{tool_configs}{tool_filter_menus}{$filter_menu}
 	# adding sub-keys for 'options' and 'options_keys'
@@ -380,6 +380,22 @@ sub build_filter_menu_options {
 			# proceed if we can
 			if ($self->can($method)) {
 				$self->$method($this_tool_filter_menu);
+			}
+
+		} elsif ($$this_tool_filter_menu{menu_options_type} eq 'Relationship' && $$this_tool_filter_menu{menu_options_method}) {
+			# 'Relationship' means another datatype, and in that case,
+			# 'method' will be in the format of 'table_name.display_field_name' where 
+			# 'display_field_name' is optional and defaults to 'name'
+			($datatype_table_name,$display_field_name) = split /\./, $$this_tool_filter_menu{menu_options_method};
+			$display_field_name ||= 'name';
+			
+			if ($datatype_table_name) {
+				$menu_omniclass_object = $self->{luggage}{object_factory}->omniclass_object(
+					'dt' => $datatype_table_name,
+					'load_all' => 1,
+				);
+				($$this_tool_filter_menu{options}, $$this_tool_filter_menu{options_keys}) =
+					$menu_omniclass_object->prep_menu_options($display_field_name);
 			}
 
 		# we really should use the method() approach and not sql logic, but all fun and no play...
