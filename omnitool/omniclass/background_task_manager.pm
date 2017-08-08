@@ -456,7 +456,7 @@ sub do_task {
 			qq{
 				set status='Running', process_pid=?, worker_id=?, update_time=unix_timestamp()
 				where status in ('Pending','Retry') and not_before_time < unix_timestamp()
-				and target_datatype=? order by code limit 1
+				and target_datatype=? order by not_before_time limit 1
 			},
 			[$$, $ENV{WORKER_ID}, $self->{dt}]
 		);
@@ -466,7 +466,7 @@ sub do_task {
 		($task_id) = $self->{db}->quick_select(qq{
 			select concat(code,'_',server_id) from }.$self->{database_name}.'.background_tasks'.qq{
 			where process_pid=? and worker_id=? and status='Running' and target_datatype=?
-			order by code limit 1
+			order by not_before_time limit 1
 		},[$$, $ENV{WORKER_ID}, $self->{dt}]);
 
 		# if no task to run right now, then no need to continue
