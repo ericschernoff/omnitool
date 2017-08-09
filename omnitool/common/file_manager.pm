@@ -66,7 +66,7 @@ sub new {
 	if ($self->{file_storage_method} eq 'Swift Store') {
 		my ($auth_url, $username, $password) = split /\|/, $self->{file_location};
 
-		$self->{swift_object} = Net::Swift->new(
+		$self->{swift_object} = Net::OpenStack::Swift->new(
 			auth_version  => '1.0',
 			auth_url       => $auth_url,
 			user           => $username,

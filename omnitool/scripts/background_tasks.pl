@@ -20,7 +20,7 @@ $ENV{WORKER_ID} ||= '1';
 # i wish i was a better person
 use strict;
 
-# prevent infinite tasks from wrecking our background processes; time out after 45 minutes
+# prevent infinite tasks from wrecking our background processes; time out after 90 minutes
 # we allow for so long because of the lab-syncing; maybe should be instance-configurable
 local $SIG{ ALRM } = sub { die "Background Script Timed Out After 90 Minutes" };
 alarm 60 * 90;
