@@ -75,18 +75,18 @@ sub search {
 	# start cycling through & keep count of each search preformed
 	$search_count = 0; # will need this to make sure we only return records which are found in each search
 	foreach $so (@{$args{search_options}}) {
-		# bonus feature:  allow them to pass the 'match_column' and 'match_value' as 
+		# bonus feature:  allow them to pass the 'match_column' and 'match_value' as
 		# 'column_name' => 'some_value' to make the very simple searches really easy
 		if (!$$so{match_column}) {
 			foreach $key (keys %$so) {
 				next if $self->{belt}->really_in_list($key, 'database_name,table_name,relationship_column,primary_table_column,match_column,match_value,operator,additonal_logic');
 				next if !$$so{$key};
-				
+
 				$$so{match_column} = $key;
 				$$so{match_value} = $$so{$key};
 			}
 		}
-	
+
 		# skip if they did not provide a match_value
 		next if !length($$so{match_value}); # can be '0'
 
@@ -116,6 +116,10 @@ sub search {
 				$$so{extra_logic} = 'parent like ? and ';
 				push(@bind_values,$self->{dt}.':%');
 				# note: you wouldn't pull the parent from metainfo, so the above 'extra_logic' is not needed here
+
+			# translate 'data_code' to it's true meaning
+			} elsif ($$so{relationship_column} eq 'data_code') {
+				$$so{relationship_column} = qq{concat(code,'_',server_id)};
 			}
 
 		} else { # my table, will be the primary key

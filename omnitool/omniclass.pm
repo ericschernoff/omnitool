@@ -634,16 +634,18 @@ This how you search (and load) data.  Meant to take the place of SQL 'select' st
 			'database_name => 'some_database', # optional; defaults to $dt_obj default or the database in $dt_obj->{database_name})
 			'table_name' => 'some_table', # optional, but required for relational searching; defaults to dt's table or the table in $dt_obj->{table_name}
 			'relationship_column' => 'column_name', # used when specifying the 'database' and/or 'table' options; will
-				# be a column on the 'foreign' table specified in 'table_name';
-				# if 'table' is 'metainfo,' will default to data_code and in that case, limits to records for this $self->{dt}.
-				# if it is 'parent,' will look for parent values with the prefix of this object's datatype ID
-				# otherwise, if left blank, defaults to 'concat(code,'_',server_id)'
+				# be a column on the 'foreign' table specified in 'table_name'; will tie back to 'primary_table_column' below
+				# if 'table_name' =~ /metainfo/, then will default to data_code and in that case, limits to records to $self->{dt}.
+				# the defailt is 'parent,' which will look for parent values with the prefix of this object's datatype ID
+				# if set to 'data_code' will be translated to 'concat(code,'_',server_id)'
 			'primary_table_column' => 'column_name', # used when specifying the 'database' and/or 'table' options,
 				# and the 'relationship_column' does not match up the primary key of this object's primary table.
 				# is a column of the datatype's primary table, which is in $dt_obj->{table_name}
 				# Tells the searcher the relationship to the primary table from the alternative 'table_name' table.
 				# This allows us to search against true foreign keys, and not just other tables represent children
 				# of this datatype.
+
+			### See example below on cross-table relationships.
 
 			# for specifying ad-hoc logic
 			'additonal_logic' => qq{some more sql logic, beginning with 'and' or 'or'), # optional
@@ -697,6 +699,29 @@ After the initial run-through, you can just call $dt_obj->search() and it will u
 which were sent before.  You do have to supply all of the arguments if you want to change any of them,
 but the most useful bit is being able to call the same exact search over and over. Very nice for keeping
 multiple folks' screens updated as they each make changes.
+
+Here is an xample query for cross-table relationships, since I feel like my explanation was kind of terrible:
+
+	# Find cities over 10,000 residents in Japan, with countries in a separate table.
+	$cities_object->search(
+		'search_options' => [
+			{ # population filter
+				'population' => 1000,
+				'operator' => '>'
+			},
+			{ # cross-table relationship to countries table
+				'match_column' => 'name',
+				'match_value' => 'Japan', # "'name' => 'Japan'" would also work
+				'table_name' => 'countries',
+				'relationship_column' => 'data_code', # so concat(code,'_',server_id) on 'countries' table
+				'primary_table_column' => 'country_id', # so 'cities.country'
+			},
+		],
+		'auto_load' => 1,
+	);
+
+	The records for cities in Japan with more than 10,000 residents would be in $cities_object->{records} now,
+	with the found keys in $cities_object->{search_results}.
 
 =head2 save()
 
