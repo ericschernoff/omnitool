@@ -100,14 +100,16 @@ sub run_action {
 
 				# if it start with a !, it's a negative match
 				$no_access = 0;
-				if ($self->{attributes}{link_match_string} =~ /^\!/) {
-					($this_match = $self->{attributes}{link_match_string}) =~ s/^\!//;
-					if (Dumper($self->{omniclass_object}->{data}{$match_col}) =~ /$this_match/i) {
+				if ($match_col) { # skip if cross-datatype (for now)
+					if ($self->{attributes}{link_match_string} =~ /^\!/) {
+						($this_match = $self->{attributes}{link_match_string}) =~ s/^\!//;
+						if (Dumper($self->{omniclass_object}->{data}{$match_col}) =~ /$this_match/i) {
+							$no_access = 1;
+						}
+					# otherwise, require positive match
+					} elsif (Dumper($self->{omniclass_object}->{data}{$match_col}) !~ /$self->{attributes}{link_match_string}/i) {
 						$no_access = 1;
 					}
-				# otherwise, require positive match
-				} elsif (Dumper($self->{omniclass_object}->{data}{$match_col}) !~ /$self->{attributes}{link_match_string}/i) {
-					$no_access = 1;
 				}
 
 				# if they failed the test, block them
