@@ -21,7 +21,9 @@ use MIME::Types;
 use Devel::Size qw(total_size);
 
 # for saving/loading files via swift
-use Net::OpenStack::Swift;
+use omnitool::common::swiftstack_client;
+# that's my hacked cisco version.  in the normal world, one would have:
+# use Net::OpenStack::Swift;
 
 # set myself up:  need the %$luggage and alternatively a $db object
 sub new {
@@ -66,12 +68,11 @@ sub new {
 	if ($self->{file_storage_method} eq 'Swift Store') {
 		my ($auth_url, $username, $password) = split /\|/, $self->{file_location};
 
-		$self->{swift_object} = Net::OpenStack::Swift->new(
-			auth_version  => '1.0',
-			auth_url       => $auth_url,
-			user           => $username,
-			password       => $password,
-			tenant_name   => 'AUTH'.$username,
+		$self->{swift_object} = omnitool::common::swiftstack_client->new(
+			'luggage' => $self->{luggage}, 
+			'auth_url' => $auth_url,
+			'username' => $username,
+			'password' => $password,
 		);
 	}
 
@@ -500,9 +501,6 @@ sub save_to_swift {
 		return;
 	}
 
-	# need to log in to transact business
-	my ($storage_url, $token) = $self->{swift_object}->get_auth();
-
 	# make sure the container exists
 	my $headers = $self->{swift_object}->put_container(container_name => $location);
 
@@ -512,9 +510,7 @@ sub save_to_swift {
 	# $self->{luggage}{belt}->logger("$data_code - $suffix",$self->{logtype});
 
 	# now upload it to swift
-	my $headers = $self->{swift_object}->put_object(container_name => $location,
-		object_name => $data_code.'.'.$suffix, content => ${$file},
-		content_length => $real_size);
+	my $headers = $self->{swift_object}->put_object($location, $data_code.'.'.$suffix, $file);
 
 	# and that's it ;)
 
@@ -570,17 +566,10 @@ sub load_from_swift {
 		$file_info = $self->load_file_info($data_code);
 	}
 
-	# need to log in to transact business
-	my ($storage_url, $token) = $self->{swift_object}->get_auth();
-
 	# pull it from the swift store.
 	my ($file);
 	eval {
-		my $etag = $self->{swift_object}->get_object(container_name => $$file_info{location},
-			object_name => $$file_info{object_name}, write_code => sub {
-	            my ($status, $message, $headers, $chunk) = @_;
-	            $file .= $chunk;
-	    });
+		$file = $self->{swift_object}->get_object( $$file_info{location}, $$file_info{object_name});
     };
     if ($@) { # if it's not there, show the error in the file and not a fatal error
 		$file = $@;
@@ -633,13 +622,9 @@ sub remove_from_swift {
 		$file_info = $self->load_file_info($data_code);
 	}
 
-	# need to log in to transact business
-	my ($storage_url, $token) = $self->{swift_object}->get_auth();
-
 	# remove from swift store - carefully
 	eval {
-		my $headers = $self->{swift_object}->delete_object(container_name => $$file_info{location} ,
-			object_name => $$file_info{object_name} );
+		my $headers = $self->{swift_object}->delete_object($$file_info{location}, $$file_info{object_name} );
 	};
 
 	return 1;
@@ -651,7 +636,7 @@ __END__
 
 =head1 omnitool::common::file_manager
 
-This package / class handles the storage and retrieval of files as attachments to database
+This package / class facilitates the storage and retrieval of files as attachments to database
 records.  Most of these files are sent in as form uploads via 'file_upload' Datatype fields,
 and this package is meant to interact with the OmniClass objects to load in these uploaded files.
 
@@ -685,14 +670,14 @@ Swift Store.  If you set 'File Storage Method' to 'File System,' then the 'File 
 be the root directory for the files.  For example, /export/webapps/files .
 
 The 'location' column in the 'stored_files' table will be the abbreviation for the current month,
-i.e. 'Mar16'.  This is auto-calculated and will be set up as a sub-directory for File System storage 
-or sub-container for Swift Store.
+i.e. 'Mar16'.  This will be set up as a sub-directory for File System storage or sub-container
+for Swift storage.
 
-The 'filename' will be original filename for the file.  The actual fiel will be saved in its storage 
-location under its primary key -- concat(code,'_',server_id) -- plus the file extension/suffix.
+The 'filename' will be original filename for the file, and it will be saved in its storage location
+under its primary key -- concat(code,'_',server_id) -- plus the file extension/suffix.
 
 This module does support retrieving files as Plack uploads, Web URL's or full-paths to local files.
-Please note that retrieving files via Web URL's requires that those URL's do not require authentication.
+Please note that any Web URL's provided need no authentication.
 
 Below are the methods you will call from outside this package.  There are several supporting methods
 we will not document.  Please also see the notes for the 'send_file' methods in both Tool.pm and
@@ -706,10 +691,10 @@ Usage:
 
 	$file_manager = omnitool::common::file_manager->new(
 		'luggage' => $luggage,	# %$luggage hash; required, can't leave home without your luggage
-		'db' => $db, # optional; alternative database object; will default to $$luggage{db}
+		'db' => $db, # alternative database object; will default to $$luggage{db}
 	);
 
-The DB handle provided in luggage or as an argument must point to a valid Instance database.  Honor
+The DB handle provided in luggage or as an argument must point to a valid instance database.  Honor
 system on that for now :)
 
 =head2 load_file_info()
@@ -759,6 +744,8 @@ can create a link such as:
 
 	"javascript:tool_objects['".$self->{tool_and_instance}."'].fetch_uploaded_file('".$self->{metainfo}{$r}{altcode}."');"
 
+Please see field_attachment_link() in omnitool/applications/my_family/datatypes/work_projects.pm for a good example.
+
 =head2 store_file()
 
 Stores a file into our desired method/location and creates (or updates) the corresponding record
@@ -769,8 +756,7 @@ First argument is required.  It should be one of:
 	1. A PSGI param name pointing to an upload field, for which the user did provide a file.
 	2. A full-path to a file on the local filesystem, i.e. /usr/home/eric/notes.txt
 	3. A Web URI to a file not protected by a password, i.e. http://www.walnutstreetrentals.com/images/wsr_logo2015sm.jpg
-	4. Another file already saved in this database, i.e. 'COPY:5_2' to duplicate the file with the primary 
-		key of 5_2 in stored_files.
+	4. Another file already saved in this database, i.e. 'COPY:5_2' to duplicate the file with the primary key of 5_2 in stored_files.
 
 The second argument is optional, and it would be the primary key -- concat(code,'_',server_id) -- of an existing
 record in the 'stored_files' table.  If that is provided, the target record will be updated and the corresponding
@@ -794,9 +780,12 @@ Updates the 'tied_to_record_type', 'tied_to_record_id', and 'tied_to_record_fiel
 that the 'stored_files' records maps to the OmniClass-managed data to which it belongs.  Meant
 to make it easier to write maintenance / cleaning scripts more easily.
 
+** Please note that deleting a record via OmniClass will not delete these stored_files records,
+at least not yet. **
+
 All four arguments are required, and thease are:
 
-	- The primary key of the target entry in stored_files.
+	- The primary key of the target record in stored_files.
 	- The primary key of the OmniClass Datatype for the tied-to-record.
 	- The primary key for the tied-to-record.
 	- The primary key of the OmniClass Datatype Field for the tied-to-record.
@@ -805,7 +794,7 @@ Usage:
 
 	$file_manager->tie_to_record($data_code,$record_datatype,$record_data_code,$record_field);
 
-This is called from omniclass::saver(), and will very likely not be used anywhere else.
+This is called from omniclass::saver(), and will very likely not be used by you ;)
 
 =head2 get_stored_files_for_record()
 
@@ -813,7 +802,7 @@ This is used to get all of the stored files associated with a particular record 
 most useful when deleting, so please see it in action in omnitool::omniclass::deleter.
 
 It requires a data_code plus a datatype ID as an argument, and returns a arrayref of the primary keys
-(code,'_',server_id) from stored_files for those files associated with that record.
+(code_server_id) from stored_files for those files associated with that record.
 
 Usage
 
