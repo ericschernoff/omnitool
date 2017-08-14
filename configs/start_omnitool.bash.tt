@@ -28,6 +28,9 @@ export OTHOME='[%options.othome%]'
 export OMNITOOL_ADMIN='[%options.omnitool_admin%]'
 export OT_COOKIE_DOMAIN='[%options.ot_cookie_domain%]'
 
+# If you use an internal SwiftStack server with a self-signed cert
+# export SWIFTSTACK_NO_HOSTNAME_VERIFY=1
+
 # EDIT AND UNCOMMENT TO USE THE 'recaptcha' FIELDS TO VERIFY HUMANS
 # export RECAPTCHA_SITEKEY=''
 # export RECAPTCHA_SECRET=''

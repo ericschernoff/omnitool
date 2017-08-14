@@ -83,9 +83,12 @@
 											[% IF data_pair.1.0.uri != '' %]
 												[% FOREACH link_set IN data_pair.1 %]
 													[% IF link_set.uri.match('javascript') %]
-														<a href="[%link_set.uri%]">[%link_set.text%]</a><
+														<a href="[%link_set.uri%]">[%link_set.text%]</a>
 													[% ELSE %]
 														<a href="[%link_set.uri%]" target="_blank">[%link_set.text%]</a>
+													[% END %]
+													[% IF link_set != data_pair.1.last %]
+														<br/>
 													[% END %]
 												[% END %]
 											[% ELSIF data_pair.1.uri != '' %]

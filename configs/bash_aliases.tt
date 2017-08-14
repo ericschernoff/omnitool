@@ -7,3 +7,6 @@ export OTPERL='[%options.othome%]/code/omnitool'
 
 # set this to see script errors on screen and not in logs
 # export OT_DEVELOPER=1
+
+# if you use a SwiftStack server with a self-signed cert 
+# export SWIFTSTACK_NO_HOSTNAME_VERIFY=1

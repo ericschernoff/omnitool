@@ -68,7 +68,8 @@ sub perform_action {
 			.'PERL5LIB='.$ENV{OTHOME}.'/code'."\n"
 			.'DATABASE_SERVER='.$instance_database_server."\n"
 			.'OMNITOOL_ADMIN='.$self->{omniclass_object}->{data}{contact_email}."\n"
-			.'OMNITOOL_ADMIN_USERNAME='.$self->{luggage}{username});
+			.'OMNITOOL_ADMIN_USERNAME='.$self->{luggage}{username}."\n"
+			.'# SWIFTSTACK_NO_HOSTNAME_VERIFY=1');
 
 		push(@{ $self->{json_results}{paragraphs} },'# uncomment to prevent email from going out'."\n".'# IS_DEV=1');
 
