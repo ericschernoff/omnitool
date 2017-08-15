@@ -8,7 +8,7 @@ OmniTool - Build web application suites very quickly and with minimal code.
 
 	$luggage = omnitool->get_everything_ready(
 		'username' => 'someones_username',
-		'hostname' => 'hostname-to-an-omnitool.application.omnitool.com',
+		'hostname' => 'hostname-to-an-omnitool.application.your-domain.com',
 	);
 
 	# %$luggage now contains a user session, utility belt, object factory, and
