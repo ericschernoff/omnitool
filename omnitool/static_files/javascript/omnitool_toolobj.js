@@ -416,8 +416,8 @@ function Tool (tool_attributes) {
 	}
 
 	// function to support allowing one menu to trigger another, sending the source menu's value
-	// meant for the 'advanced search' form
-	this.trigger_menu = function(trigger_menu,source_value,method_name) {
+	// created for the 'advanced search' form, and expanded to other uses
+	this.trigger_menu = function(trigger_menu,source_value,method_name,alternative_field_div) {
 		var post_data_object = {
 			target_menu_id: trigger_menu,
 			source_value: source_value
@@ -431,36 +431,49 @@ function Tool (tool_attributes) {
 		// clear the target menu's options
 		$("#"+trigger_menu).empty();
 
+		// if there's an alternative field, hide it
+		if (alternative_field_div != undefined) {
+			$('#'+alternative_field_div).hide();
+		}
+
 		// fetch the options from the server and put them into that target menu
 		loading_modal_display('Loading Menu...');
 		$.when( query_tool(this['tool_uri'] + '/' + method_name ,post_data_object) ).done(function(data) {
-			for (var i = 0; i < data.options_keys.length; i++) {
-				var key = data.options_keys[i];
-				$("#"+trigger_menu).append($("<option></option>").val(key).html(data.options[key]));
-			}
+			if (data.options_keys != null && data.options_keys.length > 0) {
+				for (var i = 0; i < data.options_keys.length; i++) {
+					var key = data.options_keys[i];
+					$("#"+trigger_menu).append($("<option></option>").val(key).html(data.options[key]));
+				}
 
-			// if it's hidden, be sure to show it
-			if ($("#field_div_"+trigger_menu).is(":hidden") == true && data.options_keys.length > 0) {
-				$("#field_div_"+trigger_menu).show();
+				// if it's hidden, be sure to show it
+				if ($("#field_div_"+trigger_menu).is(":hidden") == true && data.options_keys.length > 0) {
+					$("#field_div_"+trigger_menu).show();
+				}
+
+				// if this is a chosen menu, update it
+				if ( $("#"+trigger_menu).hasClass('chosen-select')) {
+					$("#"+trigger_menu).trigger("chosen:updated");
+				}
+
+				// if this target menu triggers another menu (i.e. three menus in a chain), call that
+				// change routine to reset the next menu's options
+				$("#"+trigger_menu).change();
 
 			// if it's not for the advanced search and there are no options, re-hide the menu
-			} else if (method_name != 'advanced_search_trigger_menu_options' && data.options_keys.length == 0) {
+			} else if (method_name != 'advanced_search_trigger_menu_options') {
 				$("#field_div_"+trigger_menu).hide();
-			}
 
-			// if this is a chosen menu, update it
-			if ( $("#"+trigger_menu).hasClass('chosen-select')) {
-				$("#"+trigger_menu).trigger("chosen:updated");
+				// if nothing found, and there was an alternative field, show it
+				if (alternative_field_div != undefined) {
+					$('#'+alternative_field_div).show();
+				}
 			}
 
 			// hide that modal
 			loading_modal_display('hide');
-
-			// if this target menu triggers another menu (i.e. three menus in a chain), call that
-			// change routine to reset the next menu's options
-			$("#"+trigger_menu).change();
 		});
 	}
+
 
 	// function to submit this forms via jquery.form - http://malsup.com/jquery/form/
 	// would like to use Mozilla's FormData, but it won't play nice with IE<10
