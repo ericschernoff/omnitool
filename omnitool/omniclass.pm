@@ -622,7 +622,7 @@ This how you search (and load) data.  Meant to take the place of SQL 'select' st
 				#	like so:  YYYY-MM-DD---YYYY-MM-DD, i.e. '1976-09-04---1999-08-01'
 
 			'match_column' => 'column_name_to_search', # defaults to 'name'; otherwise provide the DB column name
-			'match_value' => 'abc', # required; use arrayref for 'in' and 'not in' options, or if you use 'additonal_logic'
+			'match_value' => 'abc', # required; use arrayref for 'in' and 'not in' options, or if you use 'additional_logic'
 				# like/not like match_values automatically have % put at start/end
 
 			## a nice alternative for match_column/match_value:
@@ -648,15 +648,15 @@ This how you search (and load) data.  Meant to take the place of SQL 'select' st
 			### See example below on cross-table relationships.
 
 			# for specifying ad-hoc logic
-			'additonal_logic' => qq{some more sql logic, beginning with 'and' or 'or'), # optional
+			'additional_logic' => qq{some more sql logic, beginning with 'and' or 'or'), # optional
 				# this last bit is useful for sending something fancier than these options will allow, and
 				# especially if you need to do some 'or' stuff; a lot of 'or' logic can be handled with an IN
 				# list or a regexp, if the 'or' is testing values of the same 'match_column.'
-				# But if you need to have "name='eric' or type='dog", then you'd probably set additonal_logic to
+				# But if you need to have "name='eric' or type='dog", then you'd probably set additional_logic to
 				# qq{or type='dog'); definitely more manual, but at least gives you options
 				# remember you can mangle these options a bit in 'pre_search'
-				# USE PLACEHOLDERS IN YOUR QUERY TO EXECUTE THE 'additonal_logic' IF VALUES ARE USER-PROVIDED
-				# To do this, make 'match_value' be an arrayref, with the values for 'additonal_logic' at
+				# USE PLACEHOLDERS IN YOUR QUERY TO EXECUTE THE 'additional_logic' IF VALUES ARE USER-PROVIDED
+				# To do this, make 'match_value' be an arrayref, with the values for 'additional_logic' at
 				# the end of the array
 			}
 		],

@@ -79,7 +79,7 @@ sub search {
 		# 'column_name' => 'some_value' to make the very simple searches really easy
 		if (!$$so{match_column}) {
 			foreach $key (keys %$so) {
-				next if $self->{belt}->really_in_list($key, 'database_name,table_name,relationship_column,primary_table_column,match_column,match_value,operator,additonal_logic');
+				next if $self->{belt}->really_in_list($key, 'database_name,table_name,relationship_column,primary_table_column,match_column,match_value,operator,additonal_logic,additional_logic');
 				next if !$$so{$key};
 
 				$$so{match_column} = $key;
@@ -172,7 +172,7 @@ sub search {
 			push(@bind_values,@match_values);
 
 
-		# did they send an array (useful for 'additonal_logic')
+		# did they send an array (useful for 'additional_logic')
 		} elsif (ref($$so{match_value}) eq 'ARRAY') { # in array
 			$$so{main_logic} = $$so{match_column}.' '.$$so{operator}.' ?';
 			push(@bind_values,@{$$so{match_value}});
@@ -183,13 +183,16 @@ sub search {
 			push(@bind_values,$$so{match_value});
 		}
 
+		# i had an embarrassing typo before
+		$$so{additional_logic} = $$so{additonal_logic} if $$so{additonal_logic};
+
 		# we are going to run one SQL query per database/table combo, so make a plan to put them together
 		$table_key = $$so{database_name}.'.'.$$so{table_name};
 		$$sql_query_plans{$table_key}{relationship_column} = $$so{relationship_column};
 		$$sql_query_plans{$table_key}{primary_table_column} ||= $$so{primary_table_column};
 		push (
 			@{ $$sql_query_plans{$table_key}{query_logic} },
-			qq{ ( $$so{extra_logic} ( $$so{main_logic} $$so{additonal_logic} ) )}
+			qq{ ( $$so{extra_logic} ( $$so{main_logic} $$so{additional_logic} ) )}
 		);
 		push (
 			@{ $$sql_query_plans{$table_key}{bind_values} },
@@ -197,7 +200,7 @@ sub search {
 		);
 
 		# make sure to pass $$so{match_value} as a placeholder
-		# also note that the $$so{additonal_logic} bit would be passed as an arg to this method and probably
+		# also note that the $$so{additional_logic} bit would be passed as an arg to this method and probably
 		# generated in your datatype-specific class --> MAKE SURE IT IS SECURE; resolve down to ID's first and pass those
 
 		# track the searches specified
