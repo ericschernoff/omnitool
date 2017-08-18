@@ -14,7 +14,7 @@
 wait_timeout			= 172800
 
 # live in utf-8  ** required for ot6 **
-character-set-server	= utf8
+character-set-server		= utf8
 collation-server		= utf8_general_ci
 
 # no STRICT_TRANS_TABLES, ONLY_FULL_GROUP_BY
@@ -34,38 +34,38 @@ connect_timeout			= 120
 join_buffer_size			= 24M
 key_buffer_size				= 128M
 read_buffer_size			= 8M
-read_rnd_buffer_size 		= 8M
+read_rnd_buffer_size 			= 8M
 sort_buffer_size			= 8M
 thread_cache_size			= 60
 open_files_limit			= 65535
 # table_cache				= 768
-# myisam_sort_buffer_size	= 8M
+# myisam_sort_buffer_size		= 8M
 # query_cache_size			= 12M
 
 # innodb configs - BE SURE TO ADJUST FOR YOUR SYSTEM
-innodb_buffer_pool_size 		= 12G
-innodb_buffer_pool_instances 	= 8
+innodb_buffer_pool_size 		= 1G
+innodb_buffer_pool_instances 		= 8
 innodb_log_buffer_size 			= 64M
 innodb_log_file_size			= 512M
 innodb_file_per_table			= 1
 
 # we don't really use memory tables, but just in case
-max_heap_table_size				= 64M
-tmp_table_size					= 64M
+max_heap_table_size			= 64M
+tmp_table_size				= 64M
 
 # enable logging of updates / slow queries
-log-bin							= omnitool6-bin
-binlog-format                   = STATEMENT
-binlog-row-event-max-size       = 4294967295
-expire_logs_days				= 14
-server-id						= 1
+log-bin					= omnitool6-bin
+binlog-format                   	= STATEMENT
+binlog-row-event-max-size       	= 4294967295
+expire_logs_days			= 14
+server-id				= 1
 slow_query_log
-long_query_time					= 8
+long_query_time				= 8
 
 # long group_concats
 group_concat_max_len                    = 1000000
 
 [mysqldump]
 quick
-max_allowed_packet 		= 32M
+max_allowed_packet 			= 32M
 
