@@ -35,9 +35,11 @@
 
 	[% IF form.submit_button_text %]
 		<form class="form-inline center" id="[*tool_and_instance*]_form" action="[*my_json_uri*]" method="post" role="form">
+
 		[% FOREACH hf IN form.hidden_fields.keys %]
 			<input type="hidden" name="[%hf%]" value="[%form.hidden_fields.$hf%]" />
 		[% END %]
+		
 		[% FOREACH f IN form.field_keys %]
 			[% IF form.fields.$f.is_required %]
 				[% SET form.fields.$f.title = '* ' _ form.fields.$f.title %]
@@ -45,6 +47,7 @@
 			[% IF form.fields.$f.break_here %]
 				<div class="clearfix"></div>
 			[% END %]
+			<div class="form-group">
 			<label class="inline" for="form-field-[%f%]">
 				[% IF form.fields.$f.field_error %]
 					<span class="bold red">
@@ -57,13 +60,12 @@
 				[% IF form.fields.$f.instructions %]
 					<span class="help-button" data-rel="popover" data-trigger="hover" data-placement="right" data-content="[%form.fields.$f.instructions%]">?</span>
 				[% END %]
-
 			</label>
 			[% SET field_type = form.fields.$f.field_type %]
 			[% PROCESS $field_type %]
-			&nbsp; &nbsp; &nbsp;
+			</div>
 		[% END %]
-
+		
 		<button class="btn btn-white" type="submit">
 			[%form.submit_button_text%]
 		</button>
