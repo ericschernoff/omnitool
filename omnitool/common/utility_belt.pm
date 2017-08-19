@@ -129,34 +129,6 @@ sub datacode_query {
 
 	return '' if !$$data_codes[0]; # stop if empty
 
-=cut
-	# changed it to simple IN/NOT-IN list because it seemed a lot faster
-	# then put back to the old way because that seemed faster ;)
-
-	# turn this into a list of
-	my $q_mark_list = $self->q_mark_list( scalar(@{ $data_codes }) );
-
-	my ($search_logic, $dc, $bind_values);
-
-	# negative search?
-	if ($negative) {
-		$search_logic = qq{concat(code,'_',server_id) not in ($q_mark_list)};
-
-	} else { # no, positive
-		$search_logic = qq{concat(code,'_',server_id) in ($q_mark_list)};
-
-	}
-
-	# make a copy of the data_codes into @$bind_values, since they may want to add stuff to those bind_values
-	# as they build their query
-	foreach $dc (@{$data_codes}) {
-		push(@$bind_values,$dc);
-	}
-
-	# ship it out
-	return ($search_logic,$bind_values);
-=cut
-
 	my ($dc, $code, $server_id, $searches, $search_logic, $bind_values);
 
 	foreach $dc (@{$data_codes}) {
