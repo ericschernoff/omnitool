@@ -16,6 +16,9 @@ use omnitool::common::utility_belt;
 # for storing / retrieving data structures via the hash_cache() method
 use Storable qw( nfreeze thaw dclone );
 
+# for checking the status of the DBI reference
+use Scalar::Util qw(blessed);
+
 # time to grow up
 use strict;
 
@@ -50,6 +53,39 @@ sub new {
 	# hostname or live with the fact that we might end up constructing two database objects to
 	# get right.
 
+	# let them set up their own init vector
+	if ($ENV{INIT_VECTOR}) {
+		$iv = $ENV{INIT_VECTOR};
+	} else { # default
+		$iv = 'A104EE235B045DA9AB50DE1F5FA8E2B1202534983037819BAE';
+	}
+
+	# make the object
+	$self = bless {
+		'hostname' => $hostname,
+		'created' => time(),
+		'current_database' => $connect_to_database,
+		'outside_server' => $outside_server,
+		'iv' => $iv,
+	}, $class;
+	# change the 'iv' key to make your installation more unique and possibly more secure
+	# however, you can't change it again without first de-crypting every value encrypted with it
+
+	# now connect to the database and get a real DBI object into $self->{dbh}
+	$self->connect_to_database();
+
+	return $self;
+}
+
+# special method to connect or re-connect to the database
+sub connect_to_database {
+	my $self = shift;
+	
+	# only do this if $self->{dbh} is not already a DBI object
+	return if $self->{dbh} && blessed($self->{dbh}) =~ /DBI/;
+	
+	my ($username, $password, $credentials, $dsn);
+
 	# allow two ways for the DB user/password to be sent
 	# First way is via DB_USERNAME / DB_USERNAME env vars
 	if ($ENV{DB_USERNAME} && $ENV{DB_PASSWORD}) {
@@ -66,43 +102,25 @@ sub new {
 	}
 
 	# make the connection
-	$dsn = qq{DBI:mysql:database=$connect_to_database;host=$hostname;port=3306;mysql_socket=/tmp/mysql.sock};
-	$dbh = DBI->connect($dsn, $username, $password,{ PrintError => 0, RaiseError=>0, mysql_enable_utf8=>8 });
+	$dsn = 'DBI:mysql:database='.$self->{current_database}.';host='.$self->{hostname}.';port=3306;mysql_socket=/tmp/mysql.sock';
+	$self->{dbh} = DBI->connect($dsn, $username, $password,{ PrintError => 0, RaiseError=>0, mysql_enable_utf8=>8 });
 
 	# Set Long to 1000000 for long text...may need to adjust this
-	$dbh->{LongReadLen} = 1000000;
+	$self->{dbh}->{LongReadLen} = 1000000;
 
 	# let's automatically reconnect if the connection is timed out
-	$dbh->{mysql_auto_reconnect} = 1;
-
-	# let them set up their own init vector
-	if ($ENV{INIT_VECTOR}) {
-		$iv = $ENV{INIT_VECTOR};
-	} else { # default
-		$iv = 'A104EE235B045DA9AB50DE1F5FA8E2B1202534983037819BAE';
-	}
-
-	# make the object
-	$self = bless {
-		'dbh' => $dbh,
-		'hostname' => $hostname,
-		'created' => time(),
-		'current_database' => $connect_to_database,
-		'iv' => $iv,
-	}, $class;
-
-	# change the 'iv' key to make your installation more unique and possibly more secure
-	# however, you can't change it again without first de-crypting every value encrypted with it
+	$self->{dbh}->{mysql_auto_reconnect} = 1;
+	# note that this doesn't seem to work too well
 
 	# let's use UTC time in DB saves
 	$self->do_sql(qq{set time_zone = '+0:00'});
 
 	# i need the server-id of database server on the other end of this connection
 	# this is the one spot where we do not use the "concat(code,'_',server_id)" stuff, as this needs to be unique
-	if (!$outside_server) { # skip this if we are connecting to a server outside of this system
+	if (!$self->{outside_server}) { # skip this if we are connecting to a server outside of this system
 		($self->{server_id}) = $self->quick_select(qq{
 			select code from database_servers where hostname=?
-		},[$hostname]);
+		},[$self->{hostname}]);
 	}
 
 	# are we on MySQL or MariaDB?
@@ -110,12 +128,17 @@ sub new {
 		select \@\@version like '%maria%'
 	});
 
-	return $self;
+	# $self->{dbh} is now ready to go
 }
 
 # method to make sure I am alive
 sub your_birthdate {
 	my $self = shift;
+	
+	# make sure we are connected to the DB
+	$self->connect_to_database();
+	
+	# pull and return the info
 	my ($created) = $self->quick_select('select from_unixtime('. $self->{'created'}.')');
 	return $created;
 }
@@ -132,6 +155,9 @@ sub change_database {
 
 	# no funny business
 	return 'Bad Name' if $database_name =~ /[^a-z0-9\_]/i;
+
+	# make sure we are connected to the DB
+	$self->connect_to_database();
 
 	# pretty easy
 	$self->{dbh}->do(qq{use $database_name});
@@ -185,6 +211,9 @@ sub decrypt_string {
 	$salt_phrase ||= $ENV{SALT_PHRASE};
 	$salt_phrase ||= 'AllHailGinger'; # please set up a $salt_phrase
 
+	# make sure we are connected to the DB
+	$self->connect_to_database();
+
 	# queries are a little difference for MariaDB (no IV, only 128 bits)
 	my ($plain_text_string);
 	if ($self->{is_mariadb}) {
@@ -214,6 +243,9 @@ sub do_sql {
 	($sql,$bind_values) = @_;
 
 	# sql statement to execute and if placeholders used, arrayref of values
+
+	# make sure we are connected to the DB
+	$self->connect_to_database();
 
 	# i shouldn't need this, but just in case
 	if (!$self->{dbh}) {
@@ -291,6 +323,9 @@ sub encrypt_string {
 	# if no salt is sent, use $ENV{SALT_PHRASE}, failing that, default to the truth
 	$salt_phrase ||= $ENV{SALT_PHRASE};
 	$salt_phrase ||= 'AllHailGinger'; # please set up a $salt_phrase
+
+	# make sure we are connected to the DB
+	$self->connect_to_database();
 
 	# queries are a little different for MariaDB (no IV, only 128 bits)
 	my ($encoded_and_encrypted_string);
@@ -443,6 +478,9 @@ sub list_select {
 	($sql,$bind_values) = @_;
 	# sql statement to execute and if placeholders used, arrayref of values
 
+	# make sure we are connected to the DB
+	$self->connect_to_database();
+
 	# we should never have this error condition, but just in case
 	if (!$self->{dbh}) {
 		$self->log_errors(qq{Missing DB Connection for $sql.});
@@ -495,6 +533,9 @@ sub quick_select {
 	($sql,$bind_values) = @_;
 	# sql statement to execute and if placeholders used, arrayref of values
 
+	# make sure we are connected to the DB
+	$self->connect_to_database();
+
 	# we should never have this error condition, but just in case
 	if (!$self->{dbh}) {
 		$self->log_errors(qq{Missing DB Connection for $sql.});
@@ -540,6 +581,9 @@ sub sql_hash {
 		$kill = shift (@{$args{names}}); # kill the first one, as that one will be our key
 	}
 
+	# make sure we are connected to the DB
+	$self->connect_to_database();
+
 	# this is easy: run the command, and build a hash keyed by the first column, with the column names as sub-keys
 	# note that this works best if there are at least two columns listed
 	$num = 0;
@@ -571,7 +615,7 @@ sub sql_hash {
 # http://search.cpan.org/~dwheeler/DBIx-Connector-0.53/lib/DBIx/Connector.pm
 sub DESTROY {
 	my $self = shift;
-	if ($self->{dbh}) {
+	if ($self->{dbh} && blessed($self->{dbh}) =~ /DBI/) {
 		$self->{dbh}->disconnect;
 	}
 }
