@@ -200,6 +200,104 @@ sub post_validate_form {
 	# to let it submit without problem, return 0;
 }
 
+# example view_details method to produce %$details_hash for displaying full
+# data details via Complex_Details.tt
+sub view_details {
+	my $self = shift;
+
+	my ($details_hash, $document_object, $doc);
+
+	# put the main part of the hash together
+	$$details_hash{tab_info} = {
+		1 => ['main','Main Info'],
+		2 => ['magical_abilities','Magical Abilities'],
+		3 => ['legendary_stories','Legendary Stories'],
+	};
+	$$details_hash{tab_keys} = [1,2,3];
+	
+	# if you do not set this, the title of the page will be
+	# shown as "AltCode: Record Name" 
+	$$details_hash{hide_altcode} = 1;
+	# if set, the title will be the record's name
+
+	# This method would be called via the 'view_details.pm' Tool.pm sub-class,
+	# so the record is already loaded up in $self->{data}
+
+	# start off $$details_hash{tabs} with the first table (Main Info)
+	$$details_hash{tabs} = {
+		1 => {
+			'type' => 'info_groups',
+			'data' => [
+				[
+					[ 'Phone Number', $self->{data}{phone_number} ],
+					[ 'Email Address', {
+						'text' => $self->{data}{referrals_email_address},
+						'uri' => 'mailto:'.$self->{data}{referrals_email_address} 
+					}],
+					[ 'Created', $self->{data}{metainfo}{nice_create_age} ],
+				],
+				[
+					[ 'Preferred Dog Food', $self->{data}{preferred_food} ],
+					[ 'Tricks Known', $self->{data}{tricks_known} ],
+					[ 'Rabies Due Date', $self->{data}{rabies_due_date} ],
+				],
+				# you can add another column if you like
+			],
+			# to include text below the columns
+			'text_blocks' => [
+				[ 'Description', $self->{data}{description}],
+			],
+		},
+		# the second tab would be a table of Ginger's magical abilities
+		2 => {
+			'type' => 'table',
+			'data' => [
+				# the first row is the headings for the table
+				[ 'Ability Name','Last Used','Is Lethal'],
+			],
+		},
+		# the third table is a set of text blocks, with the example being legendary stories of ginger
+		# i will spare you the example of loading these up, since the below example for the table
+		# will suffice.
+		3 => {
+			'type' => 'text_blocks',
+			'data' => [
+				['Story Title One','A great story about Ginger goes here.'],
+				['Story Title Two','Another great story about Ginger goes here.'],
+				# Note: I could have put 1,000 real legendary stories of Ginger here, but
+				# it's hard to choose the best 1,000, so I will go with two placeholder examples.
+			],
+		},
+	};
+	
+	# how we would load up her magical powers
+	$magical_powers = $self->{luggage}{object_factory}->omniclass_object(
+		'dt' => 'ginger_powers',
+		'tool_and_instance' => $self->{tool_and_instance},
+		'search_options' => [
+			{ 'parent' => $self->{parent_string} } # having the current record as the parent
+		]
+	);
+	
+	# if we found some powers, add them to our table
+	if ($magical_powers->{search_found_count}) {
+		foreach $doc (@{ $document_object->{records_keys} }) {
+			push(@{ $$details_hash{tabs}{2}{data} }, [
+				$magical_powers->{records}{$doc}{name},
+				$magical_powers->{records}{$doc}{last_used},
+				$magical_powers->{records}{$doc}{is_lethal},
+			]);
+		}
+	} else { # delete the tab
+		$$details_hash{tabs}{2}{data}[0] = [];
+	}	
+	
+	# return the detalls hash
+	return $details_hash;
+
+}
+
+
 # example of a method which would be called from the background_task_manager via
 # do_task() to do some work in the background
 sub example_background_task {
