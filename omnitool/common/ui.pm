@@ -95,6 +95,13 @@ sub skeleton_html {
 	# append the suffix if it does not have one
 	$file .= '.tt' if $file !~ /\.([a-z]+)/i;
 
+	# fix up the ui template options (set at the Application in OT Admin)
+	$self->{luggage}{session}{app_instance_info}{ui_navigation_placement} ||= 'Left Side';
+	$self->{luggage}{session}{app_instance_info}{ui_ace_skin} ||= 'no-skin';
+	# fix the pretty option they may have chose
+	$self->{luggage}{session}{app_instance_info}{ui_ace_skin} = lc($self->{luggage}{session}{app_instance_info}{ui_ace_skin});
+	$self->{luggage}{session}{app_instance_info}{ui_ace_skin} =~ s/ /-/g;
+
 	# it will be a template toolkit file, which should be process and shipped ASAP:
 	$self->{luggage}{belt}->template_process(
 		'template_file' => $file,

@@ -188,14 +188,16 @@
 
 	</head>
 
-	[%# ot admininistration has a harsher skin %]
-	[% IF session.app_instance_info.app_code_directory == 'otadmin' %]
-		[% SET body_skin = 'skin-1' %]
-	[% ELSE %]
-		[% SET body_skin = 'no-skin' %]
+	[%# make double sure there is a setting for skin and sidebar placement %]
+	[% IF session.app_instance_info.ui_navigation_placement == '' %]
+		[% SET session.app_instance_info.ui_navigation_placement = 'Left Side' %]
 	[% END %]
 
-	<body class="[%body_skin%]">
+	[% IF session.app_instance_info.ui_ace_skin == '' %]
+		[% SET session.app_instance_info.ui_ace_skin = 'no-skin' %]
+	[% END %]
+
+	<body class="[%session.app_instance_info.ui_ace_skin%]">
 		<!-- #section:basics/navbar.layout -->
 		<div id="navbar" class="navbar navbar-default navbar-fixed-top">
 			<script type="text/javascript">
@@ -324,8 +326,11 @@
 			</script>
 
 			<!-- #section:basics/sidebar.horizontal -->
-			<!-- for top menu: h-sidebar navbar-collapse collapse -->
-			<div id="sidebar" class="sidebar sidebar-fixed responsive">
+			[% IF session.app_instance_info.ui_navigation_placement == 'Top' %]
+				<div id="sidebar" class="sidebar h-sidebar sidebar-fixed responsive">
+			[% ELSE %]
+				<div id="sidebar" class="sidebar sidebar-fixed responsive">
+			[% END %]		
 
 				<!--
 				<script type="text/javascript">

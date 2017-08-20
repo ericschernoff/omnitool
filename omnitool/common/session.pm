@@ -16,7 +16,7 @@ use strict;
 sub new {
 	my $class = shift;
 
-	my ($required_access_roles, $appinst, $access_role, $instance_id, $access_role_id, $correct_db, $app_instance_info, $appinst_keys, $application_id, $now, $ready_session, $self, $session_code, $their_name, $hard_set_access_roles, %args, $app_code_directory, $class_name);
+	my ($required_access_roles, $appinst, $access_role, $instance_id, $access_role_id, $correct_db, $app_instance_info, $appinst_keys, $application_id, $instance_id, $now, $ready_session, $self, $session_code, $their_name, $hard_set_access_roles, %args, $app_code_directory, $class_name);
 
 	# grab args
 	(%args) = @_;
@@ -90,15 +90,17 @@ sub new {
 		($app_instance_info,$appinst_keys) = $args{db}->sql_hash(qq{
 			select concat(i.code,'_',i.server_id), concat(a.code,'_',a.server_id), i.hostname, i.database_server_id,
 			ds.hostname, i.database_name, i.contact_email, a.contact_email, a.appwide_search_function, a.appwide_search_name,
-			a.appwide_quickstart_tool_uri, i.name, i.access_roles, i.switch_into_access_roles, i.file_storage_method, i.file_location, a.ui_template,
-			i.ui_logo, a.lock_lifetime, a.app_code_directory, a.description, i.description, i.uri_base_value
+			a.appwide_quickstart_tool_uri, i.name, i.access_roles, i.switch_into_access_roles, i.file_storage_method, i.file_location, 
+			a.ui_template, a.ui_navigation_placement, a.ui_ace_skin, i.ui_logo, 
+			a.lock_lifetime, a.app_code_directory, a.description, i.description, i.uri_base_value
 			from instances i, applications a, database_servers ds
 			where i.parent=concat('1_1:',a.code,'_',a.server_id) and i.database_server_id=ds.code
 			and i.status=? and a.status=? and ds.status=? order by i.name
 		},(
 			'names' => ['application_id','hostname','database_server','database_hostname','database_name','inst_contact',
 						'app_contact','appwide_search_function','appwide_search_name','appwide_quickstart_tool_uri','inst_name',
-						'access_roles','switch_into_access_roles','file_storage_method','file_location','ui_template','ui_logo',
+						'access_roles','switch_into_access_roles','file_storage_method','file_location',
+						'ui_template','ui_navigation_placement','ui_ace_skin','ui_logo',
 						'lock_lifetime','app_code_directory','app_description','inst_description','uri_base_value'],
 			'bind_values' => ['Active','Active','Active']
 		));
@@ -109,16 +111,21 @@ sub new {
 		# instance name used to be 'application name / instance name,' but i decided the instances should be
 		# a more precise reflection of their parent applications
 
-		# isolate the application ID for the desired instnace / sanity
-		$application_id = $$app_instance_info{$args{app_instance}}{application_id};
+		# isolate the instance and application ID's for the desired instance / sanity
+		$instance_id = $args{app_instance};
+		$application_id = $$app_instance_info{$instance_id}{application_id};
 
 		# instance description overrides app description; this is just for UI
-		$$app_instance_info{$args{app_instance}}{inst_description} ||= $$app_instance_info{$args{app_instance}}{app_description};
-		$$app_instance_info{$args{app_instance}}{app_description} = ''; # keep it light and tight
+		$$app_instance_info{$instance_id}{inst_description} ||= $$app_instance_info{$instance_id}{app_description};
+		$$app_instance_info{$instance_id}{app_description} = ''; # keep it light and tight
+
+		# defaults for UI options
+		$$app_instance_info{$instance_id}{ui_navigation_placement} ||= 'Left Side';
+		$$app_instance_info{$instance_id}{ui_ace_skin} ||= 'no-skin';
 
 		# if there is no app instance found, we have a problem and need to report back upstream
 		# to get the UI class to display the no-access message
-		if (!$$app_instance_info{$args{app_instance}}{hostname}) {
+		if (!$$app_instance_info{$instance_id}{hostname}) {
 			# send the instruction to show the error screen; this exact has is used in error_no_access.tt
 			return { 'NO_APP_INSTANCE_FOUND' => 1 };
 		}
@@ -135,16 +142,16 @@ sub new {
 			'their_name' => $their_name,
 			'hard_set_access_roles' => $hard_set_access_roles,
 			'created' => time(),
-			'app_instance' => $args{app_instance},
+			'app_instance' => $instance_id,
 			'application_id' => $application_id,
-			'app_instance_info' => $$app_instance_info{$args{app_instance}}, # too lazy not to use sql_hash
+			'app_instance_info' => $$app_instance_info{$instance_id}, # too lazy not to use sql_hash
 			'all_app_instance_info' => $app_instance_info, # all of it, so object_factory is more useful, cross-app
 			'appinst_keys' => $appinst_keys,
 		}, $class;
 
 		# now we need to see if there is a 'custom_session' module for the selected instance's application
 		# now the module's name in perl-space
-		$app_code_directory = $$app_instance_info{$args{app_instance}}{app_code_directory}; # sanity
+		$app_code_directory = $$app_instance_info{$instance_id}{app_code_directory}; # sanity
 		$class_name = 'omnitool::applications::'.$app_code_directory.'::custom_session';
 
 		# try to load it in and bless myself into it to access the methods with all my data imported
