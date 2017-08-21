@@ -30,7 +30,7 @@ sub pack_luggage {
 	(%args) = @_;
 
 	# start out: note my version
-	$$luggage{omnitool_version} = '6.2';
+	$$luggage{omnitool_version} = '6.3';
 
 	# make sure we have the OTHOME envvar; default to '/export/webapps', if it exists
 	# otherwise, /opt/omnitool

@@ -45,7 +45,7 @@ CREATE TABLE `access_roles` (
 
 LOCK TABLES `access_roles` WRITE;
 /*!40000 ALTER TABLE `access_roles` DISABLE KEYS */;
-INSERT INTO `access_roles` VALUES (1,1,'top','OmniTool Admin','Reserved for system / tools administrators.  Membership is maintained via the \'omnitool_admins\' Grouper group (http://wwwin-grouper.cisco.com/cgi/Grouper.cgi)',NULL,'Active','1_1,2_1','omnitool_admins','Equals','1');
+INSERT INTO `access_roles` VALUES (1,1,'top','OmniTool Admin','Reserved for system / tools administrators.',NULL,'Active','1_1,2_1','omnitool_admins','Equals','1');
 /*!40000 ALTER TABLE `access_roles` ENABLE KEYS */;
 UNLOCK TABLES;
 
