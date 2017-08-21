@@ -547,7 +547,7 @@ sub load_from_filesystem {
 	return \$file;
 }
 
-# TODO: Load a file from the swift store
+# Load a file from the swift store
 sub load_from_swift {
 	my $self = shift;
 

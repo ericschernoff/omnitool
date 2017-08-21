@@ -46,11 +46,13 @@ sub new {
 	}
 
 	# safe to continue:  try to get the bucket for this instance
-	$bucket_name = 'omnitool_'.$args{luggage}{session}->{app_instance};
-	$the_bucket = $s3->bucket();
+	$bucket_name = 'omnitool.'.$args{luggage}{session}->{app_instance};
+	$bucket_name =~ s/_/-/g; # underscores not ok
+	$the_bucket = $s3->bucket($bucket_name);
 	if (!$the_bucket) {
 		$the_bucket = $s3->add_bucket(
 			'name' => $bucket_name,
+			'location' => '',
 		);
 	}
 
