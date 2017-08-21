@@ -238,7 +238,7 @@ sub retrieve_file {
 			$file = $self->load_from_swift($data_code,$file_info);
 
 		} elsif ($self->{file_storage_method} eq 'Amazon S3') {
-			$self->load_from_s3($data_code,$file_info);
+			$file = $self->load_from_s3($data_code,$file_info);
 
 		}
 	};
@@ -658,8 +658,9 @@ sub load_from_s3 {
     if ($@) { # if it's not there, show the error in the file and not a fatal error
 		$file = $@;
     }
-
-	return \$file;
+    
+	# it's already a memory reference
+	return $file;
 }
 
 

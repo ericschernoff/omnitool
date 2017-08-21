@@ -99,9 +99,20 @@ sub get_datatypes_hash {
 				# track all the columns in the db table for loading / saving; only for 'real' / non-virtual fields
 				$$datatypes{$dt}{all_db_columns} .= ','.$$datatypes{$dt}{fields}{$dtf}{table_column} if $$datatypes{$dt}{fields}{$dtf}{virtual_field} ne 'Yes';
 
-				# track if this datatype accepts file uploads; tells omniclass->new() to load file_manager.pm
-				$$datatypes{$dt}{has_file_upload} = 1 if $$datatypes{$dt}{fields}{$dtf}{field_type} eq 'file_upload';
-
+				# track if this datatype accepts file uploads
+				if ($$datatypes{$dt}{fields}{$dtf}{field_type} eq 'file_upload') {
+					# this tells omniclass->new() to load file_manager.pm
+					$$datatypes{$dt}{has_file_upload} = 1;
+					# and this builds in a virtual field for loader.pm to provide a download link
+					$$datatypes{$dt}{fields}{$dtf.'_download'} = {
+						'name' => 'Download '.$$datatypes{$dt}{fields}{$dtf}{name},
+						'virtual_field' => 'Yes',
+						'table_column' => $$datatypes{$dt}{fields}{$dtf}{table_column}.'_download',
+						'field_type' => 'file_download',
+					};
+					push(@{ $$datatypes{$dt}{fields_key} },$dtf.'_download');
+				}
+				
 				# also track encrypted text filds
 				push(@{$$datatypes{$dt}{encrypted_fields}},$dtf) if $$datatypes{$dt}{fields}{$dtf}{field_type} =~ /encrypt/;
 			}
@@ -175,11 +186,24 @@ sub get_datatype_field_names {
 	# construct the table name
 	my $table_name = $database_name.'.datatype_fields';
 
+	my ($datatype_fields_names, $datatype_fields_keys, $field);
+
 	# very nice query
-	my ($datatype_fields_names, $datatype_fields_keys);
 	($datatype_fields_names, $datatype_fields_keys) = $db->sql_hash(qq{
-		select concat(code,'_',server_id),name,virtual_field from $table_name where parent=? order by name
+		select concat(code,'_',server_id),name,virtual_field,field_type from $table_name where parent=? order by name
 	},( 'bind_values' => ['6_1:'.$datatype_id] ) );
+	
+	# need to get any 'file_download' virtual fields in there
+	foreach $field (@$datatype_fields_keys) {
+		next if $$datatype_fields_names{$field}{field_type} ne 'file_upload';
+		# add the file_download' virtual field
+		$$datatype_fields_names{$field.'_download'} = {
+			'name' => 'Download '.$$datatype_fields_names{$field}{name},
+			'virtual_field' => 'Yes',
+			'field_type' => 'file_download',
+		};
+		push(@$datatype_fields_keys,$field.'_download');					
+	}
 
 	return ($datatype_fields_names, $datatype_fields_keys);
 }
