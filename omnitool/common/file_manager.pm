@@ -853,12 +853,13 @@ Usage:
 
 	Sends out the file to the web client.
 
-The function to deliver files to the web clients is exposed via the 'fetch_uploaded_file' function
-in omnitool_routines.js, referring to the 'send_file' method in tool::center_stage along with
-omniclass::loader::send_file.  To create a link for downloading a file, your virtual field hooks
-can create a link such as:
+Something kind of nice is that OmniClass will automatically virtual fields with links to download
+uploaded files via the Web UI.  If a Datatype has a file upload field named 'dog_picture', then a 
+virtual field named 'dog_picture_download' will be created.  (So long as 'skip_hooks' is not set, 
+of course.)  
 
-	"javascript:tool_objects['".$self->{tool_and_instance}."'].fetch_uploaded_file('".$self->{metainfo}{$r}{altcode}."');"
+This is codeless; all you have to is select the Virtual Field ending in 'Download' when configure
+your Tool View Mode in the OmniTool Admin UI.
 
 Please see field_attachment_link() in omnitool/applications/my_family/datatypes/work_projects.pm for a good example.
 

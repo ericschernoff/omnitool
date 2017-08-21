@@ -983,20 +983,13 @@ directory within the code, as it shows how Tools are built.
 
 =head2 Downloading Files to the Web Client
 
-The send_file() method allows you to initiate the transfer of uploaded files to the Web client.
-These files must be associated with an OmniClass data record.  This is exposed via the
-fetch_uploaded_file() function in omnitool_routines.js, and you just need to create
-links to it in your OmniClass virtual field hooks or other HTML templates.  Create the links
-like so:
+Something kind of nice is that OmniClass will automatically virtual fields with links to download
+uploaded files via the Web UI.  If a Datatype has a file upload field named 'dog_picture', then a 
+virtual field named 'dog_picture_download' will be created.  (So long as 'skip_hooks' is not set, 
+of course.)  
 
-	"javascript:tool_objects['".$self->{tool_and_instance}."'].fetch_uploaded_file('".$self->{metainfo}{$r}{altcode}."');"
-
-	Or to specify a field holding the uploaded file:
-
-	"javascript:tool_objects['".$self->{tool_and_instance}."'].fetch_uploaded_file('".$self->{metainfo}{$r}{altcode}."','".$some_field."');"
-
-These are placed in the 'uri' value for your Virtual Field's hash, as shown unde 'Creating
-Virtual OmniClass Fields for Rich Display' above.
+This is codeless; all you have to is select the Virtual Field ending in 'Download' when configure
+your Tool View Mode in the OmniTool Admin UI.
 
 =head2 Refreshing One Search Result
 
