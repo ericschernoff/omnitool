@@ -25,6 +25,10 @@ use omnitool::common::swiftstack_client;
 # that's my hacked cisco version.  in the normal world, one would have:
 # use Net::OpenStack::Swift;
 
+# for saving/loading files via amazon s3
+use omnitool::common::aws_s3_client;
+# that uses AWS::S3 on CPAN
+
 # set myself up:  need the %$luggage and alternatively a $db object
 sub new {
 	my $class = shift;
@@ -61,7 +65,8 @@ sub new {
 	# first the method
 	$self->{file_storage_method} = $self->{luggage}{session}{app_instance_info}{file_storage_method};
 
-	# the location is encrypted because if the method is 'swift,' the credentials will be in there
+	# the location is encrypted because if the method is 'Swift Store' or 'Amazon S3',
+	# the credentials will be in there
 	$self->{file_location} = $self->{db}->decrypt_string( $self->{luggage}{session}{app_instance_info}{file_location}, '127_1' );
 
 	# if swift store, break out the credentials and set up the client object
@@ -73,6 +78,15 @@ sub new {
 			'auth_url' => $auth_url,
 			'username' => $username,
 			'password' => $password,
+		);
+	# same treatment for the amazon s3 method
+	} elsif ($self->{file_storage_method} eq 'Amazon S3') {
+		 my ($access_key_id, $secret_access_key) = split /\:/, $self->{file_location};
+
+		$self->{s3} = omnitool::common::aws_s3_client->new(
+			'luggage' => $self->{luggage},
+			'access_key_id' => $access_key_id, 
+			'secret_access_key' => $secret_access_key, 
 		);
 	}
 
@@ -185,6 +199,9 @@ sub store_file {
 	} elsif ($self->{file_storage_method} eq 'Swift Store') {
 		$self->save_to_swift($file,$data_code,$suffix,$location);
 
+	} elsif ($self->{file_storage_method} eq 'Amazon S3') {
+		$self->save_to_s3($file,$data_code,$suffix,$location);
+
 	}
 
 	# return the new data_code from stored_files
@@ -219,6 +236,10 @@ sub retrieve_file {
 	
 		} elsif ($self->{file_storage_method} eq 'Swift Store') {
 			$file = $self->load_from_swift($data_code,$file_info);
+
+		} elsif ($self->{file_storage_method} eq 'Amazon S3') {
+			$self->load_from_s3($data_code,$file_info);
+
 		}
 	};
 	if ($@) { # there was an error: put that into the file contents
@@ -263,6 +284,10 @@ sub remove_file {
 
 	} elsif ($self->{file_storage_method} eq 'Swift Store') {
 		$result = $self->remove_from_swift($data_code,$file_info);
+
+	} elsif ($self->{file_storage_method} eq 'Amazon S3') {
+		$self->remove_from_s3($data_code,$file_info);
+
 	}
 
 	# remove from the database if they want that
@@ -485,7 +510,7 @@ sub save_to_filesystem {
 	# and that's it ;)
 }
 
-# TODO: method to save a retrieved/uploaded/provided file into a swift store
+# method to save a retrieved/uploaded/provided file into a swift store
 # based on the instance's configuration
 sub save_to_swift {
 	my $self = shift;
@@ -511,6 +536,31 @@ sub save_to_swift {
 
 	# now upload it to swift
 	my $headers = $self->{swift_object}->put_object($location, $data_code.'.'.$suffix, $file);
+
+	# and that's it ;)
+
+}
+
+# method to save a file into Amazon S3
+sub save_to_s3 {
+	my $self = shift;
+	# arguments are: (1) the memory reference to the file contents,
+	# (2) the data_code for the file in the 'stored_files' table,
+	# (3) the suffix / extension for the file and (4) the sub-location/sub-directory
+	# for the file to be saved into
+	my ($file,$data_code,$suffix,$location) = @_;
+
+	# all of those are required
+	if (!$file || !$data_code || !$suffix || !$location) {
+		$self->{luggage}{belt}->logger("ERROR: All four arguments required for save_to_swift().",$self->{logtype});
+		return;
+	}
+
+	# have to fix the location
+	$location =~ s/_/-/g;
+
+	# pretty easy ;)
+	my $result = $self->{s3}->put_file($location,$data_code.'.'.$suffix, $file);
 
 	# and that's it ;)
 
@@ -578,6 +628,41 @@ sub load_from_swift {
 	return \$file;
 }
 
+# Load a file from Amazon S3
+sub load_from_s3 {
+	my $self = shift;
+
+	# required argument is the primary key / data_code from the stored_files table
+	# optional is to provide the %$file_info hash from load_file_info()
+	my ($data_code, $file_info) = @_;
+
+	# first arg is required
+	if (!$data_code) {
+		$self->{luggage}{belt}->logger("ERROR: A 'data_code' argument is required for retrieve_file().",$self->{logtype});
+		return;
+	}
+
+	# if file-info was not provied, grab the file information from the DB
+	if (!$$file_info{updated}) {
+		$file_info = $self->load_file_info($data_code);
+	}
+
+	# no underscores in the location
+	$$file_info{location} =~ s/_/-/g;
+
+	# pull it from amazon s3
+	my ($file);
+	eval {
+		$file = $self->{s3}->get_file($$file_info{location}, $$file_info{object_name});
+    };
+    if ($@) { # if it's not there, show the error in the file and not a fatal error
+		$file = $@;
+    }
+
+	return \$file;
+}
+
+
 # method to delete a file from our file system
 sub remove_from_filesystem {
 	my $self = shift;
@@ -625,6 +710,36 @@ sub remove_from_swift {
 	# remove from swift store - carefully
 	eval {
 		my $headers = $self->{swift_object}->delete_object($$file_info{location}, $$file_info{object_name} );
+	};
+
+	return 1;
+}
+
+# method to delete a file from Amazon S3
+sub remove_from_s3 {
+	my $self = shift;
+
+	# required argument is the primary key / data_code from the stored_files table
+	# optional is to provide the %$file_info hash from load_file_info()
+	my ($data_code, $file_info) = @_;
+
+	# first arg is required
+	if (!$data_code) {
+		$self->{luggage}{belt}->logger("ERROR: A 'data_code' argument is required for remove_from_swift().",$self->{logtype});
+		return 0;
+	}
+
+	# if file-info was not provied, grab the file information from the DB
+	if (!$$file_info{updated}) {
+		$file_info = $self->load_file_info($data_code);
+	}
+
+	# no underscores in the location
+	$$file_info{location} =~ s/_/-/g;
+
+	# remove from S3 - carefully
+	eval {
+		my $result = $self->{s3}->delete_file( $$file_info{location}, $$file_info{object_name} );
 	};
 
 	return 1;
