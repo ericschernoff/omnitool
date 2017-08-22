@@ -241,8 +241,8 @@ sub database_is_ready {
 	$dt_table_name = $self->{table_name};
 	$dt_id = $self->{dt}; # datatype data_code too
 
-	# short-circuit for now
-	return;
+	# if we don't have that otadmin_instance_name for any reason, we back off of this
+	return if !$self->{luggage}{otadmin_instance_hostname};
 
 	# only once per execution run
 	return if $self->{luggage}{database_ready_checks}{$dt_id} == 1;
