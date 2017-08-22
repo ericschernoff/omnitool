@@ -292,8 +292,9 @@ sub pack_luggage {
 	$$luggage{instance_name} = $$luggage{session}->{app_instance_info}{inst_name};
 	# also stash the hostname of the otadmin instance for this app, for the automatic table_maker functions
 	($$luggage{otadmin_instance_hostname}) = $$luggage{db}->quick_select(qq{
-		select hostname from omnitool.instances where database_name=?
-	},[ $$luggage{omnitool_admin_database} ] );
+		select i.hostname from omnitool.instances i, omnitool.database_servers ds
+		where i.database_name=? and ds.hostname=? and i.database_server_id=ds.code
+	},[ $$luggage{omnitool_admin_database}, $$luggage{database_hostname} ] );
 
 	# step eleven: it is possible that the DB server we connected to above is not the database server for this
 	# application instance. We should be accessing the instance via the Apache host who has this
