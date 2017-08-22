@@ -47,6 +47,9 @@ sub new {
 		}
 	}
 
+	print "The hostname is $hostname | $ENV{DATABASE_SERVER}\n";
+	exit;
+
 	# the theory goes that the default database server in $ENV{DATABASE_SERVER} for this Plack server
 	# should be the default server for the application instance being served by this hostname.
 	# in some circumstances, this may not be the case, and you should either send an alternate
@@ -80,10 +83,10 @@ sub new {
 # special method to connect or re-connect to the database
 sub connect_to_database {
 	my $self = shift;
-	
+
 	# only do this if $self->{dbh} is not already a DBI object
 	return if $self->{dbh} && blessed($self->{dbh}) =~ /DBI/;
-	
+
 	my ($username, $password, $credentials, $dsn);
 
 	# allow two ways for the DB user/password to be sent
@@ -134,10 +137,10 @@ sub connect_to_database {
 # method to make sure I am alive
 sub your_birthdate {
 	my $self = shift;
-	
+
 	# make sure we are connected to the DB
 	$self->connect_to_database();
-	
+
 	# pull and return the info
 	my ($created) = $self->quick_select('select from_unixtime('. $self->{'created'}.')');
 	return $created;
