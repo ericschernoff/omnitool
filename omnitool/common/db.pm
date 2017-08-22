@@ -102,7 +102,6 @@ sub connect_to_database {
 	}
 
 	# make the connection
-	print "Connecting to ".$self->{hostname}."\n";
 	$dsn = 'DBI:mysql:database='.$self->{current_database}.';host='.$self->{hostname}.';port=3306;mysql_socket=/tmp/mysql.sock';
 	$self->{dbh} = DBI->connect($dsn, $username, $password,{ PrintError => 0, RaiseError=>0, mysql_enable_utf8=>8 });
 
