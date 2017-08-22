@@ -17,7 +17,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 
 		<!-- device icons -->
-		<link rel="shortcut icon" href="/non_ace_assets/icons/favicon.ico" type="image/x-icon" />
+		<link id="favicon" rel="shortcut icon" href="/non_ace_assets/icons/favicon.ico" type="image/x-icon" />
 		<link rel="apple-touch-icon" href="/non_ace_assets/icons/apple-touch-icon.png" />
 		<link rel="apple-touch-icon" sizes="57x57" href="/non_ace_assets/icons/apple-touch-icon-57x57.png" />
 		<link rel="apple-touch-icon" sizes="72x72" href="/non_ace_assets/icons/apple-touch-icon-72x72.png" />
@@ -330,7 +330,7 @@
 				<div id="sidebar" class="sidebar h-sidebar sidebar-fixed responsive">
 			[% ELSE %]
 				<div id="sidebar" class="sidebar sidebar-fixed responsive">
-			[% END %]		
+			[% END %]
 
 				<!--
 				<script type="text/javascript">
