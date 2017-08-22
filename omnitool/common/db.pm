@@ -47,9 +47,6 @@ sub new {
 		}
 	}
 
-	print "The hostname is $hostname | $ENV{DATABASE_SERVER}\n";
-	exit;
-
 	# the theory goes that the default database server in $ENV{DATABASE_SERVER} for this Plack server
 	# should be the default server for the application instance being served by this hostname.
 	# in some circumstances, this may not be the case, and you should either send an alternate
