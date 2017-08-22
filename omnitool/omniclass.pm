@@ -253,6 +253,7 @@ sub database_is_ready {
 		'luggage' => omnitool::common::luggage::pack_luggage(
 			'username' => $self->{luggage}{username},
 			'hostname' => $self->{luggage}{otadmin_instance_hostname},
+			'force' => 1, # only place we should use this
 		),
 		'app_instance' => $self->{luggage}{app_instance},
 	);
