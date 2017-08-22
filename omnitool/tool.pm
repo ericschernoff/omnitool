@@ -984,9 +984,9 @@ directory within the code, as it shows how Tools are built.
 =head2 Downloading Files to the Web Client
 
 Something kind of nice is that OmniClass will automatically virtual fields with links to download
-uploaded files via the Web UI.  If a Datatype has a file upload field named 'dog_picture', then a 
-virtual field named 'dog_picture_download' will be created.  (So long as 'skip_hooks' is not set, 
-of course.)  
+uploaded files via the Web UI.  If a Datatype has a file upload field named 'dog_picture', then a
+virtual field named 'dog_picture_download' will be created.  (So long as 'skip_hooks' is not set,
+of course.)
 
 This is codeless; all you have to is select the Virtual Field ending in 'Download' when configure
 your Tool View Mode in the OmniTool Admin UI.

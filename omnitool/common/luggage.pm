@@ -169,7 +169,7 @@ sub pack_luggage {
 				$otadmin_db.'.instances where hostname=? or uri_base_value=?',
 				[$$luggage{hostname}, $uri_base]
 			);
-			
+
 			# if it was found, remember the DB name and update otstatedata.hostname_info_cache
 			# for next time and break loop
 			if ($$luggage{app_instance}) {
@@ -198,10 +198,10 @@ sub pack_luggage {
 
 	# step six: do a kanipshin if we don't have the hostname or the app_instance
 	if (!$$luggage{app_instance}) {
-		
+
 		# see if there is a public instance we can send them to
 		($found_hostname) = $$luggage{db}->quick_select(qq{
-			select hostname from otstatedata.hostname_info_cache 
+			select hostname from otstatedata.hostname_info_cache
 			where public_mode='Yes'
 		});
 		# found one and in web mode? then redirect

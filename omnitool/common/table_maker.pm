@@ -484,8 +484,8 @@ Generally, this class is used from the 'Setup MySQL Tables' action under 'Manage
 OmniTool Administration UI.  The Tool.pm sub-class which drives that is at
 omnitool::applications::otadmin::tools::make_tables .
 
-Fun Update: In omniclass->new(), we shall call omniclass->database_is_ready(), which works with 
-table_maker.pm to make sure the Datatype table exists and has all the needed columns -- and create 
+Fun Update: In omniclass->new(), we shall call omniclass->database_is_ready(), which works with
+table_maker.pm to make sure the Datatype table exists and has all the needed columns -- and create
 the table/columns as needed. This is very convenient for changing your Datatypes on the fly.  That will
 reduce your trips into 'Setup MySQL Tables' under 'Manage Instances.'
 
