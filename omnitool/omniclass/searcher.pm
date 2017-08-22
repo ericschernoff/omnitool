@@ -117,8 +117,8 @@ sub search {
 				push(@bind_values,$self->{dt}.':%');
 				# note: you wouldn't pull the parent from metainfo, so the above 'extra_logic' is not needed here
 
-			# translate 'data_code' to it's true meaning
-			} elsif ($$so{relationship_column} eq 'data_code') {
+			# translate 'data_code' to it's true meaning (but not for metainfo)
+			} elsif ($$so{relationship_column} eq 'data_code' && $$so{table_name} !~ /metainfo/) {
 				$$so{relationship_column} = qq{concat(code,'_',server_id)};
 			}
 
