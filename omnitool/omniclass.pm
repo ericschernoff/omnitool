@@ -241,6 +241,9 @@ sub database_is_ready {
 	$dt_table_name = $self->{table_name};
 	$dt_id = $self->{dt}; # datatype data_code too
 
+	# short-circuit for now
+	return;
+
 	# only once per execution run
 	return if $self->{luggage}{database_ready_checks}{$dt_id} == 1;
 
