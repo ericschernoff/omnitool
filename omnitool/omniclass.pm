@@ -199,7 +199,7 @@ sub change_options {
 
 	# only thing is we may need a new db object for that save_to_server ID
 	if ($args{save_to_server} && $self->{db}->{server_id} ne $args{save_to_server}) { # have to replace it
-		($new_hostname) = $self->{db}->do_sql(qq{select hostname from omnitool(_*).database_servers where server_id=?},[$args{save_to_server}]);
+		($new_hostname) = $self->{db}->quick_select(qq{select hostname from database_servers where server_id=?},[$args{save_to_server}]);
 		if ($new_hostname) { # good, it's real
 			$self->{db} = omnitool::common::db->new($new_hostname);
 		} else { # if not real, default to what's in current $db object
