@@ -110,7 +110,6 @@ sub charting_json {
 			},
 		options => {}
 	};
-=cut
 
 	# have to send it out
 	return $self->{json_results};
