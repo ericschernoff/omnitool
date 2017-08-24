@@ -61,6 +61,7 @@ sub load {
 			'select data_code from '.$self->{database_name}.'.'.$self->{metainfo_table}.
 			' where the_type=?', [$self->{dt}]
 		);
+
 		# exit if none found
 		return if !$args{data_codes}[0];
 	}

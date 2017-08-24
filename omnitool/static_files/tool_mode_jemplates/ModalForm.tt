@@ -140,35 +140,43 @@
 			[% SET form.fields.$f.title = '* ' _ form.fields.$f.title %]
 		[% END %]
 
-		<div class="form-group" id="field_div_[%form.fields.$f.name%]">
-			<label class="col-sm-3 control-label no-padding-right" for="form-field-[%f%]">
-				[% IF form.fields.$f.field_error %]
-					<span class="bold red">
-						[% form.fields.$f.title %]
-						<i class="ace-icon fa fa-exclamation-circle red"></i>
-					</span>
-				[% ELSE %]
-					[% form.fields.$f.title %]
-				[% END %]
-				[% IF form.fields.$f.instructions %]
-					<span class="help-button" data-rel="popover" data-trigger="hover" data-placement="right" data-content="[%form.fields.$f.instructions%]">?</span>
-				[% END %]
-			</label>
-			<div class="col-sm-7">
-				<div class="clearfix">
-				[% SET field_type = form.fields.$f.field_type %]
-				[% PROCESS $field_type %]
-				</div>
+		[% SET field_type = form.fields.$f.field_type %]
 
-				[% IF form.fields.$f.error_instructions %]
-					<div class="space-2"></div>
-					<div class="help-block col-sm-7 bolder red">
-						[% form.fields.$f.error_instructions %]
-					</div>
-				[% END %]
-
+		[% IF field_type == 'just_text' %]
+			<div class="form-group center" id="field_div_[%form.fields.$f.name%]">
+				[% form.fields.$f.preset %]
 			</div>
-		</div>
+		[% ELSE %]
+			<div class="form-group" id="field_div_[%form.fields.$f.name%]">
+				<label class="col-sm-3 control-label no-padding-right" for="form-field-[%f%]">
+					[% IF form.fields.$f.field_error %]
+						<span class="bold red">
+							[% form.fields.$f.title %]
+							<i class="ace-icon fa fa-exclamation-circle red"></i>
+						</span>
+					[% ELSE %]
+						[% form.fields.$f.title %]
+					[% END %]
+					[% IF form.fields.$f.instructions %]
+						<span class="help-button" data-rel="popover" data-trigger="hover" data-placement="right" data-content="[%form.fields.$f.instructions%]">?</span>
+					[% END %]
+				</label>
+				<div class="col-sm-7">
+					<div class="clearfix">
+
+					[% PROCESS $field_type %]
+					</div>
+
+					[% IF form.fields.$f.error_instructions %]
+						<div class="space-2"></div>
+						<div class="help-block col-sm-7 bolder red">
+							[% form.fields.$f.error_instructions %]
+						</div>
+					[% END %]
+
+				</div>
+			</div>
+		[% END %]
 	[% END %]
 
 	<div class="clearfix form-actions">
