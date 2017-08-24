@@ -91,11 +91,11 @@
 			[% SET field_type = form.fields.$f.field_type %]
 
 			[% IF field_type == 'just_text' %]
-				<div class="form-group center" id="field_div_[%form.fields.$f.name%]">
+				<div class="form-group center [% form.fields.$f.class %]" id="field_div_[%form.fields.$f.name%]">
 					[% form.fields.$f.preset %]
 				</div>
 			[% ELSE %]
-				<div class="form-group" id="field_div_[%form.fields.$f.name%]">
+				<div class="form-group [% form.fields.$f.class %]" id="field_div_[%form.fields.$f.name%]">
 					<label class="col-sm-3 control-label no-padding-right" for="form-field-[%f%]">
 						[% IF form.fields.$f.field_error %]
 							<span class="bold red">

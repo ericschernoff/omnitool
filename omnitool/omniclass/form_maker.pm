@@ -479,6 +479,7 @@ Note: You do NOT have to use numbers for your field keys.
 			2 => {
 				'title' => 'Is Ginger Wonderful?',
 				'name' => 'is_ginger_wonderful',
+				'class' => 'some_css_class', # for modal and full-screen forms only
 				'preset' => 'Yes',
 				'field_type' => 'yes_no_select',
 				'instructions' => 'I hope it appears',
