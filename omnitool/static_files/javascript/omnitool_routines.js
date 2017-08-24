@@ -409,6 +409,8 @@ function post_data_fetch_operations (data) {
 	// if the current tool view mode wants to display a chart above the tool results, call render_tool_chart()
 	if (data.display_a_chart != undefined) {
 		render_tool_chart(data.the_tool_id);
+	} else { // otherwise, make sure any charts are hidden
+		$("div[id^='chartarea_']").hide();
 	}
 
 	// bind column-sorting to column headings
