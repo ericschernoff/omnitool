@@ -41,7 +41,7 @@
 	[* first_field = included_records_fields.shift *]
 	[* first_field_name = included_field_names.shift *]
 
-	<div class="col-xs-4 col-md-3 widget-container-col">
+	<div class="col-xs-6 widget-container-col">
 	<div class="widget-box">
 		<div class="widget-header">
 			<h5 class="widget-title">[% records.$record_key.[*first_field*] %]</h5>
