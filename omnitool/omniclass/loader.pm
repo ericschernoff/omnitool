@@ -92,6 +92,7 @@ sub load {
 		$load_column_list = ','.$load_column_list;
 	}
 
+
 	# build a nice sql query for grabbing the records from our main table
 	# pull our main data
 	($records,$r_keys) = $self->{db}->sql_hash(
@@ -183,22 +184,19 @@ sub load {
 			# if it's a file-upload, we build out the virtual field right here
 			# see the virtual field shoe-horning in datatype_hash.pm
 			if ($method =~ /_download/ && $self->{datatype_info}{fields}{$field}{field_type} eq 'file_download') {
-				
+
 				# get the field name for the actual file upload field
 				($file_upload_field = $table_column) =~ s/_download//;
-				
+
 				# and now call our virtual hook to get those links
 				$self->download_virtual_field($file_upload_field);
-			
+
 			# otherwise, it's a pure hook method
 			} elsif ($self->can($method)) {
 				$self->$method($args_ref);
 			}
 		}
-		
-		# for any 'file_upload' columns, auto-create a 
-		#	
-		
+
 	}
 
 
@@ -442,35 +440,35 @@ sub send_file {
 # this is called from around line 185 above
 sub download_virtual_field {
 	my $self = shift;
-	
+
 	# needs the column for the actual file upload field
 	my ($table_column) = @_;
-	
+
 	return if !$table_column;
-	
+
 	my ($r, $attachment_info);
-	
+
 	# go through each loaded record
 	foreach $r (@{$self->{records_keys}}) {
-		# if this field is null, no need to add a link			
+		# if this field is null, no need to add a link
 		if (!$self->{records}{$r}{$table_column}) {
 			$self->{records}{$r}{$table_column.'_download'} = 'N/A';
 			next;
 		}
-		
+
 		# if the attachment is not there, also short-circuit
 		$attachment_info = $self->{file_manager}->load_file_info( $self->{records}{$r}{$table_column} );
 		if (!$$attachment_info{filename}) {
 			$self->{records}{$r}{$table_column.'_download'} = 'N/A';
 			next;
 		}
-		
+
 		# still here?  add in the link
 		$self->{records}{$r}{$table_column.'_download'}[0] = {
 			'text' => $$attachment_info{filename},
 			'uri' => "javascript:tool_objects['".$self->{tool_and_instance}."'].fetch_uploaded_file('".$self->{metainfo}{$r}{altcode}."','".$table_column."','".$self->{dt}."');"
 		};
-	}		
+	}
 
 	# all done, memory reference updated in place
 }

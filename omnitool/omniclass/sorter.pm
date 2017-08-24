@@ -82,7 +82,7 @@ sub complex_sort {
 
 	my ($complex_sort_list) = @_;
 
-	my ($which, $table_column, $field, $sorter, $sort_logic_string, $sort_column, $sort_column_direction_pair, $second_key, $first_key, $direction, @sort_logics);
+	my ($numeric_sort, $which, $table_column, $field, $sorter, $sort_logic_string, $sort_column, $sort_column_direction_pair, $second_key, $first_key, $direction, @sort_logics);
 
 	# can't be blank
 	return if !$$complex_sort_list[0];
@@ -115,8 +115,20 @@ sub complex_sort {
 		# virtual fields need to rely on a real DB-table column for sorting, since they are a bit of a mess
 		foreach $field (@{ $self->{datatype_info}{fields_key} }) {
 			$table_column = $self->{datatype_info}{fields}{$field}{table_column}; # sanity
-			if ($self->{datatype_info}{fields}{$field}{sort_column} && $sort_column eq $table_column) {
+
+			# only if it's this current field
+			next if $sort_column ne $table_column;
+
+			# vitual field with a defined sort column
+			if ($self->{datatype_info}{fields}{$field}{sort_column}) {
 				$sort_column = $self->{datatype_info}{fields}{$field}{sort_column};
+			}
+
+			# also, is this field a numeric type?  determines the type of sort to do below (no sense to do both)
+			if ($self->{datatype_info}{fields}{$field}{field_type} =~ /decimel|integer/) { # yes
+				$numeric_sort = 1;
+			} else {
+				$numeric_sort = 0;
 			}
 		}
 
@@ -130,8 +142,11 @@ sub complex_sort {
 		}
 
 		# let's make an array of logic; first numeric sort then fall back to alphabetic
-		push(@sort_logics,'$self->{'.$which.'}{'.$first_key.'}{'.$sort_column.'} <=> $self->{'.$which.'}{'.$second_key.'}{'.$sort_column.'}');
-		push(@sort_logics,'$self->{'.$which.'}{'.$first_key.'}{'.$sort_column.'} cmp $self->{'.$which.'}{'.$second_key.'}{'.$sort_column.'}');
+		if ($numeric_sort) { # sort numerically
+			push(@sort_logics,'$self->{'.$which.'}{'.$first_key.'}{'.$sort_column.'} <=> $self->{'.$which.'}{'.$second_key.'}{'.$sort_column.'}');
+		} else { # otherwise alphabetically
+			push(@sort_logics,'$self->{'.$which.'}{'.$first_key.'}{'.$sort_column.'} cmp $self->{'.$which.'}{'.$second_key.'}{'.$sort_column.'}');
+		}
 	}
 
 	# put that together

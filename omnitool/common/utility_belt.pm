@@ -131,6 +131,13 @@ sub datacode_query {
 
 	my ($dc, $code, $server_id, $searches, $search_logic, $bind_values);
 
+	# i found this to be MUCH faster
+	my $q_marks = $self->q_mark_list(scalar(@$data_codes));
+	return (qq{concat(code,'_',server_id) in ($q_marks)},$data_codes);
+
+	# returning back the $data_codes array for backwards compatibility (and possible forwards)
+	# old way of doing this is below
+=cut
 	foreach $dc (@{$data_codes}) {
 		($code,$server_id) = split /_/, $dc;
 		push(@$searches,qq{(code=? and server_id=?)});
@@ -148,6 +155,8 @@ sub datacode_query {
 	}
 
 	return ($search_logic,$bind_values);
+=cut
+
 }
 
 # start the dateFix subroutine, where we humanify database dates

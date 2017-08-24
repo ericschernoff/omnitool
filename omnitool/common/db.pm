@@ -591,12 +591,14 @@ sub sql_hash {
 		$self->log_errors(qq{Missing DB Connection for $sql.});
 	}
 	$sth = $self->{dbh}->prepare($sql);
+
 	# use $@values if has placeholders
 	if ($args{bind_values}[0]) {
 		$sth->execute(@{$args{bind_values}}) or $self->log_errors(qq{Error executing $sql: }.$self->{dbh}->errstr);
 	} else {
 		$sth->execute or $self->log_errors(qq{Error executing $sql: }.$self->{dbh}->errstr);
 	}
+
 	while(($key,@data)=$sth->fetchrow_array) {
 		$cnum = 0;
 		foreach $c (@{$args{names}}) {

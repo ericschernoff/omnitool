@@ -117,7 +117,27 @@
 
 			<div class="radio" style="padding-bottom: 6px">
 				<label>
-					<input [%selected%] value="[%opt%]" name="[%form.fields.$f.name%]" type="radio" class="ace radio-highligter" />
+					<input [%selected%] value="[%opt%]" name="[%form.fields.$f.name%]" type="radio" />
+					<span class="lbl"> [%form.fields.$f.options.$opt%]</span>
+				</label>
+			</div>
+		[% END %]
+	</div>
+[% END %]
+
+[%# inline / horizantial version %]
+[% BLOCK radio_inline_buttons %]
+	<div class="control-group">
+		[% FOREACH opt IN form.fields.$f.options_keys %]
+			[% IF form.fields.$f.preset == opt %]
+				[% SET selected = 'checked' %]
+			[% ELSE %]
+				[% SET selected = '' %]
+			[% END %]
+
+			<div class="radio-inline" style="padding-bottom: 6px">
+				<label>
+					<input [%selected%] value="[%opt%]" name="[%form.fields.$f.name%]" type="radio" />
 					<span class="lbl"> [%form.fields.$f.options.$opt%]</span>
 				</label>
 			</div>

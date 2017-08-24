@@ -237,6 +237,7 @@ sub search {
 
 		# alright, let's build a nice sql statement & run it too
 		# use ()'s for the primary logic and include $$so{additional_logic} in those, as it may be an 'or' value
+
 		$results = $self->{db}->list_select(
 			'select '.$$sql_query_plans{$table_key}{relationship_column}.' from '.$table_key.
 			' where '.$sql_statement_logic,
