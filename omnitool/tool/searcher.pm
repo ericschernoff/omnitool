@@ -652,7 +652,7 @@ sub charting_json {
 	}
 
 	# start with eight good colors
-	$possible_colors = ['113BA4','A4114F','11A423','6611A4','D68212','D0D423','050000','D4239E'];
+	$possible_colors = ['113BA4','A4114F','11A423','6611A4','D68212','D0D423','050000','D4239E',];
 
 	# handy site for hex color codes: http://htmlcolorcodes.com/
 
@@ -705,12 +705,28 @@ sub charting_json {
 				label => $self->{included_field_names}[0],
 				data => $the_data,
 				backgroundColor => $backgroundColors,
-				borderColor => 'rgba(157, 195, 223, 0.1)',
+				borderColor => 'rgb(75, 192, 192)',
 				lineTension => 0.1
 			}]
 		},
-		options => {},
+		options =>  {}
 	};
+
+	# certain options are for certain types of charts
+	if ($chart_type =~ /line|bar/) { # start the yaxes at 0,0
+		$self->{json_results}{options}{scales}{yAxes}[0] = {
+			ticks => {
+				beginAtZero => 1
+			}
+		};
+	}
+
+	# line charts need a bit of tweaking
+	if ($chart_type eq 'line') {
+		$self->{json_results}{data}{datasets}[0]{showLine} = 1;
+		$self->{json_results}{data}{datasets}[0]{borderWidth} = 4;
+		$self->{json_results}{data}{datasets}[0]{fill} = 0;
+	}
 
 	# have to send it out explicitly
 	return $self->{json_results};
