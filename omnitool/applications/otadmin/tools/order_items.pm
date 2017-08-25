@@ -67,6 +67,11 @@ sub generate_form {
 		# if we are working on datatypes, and this is a virtual field, indicate as such
 		if ($self->{this_omniclass_object}->{records}{$record}{virtual_field} eq 'Yes') {
 			$$form{fields}{1}{options}{$record} = 'Virtual Field: '.$$form{fields}{1}{options}{$record};
+		
+		# show tool link type
+		} elsif ($self->{this_omniclass_object}->{records}{$record}{link_type}) {
+			$$form{fields}{1}{options}{$record} = $self->{this_omniclass_object}->{records}{$record}{link_type}.': '.$$form{fields}{1}{options}{$record};
+		
 		}
 
 		push(@{ $$form{fields}{1}{options_keys} }, $record);
