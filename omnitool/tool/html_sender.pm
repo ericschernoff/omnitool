@@ -96,7 +96,7 @@ sub tool_controls {
 		# just the quick search menus, which must be single-selects
 		# limit to four quick-search menus
 		next if $self->{quick_search_menus}[3] || $self->{tool_configs}{tool_filter_menus}{$filter_menu}{display_area} ne 'Quick Search' ||
-			$self->{tool_configs}{tool_filter_menus}{$filter_menu}{menu_type} ne 'Single-Select';
+			$self->{tool_configs}{tool_filter_menus}{$filter_menu}{menu_type} !~ /Single-Select|Month Chooser/;
 
 		# add this filter menu to our 1-2 item list for the template processor
 		push(@{ $self->{quick_search_menus} },$filter_menu);
@@ -338,7 +338,7 @@ sub build_filter_menu_options {
 	my $self = shift;
 	my ($filter_menu_keys) = @_;
 
-	my ($datatype_table_name,$display_field_name,$menu_omniclass_object, $the_value, $current_selected_option, $value_key, $result, $filter_menu, $method, $name, $option, $possible_options, $this_tool_filter_menu, $value, @placeholder_values, @rest);
+	my ($datatype_table_name,$display_field_name,$menu_omniclass_object, $the_value, $current_selected_option, $value_key, $result, $filter_menu, $method, $name, $option, $possible_options, $this_tool_filter_menu, $value, @placeholder_values, @rest, $months_back, $months_forward, $month_names);
 
 	# we shall cycle thru and add the options under $self->{tool_configs}{tool_filter_menus}{$filter_menu}
 	# adding sub-keys for 'options' and 'options_keys'
@@ -353,8 +353,26 @@ sub build_filter_menu_options {
 		$this_tool_filter_menu = $self->{tool_configs}{tool_filter_menus}{$filter_menu};
 		# not sure if that helps, really
 
+		# month-chooser menu type uses utility_belt::month_name_list to generate a list 
+		# of months based on the two numbers (of months) supplied in $$this_tool_filter_menu{menu_options}
+		if ($$this_tool_filter_menu{menu_type} eq 'Month Chooser') {
+			
+			# get the months back/forward from $$this_tool_filter_menu{menu_options}
+			$$this_tool_filter_menu{menu_options} =~ s/\s//g;
+			($months_back, $months_forward) = split /,/, $$this_tool_filter_menu{menu_options};
+			# the defaults are 24 months_back and 12 months_forward
+			
+			# call to the utility-belt method to get the month names
+			$month_names = $self->{belt}->month_name_list($months_back, $months_forward);
+			
+			# and then add them in
+			foreach $option (@$month_names) {
+				push(@{ $$this_tool_filter_menu{options_keys} }, $option);
+				$$this_tool_filter_menu{options}{$option} = $option;
+			}			
+			
 		# proceed based on option definer type
-		if ($$this_tool_filter_menu{menu_options_type} eq 'Comma-Separated List') { # easiest of all
+		} elsif ($$this_tool_filter_menu{menu_options_type} eq 'Comma-Separated List') { # easiest of all
 			foreach $option (split /,/, $$this_tool_filter_menu{menu_options}) {
 				next if !length($option); # skip blanks, allowing for '0'
 				# $value = $$this_tool_filter_menu{base_uri}.$option;
@@ -420,8 +438,8 @@ sub build_filter_menu_options {
 		# for the record, I should break this up into four methods, I know.
 		# probably will do that in the future
 
-		# make sure there is any 'Any/All' option upfront - only for single selects and those who allow it
-		if ($$this_tool_filter_menu{options_keys}[0] ne 'Any' && $$this_tool_filter_menu{menu_type} eq 'Single-Select' && $$this_tool_filter_menu{support_any_all_option} ne 'No') {
+		# make sure there is any 'Any/All' option upfront - only for month choosers/single selects and those who allow it
+		if ($$this_tool_filter_menu{options_keys}[0] ne 'Any' && $$this_tool_filter_menu{menu_type} =~ /Month Chooser|Single-Select/ && $$this_tool_filter_menu{support_any_all_option} ne 'No') {
 			unshift(@{ $$this_tool_filter_menu{options_keys} },'Any');
 			$$this_tool_filter_menu{options}{Any} = 'Any/All';
 		}

@@ -92,6 +92,7 @@ sub search {
 	$self->{omniclass_object}->search(
 		'search_options' => $self->{searches},
 		'auto_load' => 1,
+		'log_search' => 1,
 		'sort_column' => $self->{display_options}{sort_column},
 		'sort_direction' => $self->{display_options}{sort_direction},
 		'limit_results' => 500, # hard limit to prevent memory issues
@@ -524,6 +525,28 @@ sub build_search {
 			if ($$this_tool_filter_menu{matches_relate_to_tool_dt} ne 'Direct') {
 				$$searches[$n]{relationship_column} = $$this_tool_filter_menu{matches_relate_to_tool_dt};
 			}
+
+		# month-chooser?  have to adjust the 'match_column' based on the target column's name
+		} elsif ($self->{display_options}{$value_key} && $$this_tool_filter_menu{menu_type} eq 'Month Chooser') {
+			
+			if ($$this_tool_filter_menu{applies_to_table_column} =~ /date/) { # YYYY-MM-DD date
+				$$searches[$n]{match_column} = 'date_format('.$$this_tool_filter_menu{applies_to_table_column}.qq{,'%M %Y')};
+			} else { # going to be a unix epoch
+				$$searches[$n]{match_column} = 'from_unixtime('.$$this_tool_filter_menu{applies_to_table_column}.qq{,'%M %Y')};
+			}
+			
+			# can only be = or != operators for this
+			if ($$searches[$n]{operator} ne '=' && $$searches[$n]{operator} ne '!=') {
+				$$searches[$n]{operator} = '=';
+			}
+			
+			# going to need this
+			$$searches[$n]{match_value} = $self->{display_options}{$value_key};
+
+			if ($$this_tool_filter_menu{matches_relate_to_tool_dt} ne 'Direct') {
+				$$searches[$n]{relationship_column} = $$this_tool_filter_menu{matches_relate_to_tool_dt};
+			}
+
 
 		# maybe just a regular menu?  proceed if there is a value
 		} elsif ($self->{display_options}{$value_key} && $$this_tool_filter_menu{menu_type} =~ /Select|Keyword Tags/) {
