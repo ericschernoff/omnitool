@@ -129,13 +129,10 @@ sub datacode_query {
 
 	return '' if !$$data_codes[0]; # stop if empty
 
-	# i found this to be MUCH faster
+	# this way might be faster, although it doesn't make any sense
 	my $q_marks = $self->q_mark_list(scalar(@$data_codes));
 	return (qq{concat(code,'_',server_id) in ($q_marks)},$data_codes);
-	
-	# returning back the $data_codes array for backwards compatibility (and possible forwards)
-	# old way of doing this is below
-=cut
+
 	my ($dc, $code, $server_id, $searches, $search_logic, $q_marks, $bind_values);
 
 	foreach $dc (@{$data_codes}) {
@@ -155,7 +152,6 @@ sub datacode_query {
 	}
 
 	return ($search_logic,$bind_values);
-=cut
 
 }
 

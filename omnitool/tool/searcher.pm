@@ -185,6 +185,7 @@ sub search {
 	if ($self->can('json_results_modify')) {
 		$self->json_results_modify();
 	}
+	
 }
 
 # if we are refreshing one record in our results list, we may need to load a single, specific result
