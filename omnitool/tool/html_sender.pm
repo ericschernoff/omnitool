@@ -225,9 +225,8 @@ sub advanced_search_form {
 		}
 
 		# field type is based off 'menu type' option
-		# seems like the 'chosen' menus don't work too well, so let's go with plain for now
 		if ($$tool_filter_menu{menu_type} eq 'Single-Select') {
-			$form_field_type = 'single_select_plain';
+			$form_field_type = 'single_select';
 		} elsif ($$tool_filter_menu{menu_type} eq 'Multi-Select') {
 			$form_field_type = 'advanced_search_multi_select';
 
