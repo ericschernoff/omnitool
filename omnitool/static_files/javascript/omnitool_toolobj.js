@@ -431,8 +431,10 @@ function Tool (tool_attributes) {
 	// function to support allowing one menu to trigger another, sending the source menu's value
 	// created for the 'advanced search' form, and expanded to other uses
 	this.trigger_menu = function(trigger_menu,source_value,method_name,alternative_field_div) {
+		
+		var trigger_menu_param = trigger_menu.replace('quick_','');
 		var post_data_object = {
-			target_menu_id: trigger_menu,
+			target_menu_id: trigger_menu_param,
 			source_value: source_value
 		};
 
@@ -464,13 +466,15 @@ function Tool (tool_attributes) {
 				}
 
 				// if this is a chosen menu, update it
-				if ( $("#"+trigger_menu).hasClass('chosen-select')) {
+				if ( $("#"+trigger_menu).hasClass('chosen-select') || $("#"+trigger_menu).hasClass('tool-search-menu')) {
 					$("#"+trigger_menu).trigger("chosen:updated");
 				}
 
 				// if this target menu triggers another menu (i.e. three menus in a chain), call that
 				// change routine to reset the next menu's options
-				$("#"+trigger_menu).change();
+				if (!($("#"+trigger_menu).hasClass('tool-search-menu'))) {
+					$("#"+trigger_menu).change();
+				}
 
 			// if it's not for the advanced search and there are no options, re-hide the menu
 			} else if (method_name != 'advanced_search_trigger_menu_options') {
@@ -501,47 +505,12 @@ function Tool (tool_attributes) {
 		} else if (form_id.match('advanced')) {
 			// close the advanced search/sort modal, as we are pushing the search logic to the display
 			$("#system_modal").modal('hide');
-
-			// we need to update the quick search menus to reflect any new options
-			// yes, the tool area should be a jemplate
-			$('#'+form_id).find(':input').each(function(){
-				 if (this.name.match('menu_')) {
-				 	var new_id = this.name.replace('menu_','menu_link_');
-				 	if ( $('#'+new_id).length ) {
-				 		// get the current prefix
-				 		// var button_parts = $('#'+new_id).text().split(': '); //button_parts[0]  +
-						// then update with the new option text
-				 		$('#'+new_id).text(': '  + this.options[this.selectedIndex].innerHTML );
-				 	}
-
-					// if they cleared out a multi-select, make sure it goes blank
-				 	if (this.attributes['multiple'] != undefined && this.value == '') {
-				 		this.value='DO_CLEAR';
-				 	}
-
-				 // if they specified a new or blank quick-search keyword, show that in the quick search area
-				 } else if (this.name.match('quick_')) {
-				 	if (this.value == '') { // be sure to clear it out (but not reload)
-				 		tool_objects[this_tool_id].clear_quick_keyword(1);
-				 		this.value = 'DO_CLEAR';
-
-				 	} else { // place this into the quick search form
-					 	$('#quick_keyword_' + this_tool_id).val(this.value);
-					 	// provide the button
-					 	$('#clear_quick_search_button_'+this_tool_id).show();
-					}
-
-				 // we need to make sure that if they clear out any text fields,
-				 // those blanks take hold; these include keywords & date-ranges
-				 } else if (this.name.match('start|end|keyword') && this.value == '') {
-				 	this.value='DO_CLEAR';
-				 }
-			});
-			// $('#[%this_menu_link%]').text('[% tool_configs.tool_filter_menus.$search_menu.name %]: '+this.innerHTML)
 		}
 
 		// have this expost for use in the nested function below
 		var this_tool_display_div = this['tool_display_div'];
+		var this_tool_uri = this['tool_uri'];
+		
 		// submit the form and send the results data back into our display area's jemplate
 		loading_modal_display('Submitting Form...');
 
@@ -574,12 +543,29 @@ function Tool (tool_attributes) {
 				if (json_data.show_gritter_notice) { // was successful, just pop it up and load the previous tool
 					create_gritter_notice(json_data);
 					location.hash = json_data.return_link_uri;
+					loading_modal_display('hide');
 
 				} else { // omnitool wants you to see the form again, or maybe this is a multiple part form?
-					jemplate_bindings[ this_tool_display_div ].process_json_data(json_data);
+					if (form_id.match('advanced')) { // reload the tools controls
+						// postpone the post_data_fetch_operations function
+						json_data.skip_post_data_ops = 1;
+						// process the results
+						jemplate_bindings[ this_tool_display_div ].process_json_data(json_data);
+						// call in the new tools controls
+						$.when( query_tool(this_tool_uri + '/send_tool_controls',{}) ).done(function(tool_controls_html) {
+							// load them in
+							$('#tool_controls_'+this_tool_id).html(tool_controls_html);
+							// and now call post_data_fetch_operations()
+							post_data_fetch_operations(json_data);
+							loading_modal_display('hide');
+						});
+					
+					// regular display of results in the screen
+					} else {
+						jemplate_bindings[ this_tool_display_div ].process_json_data(json_data);
+						loading_modal_display('hide');			
+					}
 				}
-
-				loading_modal_display('hide');
 			}
 		});
 	}

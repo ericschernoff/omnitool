@@ -14,7 +14,10 @@ use strict;
 sub send_html {
 	my $self = shift;
 
-	my ($tool_datacode, $tool_html);
+	# this will be filled if they called the 'send_tool_controls' uri
+	my ($template) = @_;
+	# default use case is the whole tools area
+	$template ||= 'tool_area_skeleton.tt'; 
 
 	# allow for a hook prior to the tools_controls, namely to augment $self->{attributes}{description}
 	if ($self->can('pre_tool_controls')) {
@@ -26,12 +29,20 @@ sub send_html {
 
 	# we will rely on $OTHOME/code/omnitool/static_files/tool_area_skeleton.tt
 	my $tool_html = $self->{belt}->template_process(
-		'template_file' => 'tool_area_skeleton.tt',
+		'template_file' => $template,
 		'template_vars' => $self,
 	);
 
 	# send back; dispatcher.pm will throw to mr_zebra(), who will send out as html
 	return $tool_html;
+}
+
+# companion method to send only the tools_controls HTML, i.e. for an advanced search submit
+sub send_tool_controls {
+	my $self = shift;
+
+	# don't repeat yourself ;->
+	return $self->send_html('tool_controls.tt');
 }
 
 # subroutine to send the breadcrumbs information

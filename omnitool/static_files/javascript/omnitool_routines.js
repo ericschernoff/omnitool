@@ -213,7 +213,7 @@ function jemplate_binding (element_id, jemplate_uri, jemplate_name, json_data_ur
 			Jemplate.process(this.jemplate_name, json_data, this.element_id);
 			// we also need to call 'post_data_fetch_operations()' with this JSON
 			// data, as it may contain post-jemplate behavior instructions
-			if (json_data.one_record_mode == undefined) { // but not in one-data mode, as that's just very minimal JSON
+			if (json_data.one_record_mode == undefined && json_data.skip_post_data_ops == undefined) { // but not in one-data mode, as that's just very minimal JSON
 				post_data_fetch_operations(json_data);
 			}
 		}
