@@ -139,8 +139,8 @@
 			*/
 
 			[class*="chosen-container"] > .chosen-single {
-				line-height: 28px;
-				height: 32px;
+				line-height: 32px;
+				height: 34px;
 				box-shadow: none;
 				background: #FAFAFA;
 			}

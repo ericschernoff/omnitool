@@ -555,6 +555,8 @@ function Tool (tool_attributes) {
 						$.when( query_tool(this_tool_uri + '/send_tool_controls',{}) ).done(function(tool_controls_html) {
 							// load them in
 							$('#tool_controls_'+this_tool_id).html(tool_controls_html);
+							// empower the tool search drop-down menus
+							$('.tool-search-menu').chosen({search_contains: true});
 							// and now call post_data_fetch_operations()
 							post_data_fetch_operations(json_data);
 							loading_modal_display('hide');
