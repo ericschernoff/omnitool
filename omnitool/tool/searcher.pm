@@ -97,8 +97,9 @@ sub search {
 		'sort_direction' => $self->{display_options}{sort_direction},
 		'limit_results' => 500, # hard limit to prevent memory issues
 	);
-
+	
 	# debug code
+	# $self->{belt}->benchmarker('Search run');
 	# $self->{belt}->logger($self->{searches},'eric');
 
 	# if they want tree-mode, give it to them

@@ -130,8 +130,10 @@ sub datacode_query {
 	return '' if !$$data_codes[0]; # stop if empty
 
 	# this way might be faster, although it doesn't make any sense
-	my $q_marks = $self->q_mark_list(scalar(@$data_codes));
-	return (qq{concat(code,'_',server_id) in ($q_marks)},$data_codes);
+	# my $q_marks = $self->q_mark_list(scalar(@$data_codes));
+	# return (qq{concat(code,'_',server_id) in ($q_marks)},$data_codes);
+
+	# this way uses the primary key:
 
 	my ($dc, $code, $server_id, $searches, $search_logic, $q_marks, $bind_values);
 
