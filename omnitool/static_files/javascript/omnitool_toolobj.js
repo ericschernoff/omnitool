@@ -116,6 +116,9 @@ function Tool (tool_attributes) {
 			$.when( query_tool(this['tool_uri'] + '/send_html',{}) ).done(function(tool_html) {
 				// this html will include all the div tags, and we can add it to the 'page-content' div
 				$("#page-content").append( tool_html );
+				
+				// empower the tool search drop-down menus
+				$('.tool-search-menu').chosen({search_contains: true});
 
 				// support keyword search - screens only
 				if (this_tool_type_short == 'screen') {
@@ -369,6 +372,16 @@ function Tool (tool_attributes) {
 			jemplate_bindings[ this_tool_display_div ].process_json_data(json_data);
 			loading_modal_display('hide');
 		});
+	}
+
+	// easy utility method to process quick action links in Tabe.tt and tool_area_skeleton.tt
+	this.quick_action_link = function(action_menu) {
+		if (action_menu.val() == 'refresh_json_data') { // allow for refresh link
+			this.refresh_json_data();
+		} else if (action_menu.val() != '') { // only if it's filled
+			location.hash = action_menu.val();
+			// may do more later on
+		}
 	}
 
 	// function support empowering auto-complete fields

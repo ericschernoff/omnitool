@@ -95,7 +95,7 @@
 				left: 35px;
 			}
 
-			/* quick search field */
+			/* quick search field
 			.quick_keyword_fields {
 				font-size: 13px;
 				padding: 4px 9px;
@@ -108,6 +108,7 @@
 				font-size: 14px !important;
 				line-height: 24px !important;
 			}
+			*/
 
 			/* for table width control */
 			.omnitool-data {
@@ -136,6 +137,13 @@
 				width: 100%!important;
 			}
 			*/
+
+			[class*="chosen-container"] > .chosen-single {
+				line-height: 28px;
+				height: 32px;
+				box-shadow: none;
+				background: #FAFAFA;
+			}
 
 			/* hide things below 768px and 1025px */
 			@media only screen and (max-width: 768px) {

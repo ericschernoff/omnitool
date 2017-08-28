@@ -359,6 +359,9 @@ function post_data_fetch_operations (data) {
 		}
 	}
 
+	// empower any tool quick/inline actions drop-down menus
+	$('.tool-action-menu').chosen({search_contains: true});
+
 	// if their session was flushed since we last checked
 	// reload the menubar, clear the backgrounded tools,
 	// and suggest reloading the current tool

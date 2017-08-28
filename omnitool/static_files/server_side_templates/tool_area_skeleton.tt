@@ -75,7 +75,7 @@
 
 	<!-- show print button -->
 	<div class="btn-group">
-	<button class="btn btn-white btn-sm" onclick="$('#tool_display_[%tool_and_instance%]').printThis();">
+	<button class="btn btn-white" onclick="$('#tool_display_[%tool_and_instance%]').printThis();">
 		<i class="fa fa-print"></i>
 	</button>
 	</div>
@@ -84,7 +84,7 @@
 	<!-- quick actions menu goes here -->
 	[% IF quick_actions.0 && quick_actions.1 %]
 		<div class="btn-group">
-			<button data-toggle="dropdown" class="btn btn-white btn-sm dropdown-toggle">
+			<button data-toggle="dropdown" class="btn btn-white dropdown-toggle">
 				<i class="ace-icon fa fa-bolt"></i>
 				<span class="green">Quick Actions</span>
 				<i class="ace-icon fa fa-caret-down"></i>
@@ -106,7 +106,7 @@
 
 		[% SET qa = quick_actions.0 %]
 		<div class="btn-group">
-			<a href="#/tools/[%luggage.session.tools.$qa.uri_path_base%]/[%display_options.altcode%]" class="btn btn-white btn-sm" tabindex="-1">
+			<a href="#/tools/[%luggage.session.tools.$qa.uri_path_base%]/[%display_options.altcode%]" class="btn btn-white" tabindex="-1">
 				<i class="ace-icon fa [%luggage.session.tools.$qa.icon_fa_glyph%]"></i>
 				[%luggage.session.tools.$qa.button_name%]
 			</a>
@@ -122,7 +122,7 @@
 	<!-- tool mode config goes menu goes here -->
 	[% IF tool_configs_keys.tool_mode_configs.1 %]
 		<div class="btn-group">
-			<button data-toggle="dropdown" class="btn btn-white btn-sm dropdown-toggle">
+			<button data-toggle="dropdown" class="btn btn-white dropdown-toggle">
 				<i class="ace-icon fa fa-tv"></i>
 				[% SET current_mode_id = display_options.tool_mode %]
 				<span id="[%tool_and_instance%]" class="hidden-1025">[%tool_configs.tool_mode_configs.$current_mode_id.name%]</span>
@@ -144,24 +144,28 @@
 
 	[%# search-related buttons %]
 
-	[%# show up to four search menus %]
+	[%# show up to four search menus - chosen drop-down menus %]
 	[% FOREACH search_menu IN quick_search_menus %]
-		<div class="btn-group">
+		<div class="btn-group" id="field_div_[%search_menu%]">
 		<!-- quick search menu -->
 			[% SET this_menu = 'menu_' _ search_menu %]
 			[% SET this_menu_link = 'menu_link_' _ search_menu %]
-			<button data-toggle="dropdown" class="btn btn-white btn-sm dropdown-toggle">
-				<!-- <i class="ace-icon fa fa-search"></i> -->
-				[% tool_configs.tool_filter_menus.$search_menu.name %]<span id="[%this_menu_link%]" class="hidden-1025">: [% tool_configs.tool_filter_menus.$search_menu.current_selected_option_name %]</span>
-				<i class="ace-icon fa fa-caret-down"></i>
-			</button>
-			<ul class="dropdown-menu">
+			[% IF tool_configs.tool_filter_menus.$search_menu.trigger_menu %]
+				[% SET menu_onchange = "tool_objects['" _ tool_and_instance _ "'].trigger_menu('menu_" _ tool_configs.tool_filter_menus.$search_menu.trigger_menu _ "',this.options[this.selectedIndex].value);" %]
+			[% ELSE %]
+				[% SET menu_onchange = "tool_objects['" _ tool_and_instance _ "'].process_quick_search('" _ this_menu _ "',\$(this).val());" %] 
+			[% END %]
+			
+			<select style="padding: 20px;" data-placeholder="[% tool_configs.tool_filter_menus.$search_menu.name %]" class="tool-search-menu" tabindex="2" onchange="[%menu_onchange%]"> 
+				<option value="[%tool_configs.tool_filter_menus.$search_menu.options_keys.0%]">[% tool_configs.tool_filter_menus.$search_menu.name %]</option>
 				[% FOREACH option_value IN tool_configs.tool_filter_menus.$search_menu.options_keys %]
-				<li>
-					<a onclick="tool_objects['[%tool_and_instance%]'].process_quick_search('[%this_menu%]','[%option_value%]'); $('#[%this_menu_link%]').text(': '+this.innerHTML)" tabindex="-1">[%tool_configs.tool_filter_menus.$search_menu.options.$option_value%]</a>
-				</li>
+					[% IF display_options.$this_menu == option_value %]
+						<option SELECTED value="[%option_value%]">[%tool_configs.tool_filter_menus.$search_menu.options.$option_value%]</option>
+					[% ELSE %]
+						<option value="[%option_value%]">[%tool_configs.tool_filter_menus.$search_menu.options.$option_value%]</option>
+					[% END %]
 				[% END %]
-			</ul>
+			</select>
 		</div>
 	[% END %]
 
@@ -169,7 +173,7 @@
 	[% IF attributes.tool_type.match('Search') %]
 		[% IF has_advanced_search %]
 			<div class="btn-group" id="advanced_search_features">
-			<button data-toggle="dropdown" class="btn btn-white btn-sm dropdown-toggle">
+			<button data-toggle="dropdown" class="btn btn-white dropdown-toggle">
 				Adv<span class="hidden-1025">anced...</span>
 				<span class="badge badge-info" id="advanced_features_badge"></span>
 				<i class="ace-icon fa fa-caret-down"></i>
@@ -203,7 +207,7 @@
 		[% SET refresh_button_title = 'title="Search auto-runs every ' _ attributes.query_interval _ ' seconds."' %]
 	[% END %]
 
-	<button class="btn btn-white btn-sm" [%refresh_button_title%] onclick="tool_objects['[%tool_and_instance%]'].refresh_json_data()">
+	<button class="btn btn-white" [%refresh_button_title%] onclick="tool_objects['[%tool_and_instance%]'].refresh_json_data()">
 		<i class="fa fa-refresh green"></i>
 	</button>
 	</div>
@@ -211,7 +215,7 @@
 	<!-- support the 'return' links in action tools -->
 	[% IF attributes.link_type != 'Menubar' %]
 	<div class="btn-group">
-	<a class="btn btn-white btn-sm return_link" href="#" style="display: none">
+	<a class="btn btn-white return_link" href="#" style="display: none">
 		<i class="fa fa-arrow-left blue"></i>
 		Return to
 	</a>
@@ -220,13 +224,13 @@
 
 	<!-- support the 'previous / next' links in action tools -->
 	<div class="btn-group">
-	<button class="btn btn-white btn-sm previous_link" style="display: none">
+	<button class="btn btn-white previous_link" style="display: none">
 		<i class="fa fa-fast-backward blue"></i>
 		Previous
 	</button>
 	</div>
 	<div class="btn-group">
-	<button class="btn btn-white btn-sm next_link" style="display: none">
+	<button class="btn btn-white next_link" style="display: none">
 		Next
 		<i class="fa fa-fast_forward blue"></i>
 	</button>
@@ -241,7 +245,7 @@
 		</span>
 		</div>
 		<div class="btn-group" id="clear_quick_search_button_[%tool_and_instance%]">
-			<button class="btn btn-white btn-sm" onclick="tool_objects['[%tool_and_instance%]'].clear_quick_keyword()">
+			<button class="btn btn-white" onclick="tool_objects['[%tool_and_instance%]'].clear_quick_keyword()">
 				Clear
 			</button>
 		</div>

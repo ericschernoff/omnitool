@@ -90,9 +90,9 @@ sub search {
 
 	# finally, run the search
 	$self->{omniclass_object}->search(
+		# 'log_search' => 1,
 		'search_options' => $self->{searches},
 		'auto_load' => 1,
-		'log_search' => 1,
 		'sort_column' => $self->{display_options}{sort_column},
 		'sort_direction' => $self->{display_options}{sort_direction},
 		'limit_results' => 500, # hard limit to prevent memory issues

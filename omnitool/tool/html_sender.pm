@@ -283,7 +283,7 @@ sub advanced_search_form {
 			$self->{json_results}{form}{fields}{$num}{placeholder} = 'Select Options';
 
 		# if this is a single-select and they have 'triggers_other_menus' set to 'Yes,' then
-		# make the form reload when something is selected
+		# make the menu reload when something is selected
 		} elsif ($$tool_filter_menu{menu_type} eq 'Single-Select' && $$tool_filter_menu{trigger_menu} =~ /\d/) {
 			# can actually have more than one
 			foreach $trigger_menu (split /,/, $$tool_filter_menu{trigger_menu}) {

@@ -127,7 +127,26 @@
 	[* END *]
 	[% IF found_inline_actions %]
 	<td>
-		[% IF records.$record_key.inline_actions.0 %]
+		[% IF records.$record_key.inline_actions.6 %]
+			<div class="btn-group dropdown">
+				<select onchange="tool_objects['[*tool_and_instance*]'].quick_action_link($(this));" class="tool-action-menu">
+				[% IF metainfo.$record_key.lock_user %]
+					<option value="">
+						LOCKED ([%metainfo.$record_key.lock_user%])
+					</option>
+				[% ELSE %]
+					<option value="">
+						Actions
+					</option>
+				[% END %]
+				[% FOREACH action IN records.$record_key.inline_actions %]
+					<option value="[%action.uri%]">
+						[% action.button_name %]
+					</option>
+				[% END %]
+				</select>
+			</div>
+		[% ELSIF records.$record_key.inline_actions.0 %]
 			<div class="btn-group dropdown">
 			<button data-toggle="dropdown" type="button" class="btn btn-white btn-sm dropdown-toggle">
 				<i class="ace-icon fa fa-bolt"></i>
@@ -144,7 +163,7 @@
 			[% END %]
 			[% FOREACH action IN records.$record_key.inline_actions %]
 				<li>
-					<a href="[% action.uri %]" tabindex="-1">
+					<a href="[%action.uri%]" tabindex="-1">
 						<i class="ace-icon fa [% action.icon_fa_glyph %]"></i>
 						[% action.button_name %]
 					</a>
