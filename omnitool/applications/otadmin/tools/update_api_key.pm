@@ -29,12 +29,12 @@ sub generate_form {
 		},
 		'fields' => { # integer keys, easily sorted
 			1 => {
-				'title' => 'Tied to IP Address',
+				'title' => 'Tied to IP Addresses',
 				'name' => 'tied_to_ip_address',
-				'field_type' => 'short_text',
+				'field_type' => 'long_text',
 				'is_required' => 1,
 				'preset' => $self->{omniclass_object}->{data}{tied_to_ip_address},
-				'instructions' => qq{Required. IP Address of client which will be accessing the API.}
+				'instructions' => qq{Required. IP Address(es) of client which will be accessing the API.  Separate with new lines.}
 			},
 			2 => {
 				'title' => 'Status',

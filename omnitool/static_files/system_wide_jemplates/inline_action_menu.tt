@@ -21,7 +21,7 @@
 
 [% ELSIF inline_actions.4.button_name %] 
 	<!-- regular drop-down -->
-	<button data-toggle="dropdown" class="btn btn-white bolder btn-sm dropdown-toggle">
+	<button data-toggle="dropdown" class="btn btn-white bolder dropdown-toggle">
 		<i class="ace-icon fa fa-bolt"></i>
 		<span class="green">Quick Actions</span>
 		<i class="ace-icon fa fa-caret-down"></i>

@@ -216,113 +216,11 @@ sub omniclass_tree {
 			# $child_object = $parent_object->{children_objects}{$record}{$tree_datatype};
 			# $args{current_children} = $parent_object->{metainfo}{$record}{children};
 			$args{data_codes} = [];
-			# $self->omniclass_tree($parent_object->{children_objects}{$record}{$tree_datatype},%args);
+			$self->omniclass_tree($parent_object->{children_objects}{$record}{$tree_datatype},%args);
 
 		}
 	}
 	
-	
-=cut
-	# now, cycle through each tree_datatype...
-	my (%plain_objects);
-	foreach $tree_datatype (split /,/, $args{tree_datatypes}) {
-		next if !$tree_datatype; # skip blanks
-		next if !$all_children_by_type{$tree_datatype}[0]; # and if no child records were found
-		# create a new omniclass object for this datatype, loading in all records of that type which will be needed below
-		$args{dt} = $tree_datatype;
-		$args{data_codes} = [@{$all_children_by_type{$tree_datatype}}];
-		$loader_objects{$tree_datatype} = $self->omniclass_object(%args);
-
-		$parent_object->{children_objects}{$parent_data_code}{$tree_datatype} = $self->omniclass_object(%args);
-
-		# clear this out	
-		$args{data_codes} = [];
-	
-		foreach $child_data_code (@{$loader_objects{$tree_datatype}->{records_keys}}) { 
-
-			my $parent = $loader_objects{$tree_datatype}->{metainfo}{$child_data_code}{parent};
-			($parent_type,$parent_data_code) = split /:/, $parent;
-
-			if (!$parent_object->{children_objects}{$parent_data_code}{$tree_datatype}) {
-				$args{dt} = $tree_datatype;
-				$parent_object->{children_objects}{$parent_data_code}{$tree_datatype} = $self->omniclass_object('dt' => $tree_datatype);
-			}
-
-			$self->{luggage}{belt}->benchmarker($tree_datatype.'::'.$child_data_code.' II');
-
-			# now shoe-horn in the records from our mass-load above
-			$this_object = $parent_object->{children_objects}{$parent_data_code}{$tree_datatype}; # sanity
-
-			$this_object->{records}{$child_data_code} = $loader_objects{$tree_datatype}->{records}{$child_data_code};
-			$this_object->{metainfo}{$child_data_code} = $loader_objects{$tree_datatype}->{metainfo}{$child_data_code};
-			push(@{ $this_object->{records_keys} }, $child_data_code);
-
-			if (!$this_object->{data_code}) { # put in that initial one
-				$this_object->{data_code} = $child_data_code;
-				$this_object->{data} = $this_object->{records}{$child_data_code};
-				$this_object->{data}{metainfo} = $this_object->{metainfo}{$child_data_code};
-			}
-
-			# let's alias that to the name of the table, for sanity's sake when coding elsewhere
-			$child_table = $this_object->{table_name};
-			$parent_object->{children_objects}{$child_data_code}{$child_table} = $this_object;
-
-			# go recursive to get the children's objects
-			# $child_object = $parent_object->{children_objects}{$record}{$tree_datatype};
-			# $args{current_children} = $parent_object->{metainfo}{$record}{children};
-			$self->omniclass_tree($this_object,%args);
-		
-		}
-	}
-	
-
-	# make sure that $args{data_codes} is now clear so we don't attempt to load anything else
-	$args{data_codes} = [];
-
-	# now go through each record loaded in parent object under which we are tree'ing down
-	# notice that if no records are loaded in the parent object, we won't do this, which
-	# allows us to be recursive without having a 'return'
-
-	foreach $record (@{$parent_object->{records_keys}}) {
-		$self->{luggage}{belt}->benchmarker('treeing for '.$record);
-		foreach $child (split /,/, $parent_object->{metainfo}{$record}{children}) {
-			# next if $args{current_children} && ! ($self->{luggage}{belt}->really_in_list( $child, $args{current_children}) );
-
-			($child_type,$child_data_code) = split /:/, $child;
-
-			# set up the object and place it under 'children_objects', for this record and datatype
-			if (!$parent_object->{children_objects}{$record}{$child_type}) {
-				$args{dt} = $child_type;
-				$parent_object->{children_objects}{$record}{$child_type} = $self->omniclass_object(%args);
-			}
-
-			# now shoe-horn in the records from our mass-load above
-			$this_object = $parent_object->{children_objects}{$record}{$child_type}; # sanity
-
-			# make sure it's one of the current record's children
-			next if !$loader_objects{$child_type} || !$loader_objects{$child_type}->{records}{$child_data_code};
-
-			$this_object->{records}{$child_data_code} = $loader_objects{$child_type}->{records}{$child_data_code};
-			$this_object->{metainfo}{$child_data_code} = $loader_objects{$child_type}->{metainfo}{$child_data_code};
-			push(@{ $this_object->{records_keys} }, $child_data_code);
-
-			if (!$this_object->{data_code}) { # put in that initial one
-				$this_object->{data_code} = $child_data_code;
-				$this_object->{data} = $this_object->{records}{$child_data_code};
-				$this_object->{data}{metainfo} = $this_object->{metainfo}{$child_data_code};
-			}
-
-			# let's alias that to the name of the table, for sanity's sake when coding elsewhere
-			$child_table = $parent_object->{children_objects}{$record}{$child_type}->{table_name};
-			$parent_object->{children_objects}{$record}{$child_table} = $parent_object->{children_objects}{$record}{$child_type};
-
-			# go recursive to get the children's objects
-			$child_object = $parent_object->{children_objects}{$record}{$child_type};
-			# $args{current_children} = $parent_object->{metainfo}{$record}{children};
-			$self->omniclass_tree($child_object,%args);
-		}
-	}
-=cut	
 	
 }
 
