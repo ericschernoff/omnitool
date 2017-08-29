@@ -116,7 +116,7 @@ function Tool (tool_attributes) {
 			$.when( query_tool(this['tool_uri'] + '/send_html',{}) ).done(function(tool_html) {
 				// this html will include all the div tags, and we can add it to the 'page-content' div
 				$("#page-content").append( tool_html );
-				
+
 				// empower the tool search drop-down menus
 				$('.tool-search-menu').chosen({search_contains: true});
 
@@ -431,7 +431,7 @@ function Tool (tool_attributes) {
 	// function to support allowing one menu to trigger another, sending the source menu's value
 	// created for the 'advanced search' form, and expanded to other uses
 	this.trigger_menu = function(trigger_menu,source_value,method_name,alternative_field_div) {
-		
+
 		var trigger_menu_param = trigger_menu.replace('quick_','');
 		var post_data_object = {
 			target_menu_id: trigger_menu_param,
@@ -503,6 +503,17 @@ function Tool (tool_attributes) {
 
 		// advanced search/sort forms have a few special requirements
 		} else if (form_id.match('advanced')) {
+			// set any blank keywords to 'DO_CLEAR' so they get cleared
+			$(".advanced_search_keyword_texbox").each(function() {
+				if ($(this).val() == '') {
+					$(this).val('DO_CLEAR');
+				}
+			});
+			// same for the quick keyword
+			if ($('#form-field-1').val() == '') {
+				$('#form-field-1').val('DO_CLEAR');
+			}
+
 			// close the advanced search/sort modal, as we are pushing the search logic to the display
 			$("#system_modal").modal('hide');
 		}
@@ -510,7 +521,7 @@ function Tool (tool_attributes) {
 		// have this expost for use in the nested function below
 		var this_tool_display_div = this['tool_display_div'];
 		var this_tool_uri = this['tool_uri'];
-		
+
 		// submit the form and send the results data back into our display area's jemplate
 		loading_modal_display('Submitting Form...');
 
@@ -561,11 +572,11 @@ function Tool (tool_attributes) {
 							post_data_fetch_operations(json_data);
 							loading_modal_display('hide');
 						});
-					
+
 					// regular display of results in the screen
 					} else {
 						jemplate_bindings[ this_tool_display_div ].process_json_data(json_data);
-						loading_modal_display('hide');			
+						loading_modal_display('hide');
 					}
 				}
 			}

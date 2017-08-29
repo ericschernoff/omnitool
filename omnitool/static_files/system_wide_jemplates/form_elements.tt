@@ -1062,7 +1062,7 @@
 			<option [%selected%] value="[%opt%]">[%opt%]</option>
 		[% END %]
 	</select>
-	<input type="text" maxlength="30" id="form-field-[%f%]" placeholder="RegExp OK" name="[%form.fields.$f.keyword_key%]" value="[%form.fields.$f.keyword_preset%]" class="col-xs-4 input-sm" />
+	<input type="text" maxlength="30" id="form-field-[%f%]" placeholder="RegExp OK" name="[%form.fields.$f.keyword_key%]" value="[%form.fields.$f.keyword_preset%]" class="col-xs-4 input-sm advanced_search_keyword_texbox" />
 [% END %]
 
 [%# boring multi select for advanced search %]
