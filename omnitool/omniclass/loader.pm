@@ -96,6 +96,7 @@ sub load {
 
 	# build a nice sql query for grabbing the records from our main table
 	# pull our main data
+
 	($records,$r_keys) = $self->{db}->sql_hash(
 		qq{select concat(code,'_',server_id),name}.$load_column_list.qq{ from }.$self->{database_name}.
 			'.'.$self->{table_name}.' where '.$search_logic,
@@ -163,7 +164,7 @@ sub load {
 		$self->{metainfo} = $metainfo;
 		$self->{records_keys} = $r_keys;
 	}
-
+		
 	# Here is where we run the hooks to generate the virtual fields
 	# hint: anything at all can happen in one of these, so be creative;
 	if (!$self->{skip_hooks} && !$args{skip_hooks}) {
@@ -175,6 +176,7 @@ sub load {
 		}
 
 		foreach $field (@{ $self->{datatype_info}{fields_key} }) {
+
 			$table_column = $self->{datatype_info}{fields}{$field}{table_column}; # sanity
 
 			$method = 'field_'.$table_column;
@@ -190,16 +192,16 @@ sub load {
 				($file_upload_field = $table_column) =~ s/_download//;
 
 				# and now call our virtual hook to get those links
-				$self->download_virtual_field($file_upload_field);
+				# $self->download_virtual_field($file_upload_field);
 
 			# otherwise, it's a pure hook method
 			} elsif ($self->can($method)) {
 				$self->$method($args_ref);
 			}
+
 		}
-
+		
 	}
-
 
 	# do they want a complex sort?
 	if ($args{complex_sorting}[0]) {

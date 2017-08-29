@@ -20,6 +20,9 @@ use MIME::Types;
 # for determining the size of a file / scalar
 use Devel::Size qw(total_size);
 
+# for checking the status of the S3/Swift connections
+use Scalar::Util qw(blessed);
+
 # for saving/loading files via swift
 use omnitool::common::swiftstack_client;
 # that's my hacked cisco version.  in the normal world, one would have:
@@ -69,10 +72,21 @@ sub new {
 	# the credentials will be in there
 	$self->{file_location} = $self->{db}->decrypt_string( $self->{luggage}{session}{app_instance_info}{file_location}, '127_1' );
 
+	# ready to go
+	return $self;
+}
+
+# method to connect to the preferred file store
+# used when our 'file_storage_method' is 'Swift Store' or 'Amazon S3'
+sub connect_to_store {
+	my $self = shift;
+
 	# if swift store, break out the credentials and set up the client object
 	if ($self->{file_storage_method} eq 'Swift Store') {
+		# exit if we already have it
+		return if blessed($self->{swift_object}) =~ /swiftstack_client/;
+		# proceed with connection
 		my ($auth_url, $username, $password) = split /\|/, $self->{file_location};
-
 		$self->{swift_object} = omnitool::common::swiftstack_client->new(
 			'luggage' => $self->{luggage}, 
 			'auth_url' => $auth_url,
@@ -81,18 +95,20 @@ sub new {
 		);
 	# same treatment for the amazon s3 method
 	} elsif ($self->{file_storage_method} eq 'Amazon S3') {
-		 my ($access_key_id, $secret_access_key) = split /\:/, $self->{file_location};
+		# exit if we already have it
+		return if blessed($self->{swift_object}) =~ /aws_s3_client/;
 
+		# proceed with connection
+		my ($access_key_id, $secret_access_key) = split /\:/, $self->{file_location};
 		$self->{s3} = omnitool::common::aws_s3_client->new(
 			'luggage' => $self->{luggage},
 			'access_key_id' => $access_key_id, 
 			'secret_access_key' => $secret_access_key, 
 		);
 	}
-
-	# ready to go
-	return $self;
+	
 }
+
 
 # wrapper method to receive a file and save it into the system
 sub store_file {
@@ -526,6 +542,9 @@ sub save_to_swift {
 		return;
 	}
 
+	# make sure we are connected	
+	$self->connect_to_store();
+
 	# make sure the container exists
 	my $headers = $self->{swift_object}->put_container(container_name => $location);
 
@@ -555,6 +574,9 @@ sub save_to_s3 {
 		$self->{luggage}{belt}->logger("ERROR: All four arguments required for save_to_swift().",$self->{logtype});
 		return;
 	}
+
+	# make sure we are connected	
+	$self->connect_to_store();
 
 	# have to fix the location
 	$location =~ s/_/-/g;
@@ -616,6 +638,9 @@ sub load_from_swift {
 		$file_info = $self->load_file_info($data_code);
 	}
 
+	# make sure we are connected	
+	$self->connect_to_store();
+
 	# pull it from the swift store.
 	my ($file);
 	eval {
@@ -649,6 +674,9 @@ sub load_from_s3 {
 
 	# no underscores in the location
 	$$file_info{location} =~ s/_/-/g;
+
+	# make sure we are connected	
+	$self->connect_to_store();
 
 	# pull it from amazon s3
 	my ($file);
@@ -708,6 +736,9 @@ sub remove_from_swift {
 		$file_info = $self->load_file_info($data_code);
 	}
 
+	# make sure we are connected	
+	$self->connect_to_store();
+
 	# remove from swift store - carefully
 	eval {
 		my $headers = $self->{swift_object}->delete_object($$file_info{location}, $$file_info{object_name} );
@@ -737,6 +768,9 @@ sub remove_from_s3 {
 
 	# no underscores in the location
 	$$file_info{location} =~ s/_/-/g;
+
+	# make sure we are connected	
+	$self->connect_to_store();
 
 	# remove from S3 - carefully
 	eval {
