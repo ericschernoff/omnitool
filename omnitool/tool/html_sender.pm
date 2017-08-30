@@ -17,7 +17,7 @@ sub send_html {
 	# this will be filled if they called the 'send_tool_controls' uri
 	my ($template) = @_;
 	# default use case is the whole tools area
-	$template ||= 'tool_area_skeleton.tt'; 
+	$template ||= 'tool_area_skeleton.tt';
 
 	# allow for a hook prior to the tools_controls, namely to augment $self->{attributes}{description}
 	if ($self->can('pre_tool_controls')) {
@@ -363,24 +363,25 @@ sub build_filter_menu_options {
 		$this_tool_filter_menu = $self->{tool_configs}{tool_filter_menus}{$filter_menu};
 		# not sure if that helps, really
 
-		# month-chooser menu type uses utility_belt::month_name_list to generate a list 
+		# month-chooser menu type uses utility_belt::month_name_list to generate a list
 		# of months based on the two numbers (of months) supplied in $$this_tool_filter_menu{menu_options}
 		if ($$this_tool_filter_menu{menu_type} eq 'Month Chooser') {
-			
+
 			# get the months back/forward from $$this_tool_filter_menu{menu_options}
 			$$this_tool_filter_menu{menu_options} =~ s/\s//g;
 			($months_back, $months_forward) = split /,/, $$this_tool_filter_menu{menu_options};
 			# the defaults are 24 months_back and 12 months_forward
-			
+
 			# call to the utility-belt method to get the month names
 			$month_names = $self->{belt}->month_name_list($months_back, $months_forward);
-			
+
 			# and then add them in
 			foreach $option (@$month_names) {
-				push(@{ $$this_tool_filter_menu{options_keys} }, $option);
+				# put it last->first
+				unshift(@{ $$this_tool_filter_menu{options_keys} }, $option);
 				$$this_tool_filter_menu{options}{$option} = $option;
-			}			
-			
+			}
+
 		# proceed based on option definer type
 		} elsif ($$this_tool_filter_menu{menu_options_type} eq 'Comma-Separated List') { # easiest of all
 			foreach $option (split /,/, $$this_tool_filter_menu{menu_options}) {
@@ -412,11 +413,11 @@ sub build_filter_menu_options {
 
 		} elsif ($$this_tool_filter_menu{menu_options_type} eq 'Relationship' && $$this_tool_filter_menu{menu_options_method}) {
 			# 'Relationship' means another datatype, and in that case,
-			# 'method' will be in the format of 'table_name.display_field_name' where 
+			# 'method' will be in the format of 'table_name.display_field_name' where
 			# 'display_field_name' is optional and defaults to 'name'
 			($datatype_table_name,$display_field_name) = split /\./, $$this_tool_filter_menu{menu_options_method};
 			$display_field_name ||= 'name';
-			
+
 			if ($datatype_table_name) {
 				$menu_omniclass_object = $self->{luggage}{object_factory}->omniclass_object(
 					'dt' => $datatype_table_name,

@@ -401,8 +401,8 @@ sub get_datetime_object {
 	# if that timestring is not right, just get one for 'now'
 	if ($time_string !~ /^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}$/) {
 
-		$dt = DateTime->from_epoch( 
-			epoch => time(),  
+		$dt = DateTime->from_epoch(
+			epoch => time(),
 			time_zone	=> $timezone_name,
 		);
 
@@ -428,7 +428,7 @@ sub get_datetime_object {
 				time_zone	=> $timezone_name,
 			);
 		};
-		
+
 		if ($@) { # if they called for an invalid time, just move ahead and hour and try again
 			$hour++;
 			$dt = DateTime->new(
@@ -690,15 +690,15 @@ sub logger {
 # method to get a list of month names, based on number of months back and forward
 sub month_name_list {
 	my $self = shift;
-	
+
 	my ($months_back, $months_forward) = @_;
 
 	my ($dt, $total_interval, $n, $months_list);
-	
+
 	# reasonable defaults
 	$months_back ||= 24;
 	$months_forward ||= 12;
-	
+
 	# make sure they are integers
 	$months_back = int($months_back);
 	$months_forward = int($months_forward);
@@ -708,26 +708,26 @@ sub month_name_list {
 
 	# get a DateTime object based on the current time zone
 	$dt = $self->get_datetime_object( $self->todays_date(), $self->{timezone_name} );
-	
+
 	# go back to the first month then want
 	$dt->subtract( months => $months_back);
-	
+
 	# add in the first month
 	$months_list = [ $dt->month_name().' '.$dt->year() ];
 
 	# now increment one month until we have done the total interval
-	$n = 0;
+	$n = 1;
 	while ($n < $total_interval) {
 		# add one month
 		$dt->add( months => 1);
-	
+
 		# add to list
 		push( @$months_list, $dt->month_name().' '.$dt->year() );
-	
+
 		# increment
 		$n++;
 	}
-	
+
 	# ship it out
 	return $months_list;
 }
@@ -1509,25 +1509,25 @@ just use that for testing your apps, not in real-world logging.
 
 =head2 month_name_list()
 
-Method to get a list of month names given a range of months before/ahead of now.  
+Method to get a list of month names given a range of months before/ahead of now.
 
 Let's say today is September 4, 2017, and you do this:
 
 	$month_list = $belt->month_name_list(6,2);
-	
+
 Now, $month_list will be:
 
 	$month_list = [
 		'March 2017','April 2017','May 2017','June 2017','July 2017','August 2017',
 		'September 2017','October 2017','November 2017'
 	];
-	
+
 The months will change depending on your current date at time of execute.  It does try to
-account for the user's time zone, when executed via the Web UI.	
-	
+account for the user's time zone, when executed via the Web UI.
+
 If you pass nothing, the defaults are 24 months back, and 12 months forward.
-	
-This is used for tool::html_sender::build_filter_menu_options() when building options for 
+
+This is used for tool::html_sender::build_filter_menu_options() when building options for
 'Month Chooser' menus, but maybe it has other applications, so included here.
 
 =head2 mr_zebra()
