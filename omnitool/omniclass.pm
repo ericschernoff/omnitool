@@ -237,7 +237,7 @@ sub change_options {
 sub database_is_ready {
 	my $self = shift;
 
-	my ($table_maker, $dt_table_name, $dt_id, $table_is_there, $metainfo_table, $dtf_id, $dt_table_column);
+	my ($table_maker, $dt_table_name, $dt_id, $table_is_there, $metainfo_table, $dtf_id, $dt_table_column, $existing_columns, $existing_column_keys, $column, $need_to_fix_table);
 
 	# isoleate the table name for this datatype
 	$dt_table_name = $self->{table_name};
@@ -248,6 +248,28 @@ sub database_is_ready {
 
 	# only once per execution run
 	return if $self->{luggage}{database_ready_checks}{$dt_id} == 1;
+
+	# we want to reduce the use of this heavy/powerful method as much as possible for speed,
+	# so to that end, let's do a 'cheap' check before proceeding
+	($existing_columns,$existing_column_keys) = $self->{db}->sql_hash(qq{
+		select COLUMN_NAME,DATA_TYPE from INFORMATION_SCHEMA.COLUMNS
+		where TABLE_SCHEMA=? and TABLE_NAME=?
+	}, (
+		'bind_values' => [$self->{database_name}, $self->{table_name}]
+	));
+	# use our handy list of all the database columns for this datatype
+	$need_to_fix_table = 0;
+	foreach $column (split /,/, $self->{datatype_info}{all_db_columns}) {
+		next if $$existing_columns{$column}{DATA_TYPE}; # skip if it's there
+		# if we get past that test on any column, then we need to
+		$need_to_fix_table = 1;
+	}
+
+	# if $need_to_fix_table is still zero, mark this done and exit
+	if ($need_to_fix_table == 0) {
+		$self->{luggage}{database_ready_checks}{$dt_id} == 1; # don't come back
+		return;
+	}
 
 	# fire up our table maker object to do the heavy lifting
 	$table_maker = omnitool::common::table_maker->new(
