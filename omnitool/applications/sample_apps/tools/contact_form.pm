@@ -84,7 +84,6 @@ sub post_validate_form {
 	}
 }
 
-# make sure they are not a robot, part of request_form
 
 # routine to send the email
 sub perform_form_action {

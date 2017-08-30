@@ -116,7 +116,7 @@ sub web_authentication {
 	}
 
 	# grab the cookie
-	$authentication_code =  $self->{luggage}{belt}->{request}->cookies->{ $self->{cookie_id} };
+	$authentication_code = $self->{luggage}{belt}->{request}->cookies->{ $self->{cookie_id} };
 
 	if ($authentication_code) { # has cookie, is it still a valid session for this client's IP address?
 
