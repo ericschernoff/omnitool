@@ -122,7 +122,9 @@ sub new {
 		}
 	}
 	# make that easy to get to either way
-	$args{server_id} =  $args{db}->{server_id};
+	$args{server_id} = $args{db}->{server_id};
+	# that cannot be empty under any circumstance
+	$args{server_id} ||= '1';
 
 	# alright, we should be done!
 	# by now, everything should be in that %args hash

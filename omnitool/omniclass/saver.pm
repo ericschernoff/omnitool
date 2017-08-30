@@ -203,7 +203,7 @@ sub do_create {
 		$self->{server_id}.','.$q_mark_list.')',
 		\@values
 	);
-
+	
 	# determine the new 'data_code' primary key
 	$data_code = $self->{db}->{last_insert_id}.'_'.$self->{server_id};
 
