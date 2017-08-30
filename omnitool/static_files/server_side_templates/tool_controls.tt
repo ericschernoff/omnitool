@@ -102,12 +102,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 			[% SET menu_onchange = "tool_objects['" _ tool_and_instance _ "'].process_quick_search('" _ this_menu _ "',\$(this).val());" %] 
 		[% END %]
 		
-		[%# don't let it just be named 'Status' %]
-		[% IF tool_configs.tool_filter_menus.$search_menu.name == 'Status' %]
-			[% SET tool_configs.tool_filter_menus.$search_menu.name = tool_configs.tool_filter_menus.$search_menu.name _ '&nbsp;&nbsp;&nbsp;&nbsp;' %]
-		[% END %]
-		
-		<select id="quick_[%this_menu%]" style="padding: 20px;" data-placeholder="[% tool_configs.tool_filter_menus.$search_menu.name %]" class="tool-search-menu" tabindex="2" onchange="[%menu_onchange%]"> 
+		<select id="quick_[%this_menu%]" style="padding: 20px; min-width: 144px;" data-placeholder="[% tool_configs.tool_filter_menus.$search_menu.name %]" class="tool-search-menu" tabindex="2" onchange="[%menu_onchange%]"> 
 			<option value="[%tool_configs.tool_filter_menus.$search_menu.options_keys.0%]">[% tool_configs.tool_filter_menus.$search_menu.name %]</option>
 			[% FOREACH option_value IN tool_configs.tool_filter_menus.$search_menu.options_keys %]
 				[% IF display_options.$this_menu == option_value %]

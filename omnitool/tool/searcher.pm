@@ -163,6 +163,7 @@ sub search {
 
 	# tell the template if inline actions where found
 	$self->{json_results}{found_inline_actions} = $self->{found_inline_actions};
+	$self->{json_results}{max_actions_per_record} = $self->{max_actions_per_record};
 
 	# provide the search column / direction for JS reference
 	$self->{json_results}{sort_column} = $self->{display_options}{sort_column};
@@ -456,10 +457,12 @@ sub get_inline_actions {
 		}
 		
 		# keep track of the maximum number of inline actions for records in this tool
-		$actions_found_count = scalar(@{ $self->{omniclass_object}->{records}{$record}{inline_actions} });
-		$self->{max_actions_per_record} = $actions_found_count if $self->{max_actions_per_record} < $actions_found_count;
-		# this is used in Table.tt to determine what type of action menu to show
-
+		if ($self->{omniclass_object}->{records}{$record}{inline_actions}) {
+			$actions_found_count = scalar(@{ $self->{omniclass_object}->{records}{$record}{inline_actions} });
+			$self->{max_actions_per_record} = $actions_found_count if !$self->{max_actions_per_record} || $self->{max_actions_per_record} < $actions_found_count;
+			# this is used in Table.tt to determine what type of action menu to show
+		}
+		
 		# set the first inline tool's uri as the 'default' tool uri for this record
 		$self->{omniclass_object}->{records}{$record}{default_inline_tool} = $self->{omniclass_object}->{records}{$record}{inline_actions}[0]{uri};
 
