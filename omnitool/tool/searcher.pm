@@ -370,7 +370,7 @@ sub record_coloring_rules {
 sub get_inline_actions {
 	my $self = shift;
 
-	my ($this_record_id, $this_match, $record, $tool_datacode, $child_tool_key, $match_col, $lock_user,$lock_remaining_minutes, $parent_tool_datatype, $parent_tool_datacode);
+	my ($this_record_id, $this_match, $record, $tool_datacode, $child_tool_key, $match_col, $lock_user,$lock_remaining_minutes, $parent_tool_datatype, $parent_tool_datacode, $actions_found_count);
 
 	# in 99.9% of cases, the inline actions are Action Tools linked directly below the current tool...
 	$tool_datacode = $self->{tool_datacode};
@@ -454,6 +454,11 @@ sub get_inline_actions {
 			# note that there are some inline-actions for the template
 			$self->{found_inline_actions} = 1 if !$self->{found_inline_actions};
 		}
+		
+		# keep track of the maximum number of inline actions for records in this tool
+		$actions_found_count = scalar(@{ $self->{omniclass_object}->{records}{$record}{inline_actions} });
+		$self->{max_actions_per_record} = $actions_found_count if $self->{max_actions_per_record} < $actions_found_count;
+		# this is used in Table.tt to determine what type of action menu to show
 
 		# set the first inline tool's uri as the 'default' tool uri for this record
 		$self->{omniclass_object}->{records}{$record}{default_inline_tool} = $self->{omniclass_object}->{records}{$record}{inline_actions}[0]{uri};

@@ -127,8 +127,9 @@
 	[* END *]
 	[% IF found_inline_actions %]
 	<td>
-		[% IF records.$record_key.inline_actions.6 %]
-			<div class="btn-group dropdown">
+		[%# more than five actions --> drop-down menu %]
+		[% IF max_actions_per_record > 5 %]
+			<div class="btn-group dropdown" style="background-color: silver">
 				<select onchange="tool_objects['[*tool_and_instance*]'].quick_action_link($(this));" class="tool-action-menu">
 				[% IF metainfo.$record_key.lock_user %]
 					<option value="">
