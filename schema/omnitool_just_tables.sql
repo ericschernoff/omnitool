@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.7.19, for Linux (x86_64)
 --
--- Host: localhost    Database: omnitool_samples
+-- Host: localhost    Database: omnitool
 -- ------------------------------------------------------
 -- Server version	5.7.19-0ubuntu0.16.04.1-log
 
@@ -28,6 +28,7 @@ CREATE TABLE `access_roles` (
   `parent` varchar(30) NOT NULL,
   `name` varchar(100) NOT NULL DEFAULT 'not named',
   `description` mediumtext,
+  `username_list` mediumtext,
   `status` varchar(8) DEFAULT NULL,
   `used_in_applications` text,
   `match_hash_key` varchar(100) DEFAULT NULL,
@@ -35,7 +36,7 @@ CREATE TABLE `access_roles` (
   `match_value` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`code`,`server_id`),
   KEY `parent` (`parent`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -48,15 +49,15 @@ DROP TABLE IF EXISTS `applications`;
 CREATE TABLE `applications` (
   `code` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `server_id` int(11) unsigned NOT NULL DEFAULT '1',
-  `parent` varchar(30) NOT NULL,
-  `name` varchar(100) NOT NULL DEFAULT 'not named',
-  `status` varchar(8) DEFAULT NULL,
-  `app_code_directory` varchar(60) DEFAULT NULL,
-  `ui_template` varchar(40) DEFAULT 'default.tt',
+  `parent` varchar(30) NOT NULL DEFAULT '0',
+  `name` varchar(100) NOT NULL DEFAULT 'Not Named',
   `contact_email` varchar(100) DEFAULT NULL,
-  `description` mediumtext,
-  `share_my_datatypes` varchar(100) DEFAULT NULL,
+  `description` text NOT NULL,
+  `status` varchar(12) NOT NULL DEFAULT '',
+  `ui_template` varchar(40) DEFAULT 'default.tt',
+  `app_code_directory` varchar(60) NOT NULL DEFAULT 'None',
   `lock_lifetime` varchar(12) DEFAULT NULL,
+  `share_my_datatypes` varchar(100) DEFAULT NULL,
   `appwide_search_function` varchar(100) DEFAULT NULL,
   `appwide_search_name` varchar(100) DEFAULT NULL,
   `appwide_quickstart_tool_uri` varchar(100) DEFAULT NULL,
@@ -64,7 +65,7 @@ CREATE TABLE `applications` (
   `ui_ace_skin` varchar(15) DEFAULT NULL,
   PRIMARY KEY (`code`,`server_id`),
   KEY `parent` (`parent`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -96,6 +97,23 @@ CREATE TABLE `background_tasks` (
   KEY `status` (`status`,`not_before_time`,`target_datatype`),
   KEY `target_datatype` (`target_datatype`),
   KEY `not_before_time` (`not_before_time`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `base_table`
+--
+
+DROP TABLE IF EXISTS `base_table`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `base_table` (
+  `code` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `server_id` int(11) unsigned NOT NULL DEFAULT '1',
+  `parent` varchar(30) NOT NULL,
+  `name` varchar(100) NOT NULL DEFAULT 'not named',
+  PRIMARY KEY (`code`,`server_id`),
+  KEY `parent` (`parent`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -108,14 +126,14 @@ DROP TABLE IF EXISTS `database_servers`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `database_servers` (
   `code` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `server_id` int(11) unsigned NOT NULL DEFAULT '1',
+  `server_id` int(11) unsigned NOT NULL,
   `parent` varchar(30) NOT NULL,
-  `name` varchar(100) NOT NULL DEFAULT 'not named',
-  `status` varchar(8) DEFAULT NULL,
-  `hostname` varchar(150) DEFAULT NULL,
+  `name` varchar(100) NOT NULL DEFAULT 'Not Named',
+  `hostname` varchar(150) NOT NULL DEFAULT '127.0.0.1',
+  `status` varchar(12) DEFAULT NULL,
   PRIMARY KEY (`code`,`server_id`),
   KEY `parent` (`parent`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -130,21 +148,21 @@ CREATE TABLE `datatype_fields` (
   `server_id` int(11) unsigned NOT NULL DEFAULT '1',
   `parent` varchar(30) NOT NULL,
   `name` varchar(100) NOT NULL DEFAULT 'not named',
-  `field_type` varchar(40) DEFAULT NULL,
-  `virtual_field` varchar(3) DEFAULT NULL,
-  `table_column` varchar(40) DEFAULT NULL,
-  `priority` int(3) DEFAULT NULL,
-  `is_required` varchar(3) DEFAULT NULL,
-  `force_alphanumeric` varchar(3) DEFAULT NULL,
-  `max_length` int(10) DEFAULT NULL,
-  `instructions` mediumtext,
+  `table_column` varchar(40) NOT NULL,
+  `field_type` varchar(40) NOT NULL DEFAULT 'short_text',
+  `priority` int(3) unsigned DEFAULT '1',
+  `is_required` enum('No','Yes') NOT NULL DEFAULT 'No',
+  `max_length` int(4) unsigned NOT NULL DEFAULT '30',
+  `instructions` text,
   `default_value` varchar(200) DEFAULT NULL,
-  `option_values` mediumtext,
-  `search_tool_heading` varchar(60) DEFAULT NULL,
+  `option_values` text,
+  `force_alphanumeric` enum('No','Yes') DEFAULT 'No',
+  `virtual_field` enum('No','Yes') DEFAULT 'No',
   `sort_column` varchar(40) DEFAULT NULL,
+  `search_tool_heading` varchar(60) DEFAULT NULL,
   PRIMARY KEY (`code`,`server_id`),
   KEY `parent` (`parent`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=172 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -159,22 +177,22 @@ CREATE TABLE `datatypes` (
   `server_id` int(11) unsigned NOT NULL DEFAULT '1',
   `parent` varchar(30) NOT NULL,
   `name` varchar(100) NOT NULL DEFAULT 'not named',
-  `table_name` varchar(60) DEFAULT NULL,
-  `containable_datatypes` text,
-  `perl_module` varchar(100) DEFAULT NULL,
+  `table_name` varchar(60) DEFAULT '',
+  `containable_datatypes` mediumtext,
+  `perl_module` varchar(200) DEFAULT 'none',
+  `lock_lifetime` enum('0','5','10','20','30') DEFAULT '0',
   `description` mediumtext,
-  `metainfo_table` varchar(20) DEFAULT NULL,
-  `skip_children_column` varchar(3) DEFAULT NULL,
-  `altcodes_are_unique` varchar(3) DEFAULT NULL,
+  `metainfo_table` enum('DB Table','Own Table','No Metainfo') DEFAULT 'DB Table',
+  `show_name` varchar(3) DEFAULT 'Yes',
+  `extended_change_history` varchar(3) DEFAULT 'No',
+  `archive_deletes` varchar(3) DEFAULT 'No',
   `support_email_and_tasks` varchar(3) DEFAULT NULL,
   `incoming_email_account` varchar(30) DEFAULT NULL,
-  `show_name` varchar(3) DEFAULT NULL,
-  `lock_lifetime` varchar(2) DEFAULT NULL,
-  `extended_change_history` varchar(3) DEFAULT NULL,
-  `archive_deletes` varchar(3) DEFAULT NULL,
+  `skip_children_column` varchar(3) DEFAULT NULL,
+  `altcodes_are_unique` varchar(3) DEFAULT NULL,
   PRIMARY KEY (`code`,`server_id`),
   KEY `parent` (`parent`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -249,6 +267,27 @@ CREATE TABLE `email_outbound` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `email_sent`
+--
+
+DROP TABLE IF EXISTS `email_sent`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `email_sent` (
+  `code` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `server_id` int(11) unsigned NOT NULL DEFAULT '1',
+  `send_timestamp` int(11) unsigned DEFAULT NULL,
+  `status` varchar(20) DEFAULT NULL,
+  `from_address` varchar(200) DEFAULT NULL,
+  `to_addresses` text,
+  `subject` varchar(200) DEFAULT NULL,
+  `attached_files` text,
+  PRIMARY KEY (`code`,`server_id`),
+  KEY `status` (`status`,`send_timestamp`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `instances`
 --
 
@@ -258,26 +297,26 @@ DROP TABLE IF EXISTS `instances`;
 CREATE TABLE `instances` (
   `code` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `server_id` int(11) unsigned NOT NULL DEFAULT '1',
-  `parent` varchar(30) NOT NULL,
-  `name` varchar(100) NOT NULL DEFAULT 'not named',
-  `status` varchar(8) DEFAULT NULL,
-  `hostname` varchar(250) DEFAULT NULL,
-  `uri_base_value` varchar(100) DEFAULT NULL,
+  `parent` varchar(30) NOT NULL DEFAULT '0',
+  `name` varchar(100) NOT NULL DEFAULT 'Not Named',
   `contact_email` varchar(100) DEFAULT NULL,
-  `description` mediumtext,
+  `description` text,
+  `hostname` varchar(250) DEFAULT '',
   `database_server_id` varchar(30) DEFAULT NULL,
   `database_name` varchar(50) DEFAULT NULL,
-  `ui_logo` varchar(60) DEFAULT 'ginger_face.png',
+  `status` varchar(12) DEFAULT '',
   `access_roles` text,
-  `public_mode` varchar(3) DEFAULT NULL,
   `switch_into_access_roles` text,
-  `pause_background_tasks` varchar(3) DEFAULT NULL,
   `email_sending_info` text,
   `file_storage_method` varchar(100) DEFAULT NULL,
   `file_location` text,
+  `uri_base_value` varchar(100) DEFAULT NULL,
+  `pause_background_tasks` varchar(3) DEFAULT NULL,
+  `ui_logo` varchar(60) DEFAULT 'ginger_face.png',
+  `public_mode` varchar(3) DEFAULT NULL,
   PRIMARY KEY (`code`,`server_id`),
   KEY `parent` (`parent`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -308,7 +347,7 @@ CREATE TABLE `metainfo` (
   KEY `parent` (`parent`),
   KEY `altcode` (`altcode`),
   KEY `data_code` (`data_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=152 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=441 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -323,8 +362,8 @@ CREATE TABLE `omnitool_users` (
   `server_id` int(11) unsigned NOT NULL DEFAULT '1',
   `parent` varchar(30) NOT NULL,
   `name` varchar(100) NOT NULL DEFAULT 'not named',
-  `username` varchar(25) DEFAULT NULL,
-  `password` varchar(250) DEFAULT NULL,
+  `username` varchar(35) NOT NULL,
+  `password` varchar(250) NOT NULL,
   `hard_set_access_roles` text,
   `require_password_change` varchar(3) DEFAULT NULL,
   `password_set_date` varchar(10) DEFAULT NULL,
@@ -343,11 +382,11 @@ DROP TABLE IF EXISTS `organizers`;
 CREATE TABLE `organizers` (
   `code` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `server_id` int(11) unsigned NOT NULL DEFAULT '1',
+  `name` varchar(100) NOT NULL DEFAULT 'Not Named',
   `parent` varchar(30) NOT NULL,
-  `name` varchar(100) NOT NULL DEFAULT 'not named',
   PRIMARY KEY (`code`,`server_id`),
   KEY `parent` (`parent`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -363,13 +402,49 @@ CREATE TABLE `record_coloring_rules` (
   `parent` varchar(30) NOT NULL,
   `name` varchar(100) NOT NULL DEFAULT 'not named',
   `match_field` varchar(50) DEFAULT NULL,
-  `match_type` varchar(30) DEFAULT NULL,
-  `match_string` varchar(150) DEFAULT NULL,
-  `apply_color` varchar(40) DEFAULT NULL,
-  `priority` int(3) DEFAULT NULL,
+  `match_type` enum('Does Match','Does NOT Match') DEFAULT NULL,
+  `match_string` varchar(150) NOT NULL,
+  `apply_color` varchar(40) NOT NULL DEFAULT 'Gray',
+  `priority` int(2) unsigned DEFAULT '0',
   PRIMARY KEY (`code`,`server_id`),
   KEY `parent` (`parent`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `running_background_tasks`
+--
+
+DROP TABLE IF EXISTS `running_background_tasks`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `running_background_tasks` (
+  `worker_id` int(10) NOT NULL,
+  `process_id` int(10) NOT NULL,
+  `datatype_id` varchar(30) NOT NULL,
+  PRIMARY KEY (`worker_id`,`process_id`),
+  KEY `datatype_id` (`datatype_id`,`worker_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `search_tool_options`
+--
+
+DROP TABLE IF EXISTS `search_tool_options`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `search_tool_options` (
+  `code` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `server_id` int(11) unsigned NOT NULL DEFAULT '1',
+  `parent` varchar(30) NOT NULL,
+  `name` varchar(100) NOT NULL DEFAULT 'Not Named',
+  `target_datatype` varchar(30) NOT NULL,
+  `query_interval` enum('0','30','60','120','300','600') NOT NULL DEFAULT '60',
+  `load_trees` enum('No','Yes') DEFAULT 'No',
+  PRIMARY KEY (`code`,`server_id`),
+  KEY `parent` (`parent`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -408,24 +483,24 @@ CREATE TABLE `tool_filter_menus` (
   `server_id` int(11) unsigned NOT NULL DEFAULT '1',
   `parent` varchar(30) NOT NULL,
   `name` varchar(100) NOT NULL DEFAULT 'not named',
-  `display_area` varchar(30) DEFAULT NULL,
-  `applies_to_table_column` varchar(200) DEFAULT NULL,
-  `search_operator` varchar(10) DEFAULT NULL,
-  `matches_relate_to_tool_dt` varchar(200) DEFAULT NULL,
-  `menu_type` varchar(20) DEFAULT NULL,
-  `support_any_all_option` varchar(3) DEFAULT NULL,
-  `priority` int(3) DEFAULT NULL,
-  `menu_options_type` varchar(150) DEFAULT NULL,
-  `menu_options_method` varchar(30) DEFAULT NULL,
+  `applies_to_table_column` varchar(200) NOT NULL DEFAULT 'name',
+  `matches_relate_to_tool_dt` varchar(200) NOT NULL DEFAULT 'Direct',
+  `display_area` enum('Quick Search','Advanced Search') DEFAULT 'Advanced Search',
+  `menu_type` varchar(50) DEFAULT 'Single-Select',
+  `menu_options_type` enum('Comma-Separated List','Name/Value Pairs','Method','SQL Command') DEFAULT 'Comma-Separated List',
   `menu_options` mediumtext,
+  `menu_options_method` varchar(30) DEFAULT NULL,
   `sql_cmd` mediumtext,
-  `sql_bind_values` mediumtext,
+  `sql_bind_values` text,
+  `search_operator` varchar(10) NOT NULL DEFAULT '=',
   `default_option_value` varchar(60) DEFAULT NULL,
+  `priority` int(2) unsigned DEFAULT '0',
+  `trigger_menu` varchar(300) DEFAULT NULL,
   `instructions` mediumtext,
-  `trigger_menu` text,
+  `support_any_all_option` varchar(3) DEFAULT NULL,
   PRIMARY KEY (`code`,`server_id`),
   KEY `parent` (`parent`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -441,20 +516,20 @@ CREATE TABLE `tool_mode_configs` (
   `parent` varchar(30) NOT NULL,
   `name` varchar(100) NOT NULL DEFAULT 'not named',
   `mode_type` varchar(50) DEFAULT NULL,
-  `custom_type_name` varchar(35) DEFAULT NULL,
   `custom_template` varchar(200) DEFAULT NULL,
-  `priority` int(3) DEFAULT NULL,
+  `custom_type_name` varchar(35) DEFAULT NULL,
+  `execute_function_on_load` varchar(100) DEFAULT 'None',
+  `priority` int(2) DEFAULT '1',
   `fields_to_include` text,
+  `default_sort_column` varchar(20) DEFAULT NULL,
+  `default_sort_direction` varchar(12) DEFAULT NULL,
   `access_roles` text,
   `max_results` varchar(100) DEFAULT NULL,
-  `default_sort_direction` varchar(12) DEFAULT NULL,
-  `default_sort_column` varchar(3) DEFAULT NULL,
-  `execute_function_on_load` varchar(100) DEFAULT NULL,
   `single_record_jemplate_block` varchar(100) DEFAULT NULL,
   `display_a_chart` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`code`,`server_id`),
   KEY `parent` (`parent`)
-) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=104 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -468,36 +543,36 @@ CREATE TABLE `tools` (
   `code` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `server_id` int(11) unsigned NOT NULL DEFAULT '1',
   `parent` varchar(30) NOT NULL,
-  `name` varchar(100) NOT NULL DEFAULT 'not named',
-  `uri_path_base` varchar(200) DEFAULT NULL,
-  `perl_module` varchar(200) DEFAULT NULL,
-  `javascript_class` varchar(100) DEFAULT NULL,
-  `button_name` varchar(20) DEFAULT NULL,
-  `icon_fa_glyph` varchar(30) DEFAULT NULL,
-  `priority` int(3) DEFAULT NULL,
-  `link_type` varchar(30) DEFAULT NULL,
-  `target_datatype` varchar(30) DEFAULT NULL,
-  `tool_type` varchar(30) DEFAULT NULL,
-  `menus_required_for_search` varchar(3) DEFAULT NULL,
-  `require_quick_search_keyword` varchar(3) DEFAULT NULL,
-  `share_parent_inline_action_tools` varchar(3) DEFAULT NULL,
-  `default_mode` varchar(200) DEFAULT NULL,
-  `description` mediumtext,
-  `display_tool_controls` varchar(3) DEFAULT NULL,
-  `display_description` varchar(3) DEFAULT NULL,
+  `name` varchar(100) NOT NULL DEFAULT 'Not Named',
   `access_roles` text,
-  `link_match_field` varchar(100) DEFAULT NULL,
-  `link_match_string` varchar(30) DEFAULT NULL,
-  `message_time` varchar(100) DEFAULT NULL,
-  `message_is_sticky` varchar(3) DEFAULT NULL,
-  `is_locking` varchar(3) DEFAULT NULL,
-  `lock_lifetime` varchar(2) DEFAULT NULL,
-  `query_interval` varchar(30) DEFAULT NULL,
-  `load_trees` varchar(3) DEFAULT NULL,
+  `perl_module` varchar(200) DEFAULT 'None',
+  `uri_path_base` varchar(200) DEFAULT NULL,
+  `javascript_class` varchar(100) DEFAULT 'None',
+  `default_mode` varchar(30) DEFAULT NULL,
+  `description` text,
+  `tool_type` enum('Search - Screen','Action - Screen','Action - Modal','Action - Message Display') DEFAULT 'Search - Screen',
   `keep_warm` varchar(8) DEFAULT NULL,
+  `icon_fa_glyph` varchar(100) DEFAULT 'fa-wrench',
+  `button_name` varchar(20) NOT NULL,
+  `link_type` enum('Menubar','Inline / Data Row','Quick Actions','Hidden / None') DEFAULT 'Menubar',
+  `link_match_string` varchar(100) DEFAULT NULL,
+  `link_match_field` varchar(100) DEFAULT NULL,
+  `priority` int(3) unsigned DEFAULT '1',
+  `is_locking` enum('No','Yes') DEFAULT 'No',
+  `lock_lifetime` enum('0','5','10','20','30') DEFAULT '0',
+  `target_datatype` varchar(30) DEFAULT NULL,
+  `query_interval` enum('0','30','60','120','300','600') DEFAULT '0',
+  `load_trees` enum('No','Yes') DEFAULT 'No',
+  `message_is_sticky` enum('No','Yes') DEFAULT 'No',
+  `message_time` int(2) DEFAULT '20',
+  `share_parent_inline_action_tools` varchar(3) DEFAULT NULL,
+  `display_description` varchar(3) DEFAULT NULL,
+  `require_quick_search_keyword` varchar(3) DEFAULT NULL,
+  `menus_required_for_search` varchar(3) DEFAULT NULL,
+  `display_tool_controls` varchar(3) DEFAULT NULL,
   PRIMARY KEY (`code`,`server_id`),
   KEY `parent` (`parent`)
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=94 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -558,7 +633,7 @@ CREATE TABLE `update_history` (
   `changes` longtext,
   PRIMARY KEY (`code`,`server_id`),
   KEY `data_code` (`data_code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -573,11 +648,11 @@ CREATE TABLE `user_api_keys` (
   `server_id` int(11) unsigned NOT NULL DEFAULT '1',
   `parent` varchar(30) NOT NULL,
   `name` varchar(100) NOT NULL DEFAULT 'not named',
-  `status` varchar(8) DEFAULT NULL,
   `username` varchar(20) DEFAULT NULL,
   `tied_to_ip_address` mediumtext,
   `expiration_date` varchar(10) DEFAULT NULL,
   `api_key_string` varchar(100) DEFAULT NULL,
+  `status` varchar(8) DEFAULT NULL,
   PRIMARY KEY (`code`,`server_id`),
   KEY `parent` (`parent`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -623,4 +698,4 @@ CREATE TABLE `user_api_keys_metainfo` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-08-22  3:44:20
+-- Dump completed on 2017-08-30 11:01:24
