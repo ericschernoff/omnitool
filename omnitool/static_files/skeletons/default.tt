@@ -583,8 +583,12 @@
 		<!-- combination of all Javascript classes needed for tools in this Application: tools.javascript_class -->
 		<script src="/ui/tools_javascript_classes[%uri_base_param_no_amp%]"></script>
 
+		<!-- div for system message modal, handled via omnitool_routines's open_system_modal() -->
+		<div id="system_modal" class="modal fade" tabindex="-1">
+		</div>
+
 		<!-- content-is-loading modal -->
-		<div id="modal-loading" class="modal" tabindex="-1">
+		<div id="modal-loading" class="modal" tabindex="-1" style="z-index: 9998;">
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -597,12 +601,8 @@
 			</div>
 		</div>
 
-		<!-- div for system message modal, handled via omnitool_routines's open_system_modal() -->
-		<div id="system_modal" class="modal fade" tabindex="-1">
-		</div>
-
 		<!-- div for network diagram functions -->
-		<div id="edge-popUp" class="network_edge_pop_up">
+		<div id="edge-popUp" class="network_edge_pop_up" style="z-index: 9990;">
 			<span id="edge-operation">edge</span> <br>
 			<table style="margin:auto;">
 			<tr>

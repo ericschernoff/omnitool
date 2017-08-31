@@ -618,7 +618,7 @@ function omnitool_controller (event,target_tool_uri) {
 		}
 
 		// if they are moving to a new phase/method of the active tool, update that tool's jemplate binding
-		if (this_active_tool != 'Not Found') {
+		if (this_active_tool != 'Not Found') {	
 			// if keep-warm = Never, we need to always start fresh
 			if (tool_objects[the_tool_id]['keep_warm'] == 'Never') {
 				if ($( "#"+tool_objects[the_tool_id]['tool_div'] ).length > 0) {

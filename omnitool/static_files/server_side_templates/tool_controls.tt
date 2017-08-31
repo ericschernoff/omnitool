@@ -96,10 +96,11 @@ Expects all of $self for a Tool.pm class/sub-class.
 				[% SET is_trigger_menu = 1 %]
 			[% END %]
 		[% END %]
+		[% SET menu_onchange = "tool_objects['" _ tool_and_instance _ "'].process_quick_search('" _ this_menu _ "',\$(this).val());" %] 
+
+		[%# also support triggering another menu %]
 		[% IF is_trigger_menu %]
-			[% SET menu_onchange = "tool_objects['" _ tool_and_instance _ "'].trigger_menu('quick_menu_" _ tool_configs.tool_filter_menus.$search_menu.trigger_menu _ "',this.options[this.selectedIndex].value);" %]
-		[% ELSE %]
-			[% SET menu_onchange = "tool_objects['" _ tool_and_instance _ "'].process_quick_search('" _ this_menu _ "',\$(this).val());" %] 
+			[% SET menu_onchange = menu_onchange _ "tool_objects['" _ tool_and_instance _ "'].trigger_menu('quick_menu_" _ tool_configs.tool_filter_menus.$search_menu.trigger_menu _ "',this.options[this.selectedIndex].value);" %]
 		[% END %]
 		
 		<select id="quick_[%this_menu%]" style="padding: 20px; min-width: 144px;" data-placeholder="[% tool_configs.tool_filter_menus.$search_menu.name %]" class="tool-search-menu" tabindex="2" onchange="[%menu_onchange%]"> 

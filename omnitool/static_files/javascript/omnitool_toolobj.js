@@ -451,8 +451,14 @@ function Tool (tool_attributes) {
 			$('#'+alternative_field_div).hide();
 		}
 
+		// show the modal if another one is not already open
+		var showed_modal = 0;
+		if (!($("#modal-loading").hasClass('in'))) {
+			loading_modal_display('Loading Menu...');
+			showed_modal = 1;
+		}		
+
 		// fetch the options from the server and put them into that target menu
-		loading_modal_display('Loading Menu...');
 		$.when( query_tool(this['tool_uri'] + '/' + method_name ,post_data_object) ).done(function(data) {
 			if (data.options_keys != null && data.options_keys.length > 0) {
 				for (var i = 0; i < data.options_keys.length; i++) {
@@ -487,7 +493,9 @@ function Tool (tool_attributes) {
 			}
 
 			// hide that modal
-			loading_modal_display('hide');
+			if (showed_modal == 1) {
+				loading_modal_display('hide');
+			}
 		});
 	}
 
