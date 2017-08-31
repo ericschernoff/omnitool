@@ -163,7 +163,6 @@
 				</label>
 				<div class="col-sm-7">
 					<div class="clearfix">
-
 					[% PROCESS $field_type %]
 					</div>
 
