@@ -18,7 +18,7 @@ sub perform_form_action {
 	# cancel if no target_username provided (validation should handle this)
 	return if !$self->{luggage}{params}{target_username};
 
-	my ($instances_omniclass, $access_roles_omniclass_object, $match_text, $right_db_obj, $role, $target_application, $target_instance, $target_username, $target_users_session);
+	my ($app_instances, $instances_omniclass, $access_roles_omniclass_object, $match_text, $right_db_obj, $role, $target_application, $target_instance, $target_username, $target_users_session);
 
 	# sanity
 	$target_username = $self->{luggage}{params}{target_username};
@@ -26,7 +26,6 @@ sub perform_form_action {
 
 	# grab a session for this user
 	$target_users_session = $self->grab_instance_session($target_instance, $target_username);
-
 	$target_application = $target_users_session->{all_app_instance_info}{$target_instance}{application_id};
 
 	# load the access roles for the target instance's parent application
@@ -37,6 +36,13 @@ sub perform_form_action {
 		'data_codes' => ['all'],
 		'sort_column' => 'name',
 	);
+	
+	# grab the app / instance combos for this omnitool admin db
+	$app_instances = $self->{luggage}{object_factory}->omniclass_object(
+		'dt' => '5_1',
+		'data_codes' => [$target_instance],
+		'load_fields' => 'name',
+	);	
 
 	# finally ready to gather up their roles
 	foreach $role (@{ $access_roles_omniclass_object->{records_keys} }) {
@@ -74,7 +80,7 @@ sub perform_form_action {
 	}
 
 	# send the instance name too
-	$self->{json_results}{instance_name} = $self->{luggage}{session}{all_app_instance_info}{$target_instance}{inst_name};
+	$self->{json_results}{instance_name} = $app_instances->{data}{name};
 	$self->{json_results}{username} = $target_username;
 
 	# make sure form displays again
