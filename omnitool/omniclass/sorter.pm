@@ -123,9 +123,9 @@ sub complex_sort {
 			if ($self->{datatype_info}{fields}{$field}{sort_column}) {
 				$sort_column = $self->{datatype_info}{fields}{$field}{sort_column};
 			}
-
+			
 			# also, is this field a numeric type?  determines the type of sort to do below (no sense to do both)
-			if ($self->{datatype_info}{fields}{$field}{field_type} =~ /decimel|integer/) { # yes
+			if ($self->{datatype_info}{fields}{$field}{field_type} =~ /decimal|integer/) { # yes
 				$numeric_sort = 1;
 			} else {
 				$numeric_sort = 0;
