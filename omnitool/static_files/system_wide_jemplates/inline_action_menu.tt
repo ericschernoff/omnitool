@@ -19,7 +19,7 @@
 
 	</select>
 
-[% ELSIF inline_actions.4.button_name %] 
+[% ELSIF inline_actions.0.button_name %] 
 	<!-- regular drop-down -->
 	<button data-toggle="dropdown" class="btn btn-white bolder dropdown-toggle">
 		<i class="ace-icon fa fa-bolt"></i>
