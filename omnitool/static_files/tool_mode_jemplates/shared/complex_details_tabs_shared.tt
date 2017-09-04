@@ -129,7 +129,7 @@
 
 						[% ELSIF tabs.$tab_key.type == 'text_blocks' %]
 							<div class="col-xs-12" style="margin-right: 10pt; margin-left: 10pt">
-							[% IF !tabs.$tab_key.data.1 %]
+							[% IF !tabs.$tab_key.data.1 && !tabs.$tab_key.force_multiple %]
 
 								[% IF !(matches = tabs.$tab_key.data.0.1.match('<br/>')) %]
 									[% tabs.$tab_key.data.0.1.replace("\n", '<br/>') %]
