@@ -525,6 +525,7 @@ sub find_breadcrumbs {
 	}
 
 	# if found, include this info in the array of hashes we are building
+	$record_name = $data_id_altcode if $record_name eq 'Not Named';
 	if ($record_name) {
 		unshift(@{$self->{bc_store}{breadcrumbs}},{
 			'tool_name' => $self->{luggage}{session}{tools}{$tool_datacode}{button_name}. ' ('.$record_name.')',

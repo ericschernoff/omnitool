@@ -6,7 +6,10 @@
 
 	<div class="page-header h3">
 		[% IF !hide_altcode && altcode %]
-			[%altcode%]: [% data_title %]
+			[%altcode%]
+			[%IF data_title != 'Not Named' %]
+				: [% data_title %]
+			[% END %]
 		[% ELSIF data_title != 'Not Named' %]
 			[% data_title %]
 		[% END %]
