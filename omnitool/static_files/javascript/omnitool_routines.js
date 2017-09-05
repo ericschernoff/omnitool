@@ -968,7 +968,51 @@ function interactive_form_elements (tool_id,form_type) {
 		});
 
 		// enable rich-text editors
-		$('#'+tool_id+'_wyiswig').ace_wysiwyg();
+		$('#'+tool_id+'_wyiswig').ace_wysiwyg({
+			speech_button: true,
+			toolbar: [
+				'font',
+				'fontSize',
+				'bold',
+				'italic',
+				'strikethrough',
+				'underline',
+				null,
+				'insertunorderedlist',
+				'insertorderedlist',
+				'outdent',
+				'indent',
+				'justifyleft',
+				'justifycenter',
+				'justifyright',
+				'justifyfull',
+				null,
+				'createLink',
+				'unlink',
+				null,
+				'insertImage',
+				null,
+				'foreColor',
+				null,
+				'undo',
+				'redo',
+				null,
+				'viewSource'
+			],			
+			wysiwyg: {
+				hotKeys: {
+					'ctrl+b meta+b': 'bold',
+					'ctrl+i meta+i': 'italic',
+					'ctrl+u meta+u': 'underline',
+					'ctrl+z meta+z': 'undo',
+					'ctrl+y meta+y meta+shift+z': 'redo',
+					'ctrl+l meta+l': 'justifyleft',
+					'ctrl+r meta+r': 'justifyright',
+					'ctrl+e meta+e': 'justifycenter',
+					'ctrl+j meta+j': 'justifyfull',
+				}
+			}
+		});
 		//$('#'+tool_id+'_wyiswig').addClass('wysiwyg-style2');
 
 		// enable color-choosing, if they have such a field (only supports one per form)
