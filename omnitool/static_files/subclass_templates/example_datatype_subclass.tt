@@ -66,6 +66,9 @@ sub altcode_maker {
 	# grab the args passed into save()
 	my ($args) = @_;
 
+	# some great altcode-generating logic goes here
+
+	return $some_altcode_string; # no spaces or special chars!
 }
 
 # routine to run at the start of save(), before creating or updating the record(s).
@@ -214,9 +217,9 @@ sub view_details {
 		3 => ['legendary_stories','Legendary Stories'],
 	};
 	$$details_hash{tab_keys} = [1,2,3];
-	
+
 	# if you do not set this, the title of the page will be
-	# shown as "AltCode: Record Name" 
+	# shown as "AltCode: Record Name"
 	$$details_hash{hide_altcode} = 1;
 	# if set, the title will be the record's name
 
@@ -232,7 +235,7 @@ sub view_details {
 					[ 'Phone Number', $self->{data}{phone_number} ],
 					[ 'Email Address', {
 						'text' => $self->{data}{referrals_email_address},
-						'uri' => 'mailto:'.$self->{data}{referrals_email_address} 
+						'uri' => 'mailto:'.$self->{data}{referrals_email_address}
 					}],
 					[ 'Created', $self->{data}{metainfo}{nice_create_age} ],
 				],
@@ -269,7 +272,7 @@ sub view_details {
 			],
 		},
 	};
-	
+
 	# how we would load up her magical powers
 	$magical_powers = $self->{luggage}{object_factory}->omniclass_object(
 		'dt' => 'ginger_powers',
@@ -278,7 +281,7 @@ sub view_details {
 			{ 'parent' => $self->{parent_string} } # having the current record as the parent
 		]
 	);
-	
+
 	# if we found some powers, add them to our table
 	if ($magical_powers->{search_found_count}) {
 		foreach $doc (@{ $document_object->{records_keys} }) {
@@ -290,8 +293,8 @@ sub view_details {
 		}
 	} else { # delete the tab
 		$$details_hash{tabs}{2}{data}[0] = [];
-	}	
-	
+	}
+
 	# return the detalls hash
 	return $details_hash;
 
