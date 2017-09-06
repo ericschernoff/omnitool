@@ -314,6 +314,17 @@ sub search {
 		$self->{search_results} = [];
 	}
 
+	# if they passed in an 'order_by' clause, use that here to sort the found results
+	if ($args{order_by} && $self->{search_found_count}) {
+		$args{order_by} =~ s/order by//; # can't be too careful these days
+		$self->{search_results} = $self->{db}->list_select(
+			qq{select concat(code,'_',server_id) from }.$primary_table.
+			qq{ where concat(code,'_',server_id) in ($question_marks)}.
+			' order by '.$args{order_by},
+			$self->{search_results}
+		);
+	}
+
 	# if they want the post_search hook, let's run it here
 	if (!$self->{skip_hooks} && !$args{skip_hooks} && $self->can('post_search')) {
 		$self->post_search($args_ref);
