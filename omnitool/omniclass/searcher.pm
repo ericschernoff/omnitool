@@ -238,23 +238,6 @@ sub search {
 		# alright, let's build a nice sql statement & run it too
 		# use ()'s for the primary logic and include $$so{additional_logic} in those, as it may be an 'or' value
 
-		# if they passed in an 'order_by' clause, and we are on the primary table, we shall use that now
-		if ($args{order_by} && $table_key eq $primary_table) {
-			$order_by = $args{order_by};
-			$order_by = 'order by '.$order_by if $order_by !~ /order by/i;
-			# if they passed in 'limit_results', we have to honor that here or it will not work
-			# (or at least, i'd have to write a lot more perl
-			if ($args{limit_results}) {
-				$args{limit_results} = int($args{limit_results});
-				$order_by .= ' limit '.$args{limit_results};
-				$args{limit_results_done} = 1; # for to skip below and save 0.0000001 of a second.
-			}
-
-			$sql_statement_logic .= ' '.$order_by;
-		} else {
-			$order_by = '';
-		}
-
 		$results = $self->{db}->list_select(
 			'select '.$$sql_query_plans{$table_key}{relationship_column}.' from '.$table_key.
 			' where '.$sql_statement_logic,
@@ -329,6 +312,28 @@ sub search {
 	$self->{search_found_count} = scalar @{$self->{search_results}};
 	if (!$self->{search_found_count}) { # make sure it's an arrayref at least
 		$self->{search_results} = [];
+	}
+
+	# if they passed in an 'order_by' clause, we need to re-sort the keys for that logic
+	if ($args{order_by} && $self->{search_found_count}) {
+		$order_by = $args{order_by};
+		$order_by = 'order by '.$order_by if $order_by !~ /order by/i;
+		# if they passed in 'limit_results', we have to honor that here or it will not work
+		# (or at least, i'd have to write a lot more perl
+		if ($args{limit_results}) {
+			$args{limit_results} = int($args{limit_results});
+			$order_by .= ' limit '.$args{limit_results};
+			$args{limit_results_done} = 1; # for to skip below and save 0.0000001 of a second.
+		}
+
+		# now run the query to get them sorted
+		$question_marks = $self->{belt}->q_mark_list($self->{search_found_count});
+		$self->{search_results} = $self->{db}->list_select(
+			qq{select concat(code,'_',server_id) from }.$primary_table.
+			qq{ where concat(code,'_',server_id) in ($question_marks) }.$order_by,
+			$self->{search_results}
+		);
+
 	}
 
 	# if they want the post_search hook, let's run it here
