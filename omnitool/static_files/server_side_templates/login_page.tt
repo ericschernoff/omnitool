@@ -53,9 +53,12 @@
 						<div class="login-container">
 							<div class="center">
 								<h2>
-									<span class="white" id="id-text2">[%instance_name%]</span>
+									<span class="white" id="id-text2">
+									[% IF ui_logo %]
+										<img src="[%ui_logo%]"/>&nbsp;
+									[% END %]
+									[%instance_name%]</span>
 								</h2>
-								<h4 class="white" id="id-company-text"><img src="[%ui_logo%]"/> OmniTool [%omnitool_version%]</h4>
 							</div>
 
 							<div class="space-6"></div>
