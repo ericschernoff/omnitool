@@ -487,8 +487,8 @@ method will have all the methods after new().
 		'altcodes' => [@list_of_altcodes], # optional, alternative way to call $self->load() on records, and probably
 						# much easier for writing scripts; do not use if you are sending data_codes
 		'search_options' => [%$search_options], # optional, if filled, will call $self->search() with these search
-						# criteria as the %args; please see description of options under 'search()'
-						# below; adds auto_load=1 to search()
+						# criteria.  Sends all of %args, so you can pass all options described under 'search()'
+						# below; does add auto_load=1 to search()
 		# the following options are useful if 'data_codes' or 'search_options' is filled
 		'sort_column' => $column_or_key_name,
 		'sort_direction' => 'up', # up = ascending / down = descending
@@ -690,6 +690,10 @@ This how you search (and load) data.  Meant to take the place of SQL 'select' st
 		],
 		'log_search' => 1 or blank, # for debugging, if filled, will log the SQL and values of the search into the USERNAME_searches log
 									# where 'USERNAME' is $self->{luggage}{username}
+		'order_by' => 'some_col', # sorts the results based on an 'order by' SQL clause against the primary table, so any/all
+								  # specified columns must be in the primary datatype table.  Regular SQL syntax, minus the
+								  # 'order by' bit; very useful when you are not auto-loading records.
+								  # Please use with limit_results for best_results ;>
 		'limit_results' => blank or an integer, # default blank; if filled, limits the number of results found to value
 		'auto_load'	=> 0 or 1, # default is 0; if 1 or otherwise true, calls $dt_obj->load() on search results
 		'skip_hooks' => 0 or 1, # optional; if 1 or otherwise true, skip pre_search and post_search

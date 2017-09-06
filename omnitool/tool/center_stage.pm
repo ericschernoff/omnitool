@@ -97,6 +97,7 @@ sub send_jemplate {
 		);
 	}
 
+
 	# and how about a hook to modify that jemplate text just in case?
 	if ($self->can('pre_send_jemplate')) {
 		$tool_jemplate = $self->pre_send_jemplate($tool_jemplate);

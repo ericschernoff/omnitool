@@ -173,7 +173,7 @@ sub omniclass_tree {
 	# return silently if there is no parent object
 	return if !$parent_object;
 	return if !($parent_object->isa("omnitool::omniclass"));
-	
+
 	# they can have a 'tree_datatypes' arg to limit which datatypes we will tree into
 	# allow that to be a table name or datatype code
 	if ($args{tree_datatypes}) {
@@ -200,12 +200,12 @@ sub omniclass_tree {
 			# %all_children_by_type will be a hash of arrays, keyed by type
 			push(@{$all_children_by_type{$record}{$child_type}}, $child_data_code);
 		}
-		
+
 		foreach $tree_datatype (split /,/, $args{tree_datatypes}) {
 			$args{dt} = $tree_datatype;
 			$args{data_codes} = $all_children_by_type{$record}{$tree_datatype};
 			next if !$all_children_by_type{$record}{$tree_datatype}[0];
-			
+
 			$parent_object->{children_objects}{$record}{$tree_datatype} = $self->omniclass_object(%args);
 
 			# let's alias that to the name of the table, for sanity's sake when coding elsewhere
@@ -220,8 +220,8 @@ sub omniclass_tree {
 
 		}
 	}
-	
-	
+
+
 }
 
 # recursive method to convert a omniclass object (which could be a tree of objects)
@@ -450,17 +450,17 @@ __END__
 
 =head1 omnitool::common::object_factory
 
-This module exists so we can easily utilize sub-classes to work with datatypes or tools on the fly.  
-When the time comes to create an object for OmniClass or Tool.pm, this module will decide which 
+This module exists so we can easily utilize sub-classes to work with datatypes or tools on the fly.
+When the time comes to create an object for OmniClass or Tool.pm, this module will decide which
 Perl module to call to create the object.
 
 In the case of Tool.pm, this module will (almost) always get called in dispatcher.pm to run the
 tool's code and output to the client's browser.
 
-OmniClass Datatypes are trickier.  They will often be called during the Tool's execution, usually 
+OmniClass Datatypes are trickier.  They will often be called during the Tool's execution, usually
 via get_omniclass_object() portion of Tool.pm class, but these objects could be built virtually
-anywhere under omniclass::applications or in your custom scripts, so we will stash an object_factory 
-class in our $$luggage, built by pack_luggage.  (That's turning out to be a pretty key part of this 
+anywhere under omniclass::applications or in your custom scripts, so we will stash an object_factory
+class in our $$luggage, built by pack_luggage.  (That's turning out to be a pretty key part of this
 little setup.)
 
 Our methods for object_factory are:
@@ -481,8 +481,8 @@ mnitool::applications::APPLICATION_CODE_DIR::datatype_modules::THIS_DATATPYPES_M
 will get instantiated and returned.  Otherwise, omniclass_object() will return a 'plain'
 omnitool::omniclass object for that Datatype.
 
-Pass the same %args arguments which will be used for omnitool::omniclass.  The one required entry 
-will be for the 'dt' key, which tells us which datatype we want.  Please see the notes within 
+Pass the same %args arguments which will be used for omnitool::omniclass.  The one required entry
+will be for the 'dt' key, which tells us which datatype we want.  Please see the notes within
 omnitool::omniclass to learn what else can go in here.
 
 There are a few options available here but not in the regular OmniClass new(). One *very powerful*
@@ -507,9 +507,9 @@ For the args, you have some handy options (in additional to all the omniclass op
 		'data_codes' => [LIST_OF_IDS], # optional; list of data codes to load up in records/metainfo/records_keys
 		'altcodes' => [@list_of_altcodes], # optional, alternative way to call $self->load() on records, and probably
 											# much easier for writing scripts; do not use if you are sending data_codes
-		
+
 		...any/all other OmniClass arguments can go here...
-		
+
 		'tree_mode' => 1, # optional, tells us to invoke 'omniclass_tree', see below'
 		'tree_datatypes' => 'list,of,dts', # optional; comma-separated list of datatypes (or datatype tables names)
 											# for which we want to include in our omniclass tree; used to limit trees
@@ -634,7 +634,7 @@ the data, extract to hash, and cache it all in one action.
 =head2 tool_object();
 
 Creates the appropriate object to execute a Tool's code.  Will either be a plain omnitool::tools
-object or built from a custom Tool.pm sub-class at 
+object or built from a custom Tool.pm sub-class at
 omnitool::applications::APPLICATION_CODE_DIR::tools::THIS_TOOLS_MODULE
 
 Can accept one optional argument, which is a URI that would represent a Tool.  If that's not
@@ -649,7 +649,7 @@ a time to find the right tool.  So for example:
 
 	/tools/db_servers				- Easy, start up the DB Servers tool
 	/tools/db_servers/load_html 	- Run the 'load_html()' method in the DB Servers too
-	/tools/db_servers/update/ginger423	- Run the 'update()' method in the DB Servers too on 
+	/tools/db_servers/update/ginger423	- Run the 'update()' method in the DB Servers too on
 											record ginger423
 
 Either way, it *should* figure out to use the DB Servers tool.  The magic is in the 'uris_to_tools'
@@ -660,5 +660,5 @@ Usage:
 		or
 	$tool_object = $$luggage{object_factory}->tool_object($uri);
 
-This method should always get called from dispatcher.pm or in the root area of a script.  I 
+This method should always get called from dispatcher.pm or in the root area of a script.  I
 have yet to use it in another context.

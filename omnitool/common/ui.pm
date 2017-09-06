@@ -232,6 +232,7 @@ sub build_navigation {
 
 	# the screens are ordered when pulled in the session class, so cyle thru those
 	foreach $tool_key (@{ $self->{luggage}{session}{tools_keys} }) {
+		next if $self->{luggage}{session}{tools}{$tool_key}{link_type} =~ /Hidden/;
 		$tools{menu}[$n] = {
 			'name' => $self->{luggage}{session}{tools}{$tool_key}{name},
 			'button_name' => $self->{luggage}{session}{tools}{$tool_key}{button_name},

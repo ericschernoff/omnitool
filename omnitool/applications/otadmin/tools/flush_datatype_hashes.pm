@@ -32,20 +32,14 @@ sub prepare_message {
 		$self->{instances_omniclass_object} = $self->{luggage}{object_factory}->omniclass_object(
 			'dt' => '5_1',
 			'skip_hooks' => 1,
-		);
-		$self->{instances_omniclass_object}->search(
 			'search_options' => [
 				{
-				'match_column' => 'parent',
-				'match_value' => $parent_string
+					'parent' => $parent_string,
 				},
 				{
-				'match_column' => 'database_server_id',
-				'match_value' => $self->{db}->{server_id}
+					'database_server_id' => $self->{db}->{server_id}
 				},
 			],
-			'auto_load' => 1,
-			'skip_hooks' => 1
 		);
 
 		# and perform the flush using our method below
@@ -61,6 +55,7 @@ sub prepare_message {
 
 		# fill in the needed info for the return object
 		$self->{json_results}{title} = 'Flushed Datatype Hash for '.$app_omniclass_object->{data}{name};
+		$self->{json_results}{message} = 'NOTE: If the Datatypes are shared with another Application, you will need to flush the DT Hash for those other Instances.';
 
 	}
 }

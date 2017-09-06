@@ -28,7 +28,7 @@ sub search {
 	# need myself and my args
 	my $self = shift;
 	my (%args) = @_;
-	my (@table_keys, $key, $foreign_results, $did, $primary_table, $actual_queries_run, $sql_statement_logic, $table_key, $sql_query_plans, $actual_results, $search_result, $limit_count, @match_values, $question_marks, $args_ref, @bind_values, $math_operator_list, $operator_list, $r, $results, $search_count, $so, %found, $dt);
+	my (@table_keys, $key, $foreign_results, $did, $primary_table, $actual_queries_run, $sql_statement_logic, $table_key, $sql_query_plans, $actual_results, $search_result, $limit_count, @match_values, $question_marks, $args_ref, @bind_values, $math_operator_list, $operator_list, $r, $results, $search_count, $so, %found, $dt,$order_by);
 
 	# for this method, we want to save the search_options and other arguments so that search()
 	# could be called again with no arguments and execute the same search
@@ -314,13 +314,35 @@ sub search {
 		$self->{search_results} = [];
 	}
 
+	# if they passed in an 'order_by' clause, we need to re-sort the keys for that logic
+	if ($args{order_by} && $self->{search_found_count}) {
+		$order_by = $args{order_by};
+		$order_by = 'order by '.$order_by if $order_by !~ /order by/i;
+		# if they passed in 'limit_results', we have to honor that here or it will not work
+		# (or at least, i'd have to write a lot more perl
+		if ($args{limit_results}) {
+			$args{limit_results} = int($args{limit_results});
+			$order_by .= ' limit '.$args{limit_results};
+			$args{limit_results_done} = 1; # for to skip below and save 0.0000001 of a second.
+		}
+
+		# now run the query to get them sorted
+		$question_marks = $self->{belt}->q_mark_list($self->{search_found_count});
+		$self->{search_results} = $self->{db}->list_select(
+			qq{select concat(code,'_',server_id) from }.$primary_table.
+			qq{ where concat(code,'_',server_id) in ($question_marks) }.$order_by,
+			$self->{search_results}
+		);
+
+	}
+
 	# if they want the post_search hook, let's run it here
 	if (!$self->{skip_hooks} && !$args{skip_hooks} && $self->can('post_search')) {
 		$self->post_search($args_ref);
 	}
 
 	# if they passed in a limit number, honor that
-	if ($args{limit_results} && $self->{search_found_count} > $args{limit_results}) {
+	if ($args{limit_results} && !$args{limit_results_done} && $self->{search_found_count} > $args{limit_results}) {
 		$args{limit_results} = int($args{limit_results}); # no decimels allowed
 		$self->{search_found_count} = $args{limit_results};
 		# @{$self->{search_results}} = $self->{search_results}[0..($args{limit_results}-1)];
