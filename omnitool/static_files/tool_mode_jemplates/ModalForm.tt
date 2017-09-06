@@ -206,7 +206,7 @@
 
 </div><!-- /.modal-body -->
 
-[%IF !the_tool_id %]
+[% IF !the_tool_id %]
 	</div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->
 [% END %]
