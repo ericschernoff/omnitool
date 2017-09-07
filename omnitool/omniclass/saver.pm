@@ -486,4 +486,48 @@ sub figure_the_key {
 	}
 }
 
+# convenience method for updating a few fields of a record
+# something i should have written two years ago ;)
+sub simple_save {
+	my $self = shift;
+	my (%args) = @_;
+	
+	my (@sent_keys, $data_code);
+	
+	# did they send a data code?
+	if ($args{data_code}) { # yes
+		$data_code = $args{data_code};
+		# don't pass that value into the save() params
+		delete($args{data_code});
+	
+	# no -- is there a loaded record?	
+	} elsif ($self->{data_code}) {
+		$data_code = $self->{data_code};
+	}
+	
+	# if there is no data_code, we cannot proceed
+	if (!$data_code) {
+		$self->work_history(0,"ERROR: Can not use simple_save() without a data_code either passed in the args or a pre-loaded record.");
+		return;
+	}
+
+	# now that we cleared $args{data_code}, make sure there are some items left in %args
+	@sent_keys = keys %args;
+	if (!$sent_keys[0]) {
+		$self->work_history(0,"ERROR: Can not use simple_save() some params to send to save().");
+		return;
+	}
+	
+	# okay, send the command to save() to update the fields
+	$self->save(
+		'data_code' => $data_code,
+		'skip_blanks' => 1,
+		'params' => \%args,
+	);
+
+	# update our meaningless log
+	$self->work_history(1,"Successfully called simple_save() to update $data_code via save().");
+
+}
+
 1;

@@ -834,7 +834,34 @@ This method allows you to save one record at a time, and if you have a batch-ent
 sub-key and cycle through the forms submissions in group by key ('record1,' record2', etc....you get the idea,
 I mean really, why am I am typing so many comments.)
 
-Finally, these routines will log out to today's 'saves_DBNAME_TABLENAME' log file under the $OTHOME/log directory.
+Finally, this routine will log out to today's 'saves_DBNAME_TABLENAME' log file under the $OTHOME/log directory.
+
+=head2 simple_save()
+
+Handy utility method to update a few fields of an existing record with a little less code.  Can not create
+records, only update.  Not appropriate for handling PSGI forms; better for your direct updates.
+
+Usage:
+
+	$dt_object->simple_save(
+		'data_code' => $target_record_data_code, # leave off to default to $dt_object->{data_code}
+		'field_to_update_one' => $new_value_one,
+		'field_to_update_two' => $new_value_two,
+		# as many fields as you want
+	);
+
+That code is equivalent to:
+
+	$dt_object->save(
+		'data_code' => $target_record_data_code, # required in this context
+		'skip_blanks' => 1,
+		'params' => {
+			'field_to_update_one' => $new_value_one,
+			'field_to_update_two' => $new_value_two,
+		},
+	);
+
+So a bit less code, especially if you have a record already loaded and can use $dt_object->{data_code},
 
 =head2 simple_sort()
 
