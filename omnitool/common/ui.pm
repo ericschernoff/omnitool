@@ -39,6 +39,15 @@ sub new {
 	# by now, everything should be in that %args hash
 	my $self = bless \%args, $class;
 
+	# let's allow them to override and add to this class for their application
+	# we need to see if there is a 'custom_ui' module for the selected instance's application
+	my $app_code_directory = $self->{luggage}{session}->{app_instance_info}{app_code_directory}; # sanity
+	my $class_name = 'omnitool::applications::'.$app_code_directory.'::custom_ui';
+	# try to load it in and bless myself into it to access the methods with all my data imported
+	if (eval "require $class_name") { # phew, loaded ;)
+		bless $self, "$class_name";  # see notes below about this, please
+	}
+
 	return $self;
 }
 
@@ -180,8 +189,18 @@ sub build_navigation {
 	my $self = shift;
 	# no args needed; we shall operate on the session stored in $$luggage
 
+	# allow them to override this in their custom_ui.pm class
+	if ( $self->can('custom_build_navigation') ) {
+		my $custom_tools = $self->custom_build_navigation();
+		# if it was good, use it, otherwise, we will continue below
+		if ($$custom_tools{menu}[0]) {
+			return $custom_tools;
+		}
+	}
+
 	# local vars
 	my ($n, $sn, %tools, $child_tool_key, $tool_key, %this_action, @navigation, $bookmark_broker, $bm, $tool_id);
+
 
 	# $n starts at 0
 	$n = 0;
@@ -458,6 +477,12 @@ to make this work, and our UI skeletons must all load this in right with omnitoo
 BTW, we have the load_javascript() method above for loading in JavaScripts from our 'static_files'
 directory.
 
+You can create a sub-class of ui.pm to override any of the methods here, as well as add a
+'custom_build_navigation()' method (see below).  To do that, create the sub-class as
+'custom_ui.pm' directly under your Applications Code Directory.  Override these methods VERY
+carefully.  The true use of this feature is if you are using a custom template skeleton, other
+than default.tt.  As of this writing, I have only used custom_build_navigation().
+
 =head2 new()
 
 Creates the ui.pm object, storing the %$luggage structure and $db obj within $self, for easy
@@ -504,6 +529,10 @@ Usage:
 
 Builds a array of hashes with the navigation links using the user'ss session
 in $self->{luggage}{session}.
+
+Will first try to run custom_build_navigation() if you have set up a custom_ui.pm class,
+and if that doesn't exist or doesn't return anything, it will continue with the standard
+navigation build.
 
 Usage:
 
