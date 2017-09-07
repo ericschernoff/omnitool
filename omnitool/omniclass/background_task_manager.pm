@@ -263,11 +263,13 @@ sub retrieve_task_details {
 	if ($args{run_status} eq 'will_run') {
 		$sql .= qq{ and status in ('Pending','Retry','Running') };
 	} elsif ($args{run_status} eq 'has_run') {
-		$sql .= qq{ and status in ('Completed','Error','Cancelled') };
+		$sql .= qq{ and status in ('Completed','Error','Cancelled','Warn') };
 	} elsif ($args{run_status} eq 'running') {
 		$sql .= qq{ and status = 'Running' };
 	} elsif ($args{run_status} eq 'error') {
 		$sql .= qq{ and status = 'Error' };
+	} elsif ($args{run_status} eq 'warn') {
+		$sql .= qq{ and status = 'Warn' };
 	}
 
 	# filter by method?

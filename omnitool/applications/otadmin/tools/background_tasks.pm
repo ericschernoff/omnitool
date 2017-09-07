@@ -158,6 +158,7 @@ sub perform_form_action {
 		'Completed' => ['check-square-o','blue'],
 		'Cancelled' => ['times-circle','blue','Retry'],
 		'Error' => ['exclamation-circle','red','Retry'],
+		'Warn' => ['info-circle','orange','Retry'],
 	};
 
 	# go through each task and prepare for display
@@ -312,8 +313,9 @@ sub generate_form {
 					'running' => 'Running Now',
 					'has_run' => 'Completed / Error',
 					'error' => 'Error Only',
+					'warn' => 'Warn Only',
 				},
-				'options_keys' => ['all','will_run','running','has_run','error'],
+				'options_keys' => ['all','will_run','running','has_run','error','warn'],
 				'preset' => $self->{luggage}{params}{run_status}
 			},
 			5 => {

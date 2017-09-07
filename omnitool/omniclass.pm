@@ -1369,7 +1369,12 @@ You can get or set the task's status like so:
 
 	$dt_obj->task_status($new_task_id,'Error','Error reason / message');
 
-Valid statuses for tasks are 'Pending','Completed','Cancelled','Error','Hold', and 'Retry'.
+	$dt_obj->task_status($new_task_id,'Warn','Error reason / message');
+
+Valid statuses for tasks are 'Pending','Completed','Cancelled','Error', 'Warn', 'Hold', and 'Retry'.
+The 'Warn' status is meant to be a 'soft' error, mainly so that you can exclude those tasks from any
+kind of daily/week report on errors.  Please use 'Warn' when the task either completed well enough,
+or it's failure is not critical to your life being happy.
 
 To retrieve the task ID and the method name for the next-to-run pending task for a record, you can:
 
