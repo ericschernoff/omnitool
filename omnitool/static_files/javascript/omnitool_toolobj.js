@@ -538,9 +538,9 @@ function Tool (tool_attributes) {
 			$("html, body").animate({ scrollTop: 0 }, "slow");
 		}
 
-		// if there is a wysiwig editor, transfer its text into the hidden variable
+		// if there is a wysiwig editor, transfer its text into the hidden variable (and trim leading/ending whitespace)
 		if ($('#'+this_tool_id+'_wyiswig').length > 0) {
-			$('#' + this_tool_id + '_wyiswig_transporter').val( $('#'+this_tool_id+'_wyiswig').html() );
+			$('#' + this_tool_id + '_wyiswig_transporter').val( $.trim( $('#'+this_tool_id+'_wyiswig').html() ) );
 		}
 
 		// submit the form
