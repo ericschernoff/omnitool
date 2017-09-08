@@ -88,7 +88,7 @@ sub connect_to_store {
 		# proceed with connection
 		my ($auth_url, $username, $password) = split /\|/, $self->{file_location};
 		$self->{swift_object} = omnitool::common::swiftstack_client->new(
-			'luggage' => $self->{luggage}, 
+			'luggage' => $self->{luggage},
 			'auth_url' => $auth_url,
 			'username' => $username,
 			'password' => $password,
@@ -102,11 +102,11 @@ sub connect_to_store {
 		my ($access_key_id, $secret_access_key) = split /\:/, $self->{file_location};
 		$self->{s3} = omnitool::common::aws_s3_client->new(
 			'luggage' => $self->{luggage},
-			'access_key_id' => $access_key_id, 
-			'secret_access_key' => $secret_access_key, 
+			'access_key_id' => $access_key_id,
+			'secret_access_key' => $secret_access_key,
 		);
 	}
-	
+
 }
 
 
@@ -249,7 +249,7 @@ sub retrieve_file {
 	eval {
 		if ($self->{file_storage_method} eq 'File System') {
 			$file = $self->load_from_filesystem($data_code,$file_info);
-	
+
 		} elsif ($self->{file_storage_method} eq 'Swift Store') {
 			$file = $self->load_from_swift($data_code,$file_info);
 
@@ -261,7 +261,7 @@ sub retrieve_file {
 	if ($@) { # there was an error: put that into the file contents
 		$file = $@;
 	}
-	
+
 	# if they want to send it to the client, let's do so and end here
 	if ($send_out) {
 		$self->{luggage}{belt}->mr_zebra(${$file}, 2, $$file_info{mime_type}, $$file_info{filename});
@@ -542,7 +542,7 @@ sub save_to_swift {
 		return;
 	}
 
-	# make sure we are connected	
+	# make sure we are connected
 	$self->connect_to_store();
 
 	# make sure the container exists
@@ -575,7 +575,7 @@ sub save_to_s3 {
 		return;
 	}
 
-	# make sure we are connected	
+	# make sure we are connected
 	$self->connect_to_store();
 
 	# have to fix the location
@@ -610,7 +610,7 @@ sub load_from_filesystem {
 	# the absolute path to the file will be in $$file_info{filepath}
 	# make sure it's there
 	if (!(-e "$$file_info{filepath}")) { # fatal error if not
-		$self->{luggage}{belt}->mr_zebra("ERROR: A $$file_info{filepath} could not be loaded.",1);
+		$self->{luggage}{belt}->mr_zebra("ERROR: $$file_info{filepath} could not be loaded.",1);
 	}
 
 	# otherwise, load it up and return the memory reference
@@ -638,7 +638,7 @@ sub load_from_swift {
 		$file_info = $self->load_file_info($data_code);
 	}
 
-	# make sure we are connected	
+	# make sure we are connected
 	$self->connect_to_store();
 
 	# pull it from the swift store.
@@ -675,7 +675,7 @@ sub load_from_s3 {
 	# no underscores in the location
 	$$file_info{location} =~ s/_/-/g;
 
-	# make sure we are connected	
+	# make sure we are connected
 	$self->connect_to_store();
 
 	# pull it from amazon s3
@@ -686,7 +686,7 @@ sub load_from_s3 {
     if ($@) { # if it's not there, show the error in the file and not a fatal error
 		$file = $@;
     }
-    
+
 	# it's already a memory reference
 	return $file;
 }
@@ -736,7 +736,7 @@ sub remove_from_swift {
 		$file_info = $self->load_file_info($data_code);
 	}
 
-	# make sure we are connected	
+	# make sure we are connected
 	$self->connect_to_store();
 
 	# remove from swift store - carefully
@@ -769,7 +769,7 @@ sub remove_from_s3 {
 	# no underscores in the location
 	$$file_info{location} =~ s/_/-/g;
 
-	# make sure we are connected	
+	# make sure we are connected
 	$self->connect_to_store();
 
 	# remove from S3 - carefully
@@ -888,9 +888,9 @@ Usage:
 	Sends out the file to the web client.
 
 Something kind of nice is that OmniClass will automatically virtual fields with links to download
-uploaded files via the Web UI.  If a Datatype has a file upload field named 'dog_picture', then a 
-virtual field named 'dog_picture_download' will be created.  (So long as 'skip_hooks' is not set, 
-of course.)  
+uploaded files via the Web UI.  If a Datatype has a file upload field named 'dog_picture', then a
+virtual field named 'dog_picture_download' will be created.  (So long as 'skip_hooks' is not set,
+of course.)
 
 This is codeless; all you have to is select the Virtual Field ending in 'Download' when configure
 your Tool View Mode in the OmniTool Admin UI.

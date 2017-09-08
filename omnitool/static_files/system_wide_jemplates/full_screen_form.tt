@@ -148,7 +148,7 @@
 
 				&nbsp; &nbsp; &nbsp;
 
-				[% IF return_link_uri %]
+				[% IF return_link_uri && return_link_uri !='#/tools/' %]
 					<a class="btn hidden-1025" href="[%return_link_uri%]" role="button">
 						<i class="ace-icon fa fa-undo bigger-110"></i>
 						Cancel / Return
