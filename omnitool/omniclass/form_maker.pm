@@ -368,6 +368,11 @@ sub setup_field {
 			$$form{fields}{$key}{preset} = $self->{datatype_info}{fields}{$field}{default_value};
 		}
 
+		# if it's a date field with no preset, use today
+		if ($$form{fields}{$key}{field_type} eq 'simple_date' && !$$form{fields}{$key}{preset}) {
+			$$form{fields}{$key}{preset} = $self->{belt}->todays_date();
+		}
+
 		# if this is a street address, we have to break up our preset into the six parts
 		# any saved portion will be already combined into one text block, each piece on its own line
 		if ($$form{fields}{$key}{field_type} eq 'street_address') {
