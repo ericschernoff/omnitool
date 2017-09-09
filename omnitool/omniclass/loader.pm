@@ -164,7 +164,7 @@ sub load {
 		$self->{metainfo} = $metainfo;
 		$self->{records_keys} = $r_keys;
 	}
-		
+
 	# Here is where we run the hooks to generate the virtual fields
 	# hint: anything at all can happen in one of these, so be creative;
 	if (!$self->{skip_hooks} && !$args{skip_hooks}) {
@@ -192,7 +192,7 @@ sub load {
 				($file_upload_field = $table_column) =~ s/_download//;
 
 				# and now call our virtual hook to get those links
-				# $self->download_virtual_field($file_upload_field);
+				$self->download_virtual_field($file_upload_field);
 
 			# otherwise, it's a pure hook method
 			} elsif ($self->can($method)) {
@@ -200,7 +200,7 @@ sub load {
 			}
 
 		}
-		
+
 	}
 
 	# do they want a complex sort?
