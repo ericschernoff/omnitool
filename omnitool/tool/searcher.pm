@@ -97,7 +97,7 @@ sub search {
 		'sort_direction' => $self->{display_options}{sort_direction},
 		'limit_results' => 500, # hard limit to prevent memory issues
 	);
-	
+
 	# debug code
 	# $self->{belt}->benchmarker('Search run');
 	# $self->{belt}->logger($self->{searches},'eric');
@@ -187,7 +187,7 @@ sub search {
 	if ($self->can('json_results_modify')) {
 		$self->json_results_modify();
 	}
-	
+
 }
 
 # if we are refreshing one record in our results list, we may need to load a single, specific result
@@ -455,14 +455,14 @@ sub get_inline_actions {
 			# note that there are some inline-actions for the template
 			$self->{found_inline_actions} = 1 if !$self->{found_inline_actions};
 		}
-		
+
 		# keep track of the maximum number of inline actions for records in this tool
 		if ($self->{omniclass_object}->{records}{$record}{inline_actions}) {
 			$actions_found_count = scalar(@{ $self->{omniclass_object}->{records}{$record}{inline_actions} });
 			$self->{max_actions_per_record} = $actions_found_count if !$self->{max_actions_per_record} || $self->{max_actions_per_record} < $actions_found_count;
 			# this is used in Table.tt to determine what type of action menu to show
 		}
-		
+
 		# set the first inline tool's uri as the 'default' tool uri for this record
 		$self->{omniclass_object}->{records}{$record}{default_inline_tool} = $self->{omniclass_object}->{records}{$record}{inline_actions}[0]{uri};
 
@@ -538,18 +538,18 @@ sub build_search {
 
 		# month-chooser?  have to adjust the 'match_column' based on the target column's name
 		} elsif ($self->{display_options}{$value_key} && $$this_tool_filter_menu{menu_type} eq 'Month Chooser') {
-			
+
 			if ($$this_tool_filter_menu{applies_to_table_column} =~ /date/) { # YYYY-MM-DD date
 				$$searches[$n]{match_column} = 'date_format('.$$this_tool_filter_menu{applies_to_table_column}.qq{,'%M %Y')};
 			} else { # going to be a unix epoch
 				$$searches[$n]{match_column} = 'from_unixtime('.$$this_tool_filter_menu{applies_to_table_column}.qq{,'%M %Y')};
 			}
-			
+
 			# can only be = or != operators for this
 			if ($$searches[$n]{operator} ne '=' && $$searches[$n]{operator} ne '!=') {
 				$$searches[$n]{operator} = '=';
 			}
-			
+
 			# going to need this
 			$$searches[$n]{match_value} = $self->{display_options}{$value_key};
 
@@ -672,7 +672,8 @@ sub build_search {
 sub charting_json {
 	my $self = shift;
 
-	my ($backgroundColors, $chart_type, $labels, $n, $possible_colors, $record, $the_data, $first_field, $second_field, $chart_data_keys, $chart_data, $label);
+	my ($backgroundColors, $chart_type, $labels, $n, $possible_colors, $record, $the_data, $first_field, $second_field, $chart_data_keys, $chart_data, $label, $target_dtfield, @dt_fields);
+
 	# re-run the search with the criteria they submitted
 	# and that will put the results in $self->{json_results}{records} and
 	# $self->{json_results}{records_keys} for you to build up 'datasets' below
@@ -696,7 +697,18 @@ sub charting_json {
 
 	# get the first and second included fields
 	$first_field = $self->{included_records_fields}[0];
-	$second_field = $self->{included_records_fields}[1];
+
+	# maybe that second field is a virtual field - if so, use the sort column value
+	@dt_fields = split /,/, $self->{this_mode_config}{fields_to_include};;
+	$target_dtfield = $dt_fields[1];
+	if ($self->{omniclass_object}->{datatype_info}{fields}{$target_dtfield}{sort_column}) { # only if filled
+		$second_field = $self->{omniclass_object}->{datatype_info}{fields}{$target_dtfield}{sort_column};
+
+	# otherwise, use regular
+	} else {
+		$second_field = $self->{included_records_fields}[1];
+	}
+
 
 	# determine the chart type based on the tool view mode name
 	if ($self->{this_mode_config}{display_a_chart} =~ /line/i) {
