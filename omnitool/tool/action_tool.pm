@@ -42,8 +42,14 @@ sub run_action {
 		($parent_tool_datacode = $self->{attributes}{parent}) =~ s/8_1://;
 	}
 
-	$self->{json_results}{return_link_uri} = '#/tools/'.$self->{luggage}{session}{tools}{$parent_tool_datacode}{uri_path_base};
-	$self->{json_results}{return_link_title} = $self->{luggage}{session}{tools}{$parent_tool_datacode}{name};
+	# the parent tool is the return link, unless there is no parent
+	if ($self->{luggage}{session}{tools}{$parent_tool_datacode}{uri_path_base}) {
+		$self->{json_results}{return_link_uri} = '#/tools/'.$self->{luggage}{session}{tools}{$parent_tool_datacode}{uri_path_base};
+		$self->{json_results}{return_link_title} = $self->{luggage}{session}{tools}{$parent_tool_datacode}{name};
+	} else { # in which case, the current tool is the return; think a top-level singleton
+		$self->{json_results}{return_link_uri} = '#/tools/'.$self->{attributes}{uri_path_base};
+		$self->{json_results}{return_link_title} = $self->{attributes}{name};
+	}
 
 	# so the previous/next buttons can work
 	$self->{json_results}{parent_tool_id} = $self->{luggage}{app_instance}.'_'.$parent_tool_datacode;
