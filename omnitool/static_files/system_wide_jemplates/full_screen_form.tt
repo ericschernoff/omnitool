@@ -41,9 +41,19 @@
 			</div>
 		[% END %]
 
-		<div class="clearfix center h4">
-			<a href="[%return_link_uri%]">Return to [%return_link_title%]</a>
-		<div>
+		[% IF button_text %]
+			<div class="clearfix center h4">
+			<button class="btn btn-white btn-sm" onclick="tool_objects['[%the_tool_id%]'].refresh_json_data()">
+				[% button_text %]
+				<i class="fa fa-refresh green"></i>
+			</button>
+			</div>
+
+		[% ELSIF return_link_uri %]
+			<div class="clearfix center h4">
+				<a href="[%return_link_uri%]">Return to [%return_link_title%]</a>
+			<div>
+		[% END %]
 
 	[% ELSE %]
 		<!-- need to display the form -->
@@ -70,7 +80,7 @@
 		[% END %]
 
 		[% IF form.instructions %]
-			<div class="alert alert-block">
+			<div class="alert alert-block center">
 				[% form.instructions %]
 			</div>
 		[% ELSE %]
