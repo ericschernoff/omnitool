@@ -90,8 +90,8 @@ sub new {
 		($app_instance_info,$appinst_keys) = $args{db}->sql_hash(qq{
 			select concat(i.code,'_',i.server_id), concat(a.code,'_',a.server_id), i.hostname, i.database_server_id,
 			ds.hostname, i.database_name, i.contact_email, a.contact_email, a.appwide_search_function, a.appwide_search_name,
-			a.appwide_quickstart_tool_uri, i.name, i.access_roles, i.switch_into_access_roles, i.file_storage_method, i.file_location, 
-			a.ui_template, a.ui_navigation_placement, a.ui_ace_skin, i.ui_logo, 
+			a.appwide_quickstart_tool_uri, i.name, i.access_roles, i.switch_into_access_roles, i.file_storage_method, i.file_location,
+			a.ui_template, a.ui_navigation_placement, a.ui_ace_skin, i.ui_logo,
 			a.lock_lifetime, a.app_code_directory, a.description, i.description, i.uri_base_value
 			from instances i, applications a, database_servers ds
 			where i.parent=concat('1_1:',a.code,'_',a.server_id) and i.database_server_id=ds.code
