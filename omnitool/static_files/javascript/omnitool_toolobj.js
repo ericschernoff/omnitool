@@ -386,7 +386,7 @@ function Tool (tool_attributes) {
 
 	// function support empowering auto-complete fields
 	// looks for two args:  the name of the method to run on the server-side (which should return a JSON array),
-	// and the actual field objecct (not an identifier, pass in $('#field')
+	// and the actual field objecc (not an identifier, pass in $('#field')
 	this.auto_complete_fields = function(server_side_method_name,field) {
 		// set up the autocomplete, point it at the server-side tool method and respond with the data
 		// jquery.ui makes this quite easy
@@ -456,7 +456,7 @@ function Tool (tool_attributes) {
 		if (!($("#modal-loading").hasClass('in'))) {
 			loading_modal_display('Loading Menu...');
 			showed_modal = 1;
-		}		
+		}
 
 		// fetch the options from the server and put them into that target menu
 		$.when( query_tool(this['tool_uri'] + '/' + method_name ,post_data_object) ).done(function(data) {

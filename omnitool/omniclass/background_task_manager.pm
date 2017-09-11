@@ -63,7 +63,7 @@ sub add_task {
 
 	# really set delay_hours to 0 if blank
 	$args{delay_hours} ||= 0;
-	
+
 	# if they passed a unix epoch in the future for 'not_before_time,' use that
 	if ($args{not_before_time} < time()) { # otherwise, calculate
 		$args{not_before_time} =  time() + ($args{delay_hours} * 3600);
@@ -569,16 +569,20 @@ sub do_task {
 	# get the current time, for logging purposes
 	$human_time = $self->{belt}->time_to_date(time(),'to_date_human_time');
 
-	if ($result eq '1' || $result eq 'Success') { # be flexibile in life
-		$self->task_status($task_id, 'Completed');
+	if ($result eq '1' || $result eq 'Success' || $result eq 'Warn') { # be flexibile in life
+		# it can only be 'Completed' or 'Warn'
+		$result = 'Completed' if $result ne 'Warn';
+
+		$self->task_status($task_id, $result);
 
 		# we want to also log to $OTHOME/log
+		$status_message = 'Warn: '.$status_message if $result eq 'Warn';
 		$self->{belt}->logger(qq{$human_time | Task $task_id | $method() | $data_code | $status_message},'task_execute_success_'.$self->{database_name});
 
 	# otherwise, it failed and we may need to auto-try it in four hours or just log the status message
 
 	} else {
-	
+
 		# if it failed due to a hard-error (probably due to connectivity) give it another
 		# shot in one hour; only do this once (and check that via the 'auto_retried' column)
 		if (!$auto_retried && $do_auto_retry) {
@@ -592,15 +596,15 @@ sub do_task {
 					where concat(code,'_',server_id)=?
 				},
 				[$not_before_time, $task_id]
-			);			
-		
+			);
+
 		# otherwise, let's mark the item as error
 		} else {
-		
+
 			$self->task_status($task_id, 'Error', $status_message);
 
 		}
-		
+
 		# either way, we want to also log to $OTHOME/log
 		$self->{belt}->logger(qq{$human_time | Task $task_id | $method() | $data_code | }.$status_message,'task_execute_errors_'.$self->{database_name});
 
