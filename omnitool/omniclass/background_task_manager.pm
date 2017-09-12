@@ -573,7 +573,7 @@ sub do_task {
 		# it can only be 'Completed' or 'Warn'
 		$result = 'Completed' if $result ne 'Warn';
 
-		$self->task_status($task_id, $result);
+		$self->task_status($task_id, $result, $status_message);
 
 		# we want to also log to $OTHOME/log
 		$status_message = 'Warn: '.$status_message if $result eq 'Warn';

@@ -211,6 +211,9 @@ sub form {
 			# ...or a loaded-record preset
 			} elsif ($self->{records}{$data_code}{$params_key}) { # loaded-record
 				$$form{hidden_fields}{$params_key} = $self->{records}{$data_code}{$params_key};
+
+			} elsif ($self->{datatype_info}{fields}{$field}{default_value}) {
+				$$form{hidden_fields}{$params_key} = $self->{datatype_info}{fields}{$field}{default_value};
 			}
 
 		# otherwise, call our friendly method again
