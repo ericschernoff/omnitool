@@ -304,7 +304,7 @@ sub setup_field {
 			'name' => $$form{the_params_key}.'name',
 			'field_type' => 'short_text',
 			'is_required' => 1,
-			'instructions' => 'Required.',
+			# 'instructions' => 'Required.',
 		};
 
 		# figure name preset; more notes on presets below
@@ -338,7 +338,7 @@ sub setup_field {
 		# whether or not the validate_form should enforce field requirements
 		if ($self->{datatype_info}{fields}{$field}{is_required} eq 'Yes') {
 			$$form{fields}{$key}{is_required} = 1;
-			$$form{fields}{$key}{instructions} = 'Required. '.$$form{fields}{$key}{instructions};
+			# $$form{fields}{$key}{instructions} = 'Required. '.$$form{fields}{$key}{instructions};
 		}
 
 		# if it's an encrypted field, note in the instructions
