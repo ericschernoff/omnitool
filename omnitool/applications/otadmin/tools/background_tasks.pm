@@ -207,7 +207,7 @@ sub perform_form_action {
 		# $$tasks{$task}{status_info}[1]{text} = $$tasks{$task}{error_message} if $$tasks{$task}{error_message};
 		if ($$tasks{$task}{error_message}) {
 			push(@{$$tasks{$task}{status_info}},{
-				'text' => 'View Error Message',
+				'text' => 'View Message',
 				'message_uri' => $self->{my_base_uri}.'/view_error_message?task='.$task,
 			});
 		}
