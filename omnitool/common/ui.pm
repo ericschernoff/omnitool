@@ -607,6 +607,22 @@ Otherwise, it relies on the 'jemplate' CGI param being filled in.
 Please note some of the 'false' methods created in AUTOLOAD() which utilize send_jemplate() to
 send out some system-wide Jemplates.
 
+How about a nice update?  You can call in your application-specific Jemplates by prepending 
+'jemplates/' to the filename you send.  So you can add something like this to your 
+application_extra_skeleton_classes.tt file (which is under $app_code_directory/javascript):
+
+<script src="/ui/send_jemplate?jemplate=jemplates/my_great_jemplate.tt[%uri_base_param_amp%]"></script>
+
+Substituting out 'my_great_jemplate.tt' for the filename.  Make sure that file only contains a 
+[% BLOCK %] of Jemplate goodness to be used in your custom Tool View Mode Jemplates or via 
+custom JavaScript like this:
+
+	data.block_name = 'my_great_jemplate_block';
+	jemplate_bindings['process_any_div'].element_id = '#target_div_id';
+	jemplate_bindings['process_any_div'].process_json_data(data);
+
+Nice and easy ;)
+
 =head tools_javascript_classes()
 
 Also invoked at the bottom of the UI skeleton file.  Combines and ships back all of the static
