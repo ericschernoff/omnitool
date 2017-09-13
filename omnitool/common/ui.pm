@@ -281,6 +281,7 @@ sub build_navigation {
 
 # method to send out a system-level template for client-side processing in Jemplate (see utility_belt.pm notes)
 # 'system-level' means it lives in $ENV{OTHOME}/code/omnitool/static_files/templates
+# update: relenting; you can pass 'jemplates/file_name.tt' to use something in your app-level directory
 sub send_jemplate {
 	my $self = shift;
 
@@ -289,8 +290,20 @@ sub send_jemplate {
 
 	$self->{luggage}{params}{jemplate} = $jemplate_file if $jemplate_file;
 
-	# send the file, if specified
-	if ($self->{luggage}{params}{jemplate}) {
+	# okay, okay, let's relent and allow for application-specific jemplates to be called in
+	# via application_extra_skeleton_classes.tt
+	if ($self->{luggage}{params}{jemplate} =~ /jemplates\//) {
+		my $app_inst = $self->{luggage}{app_inst};
+		my $app_code_directory = $self->{luggage}{session}{app_instance_info}{app_code_directory};
+
+		# the utility belt does all the heavy lifting ;)
+		return $self->{luggage}{belt}->jemplate_process(
+			'template_file_paths' => [ $ENV{OTHOME}.'/code/omnitool/applications/'.$app_code_directory.'/'.$self->{luggage}{params}{jemplate} ],
+			# 'stop_here' => 1,
+		);
+
+	# otherwise, send the system file, if specified
+	} elsif ($self->{luggage}{params}{jemplate}) {
 		# the utility belt does all the heavy lifting ;)
 		return $self->{luggage}{belt}->jemplate_process(
 			'template_file_paths' => [ $self->{luggage}{params}{jemplate} ],

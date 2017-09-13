@@ -533,7 +533,6 @@ sub jemplate_process {
 	# make sure we have 'template_name' filled if we are using 'template_content'
 	$args{template_content} = '' if !$args{template_name};
 
-
 	# log an error if no process-able template files found
 	if (!$template_files[0] && !$args{template_content}) {
 		$args{template_file_paths}[0] = 'NO FILES SENT' if !$args{template_file_paths}[0];
