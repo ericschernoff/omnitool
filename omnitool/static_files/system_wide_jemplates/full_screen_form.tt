@@ -101,8 +101,18 @@
 			[% SET field_type = form.fields.$f.field_type %]
 
 			[% IF field_type == 'just_text' %]
-				<div class="form-group center [% form.fields.$f.class %]" id="field_div_[%form.fields.$f.name%]">
-					[% form.fields.$f.preset %]
+				<div class="form-group [% form.fields.$f.class %]" id="field_div_[%form.fields.$f.name%]">
+					<label class="col-sm-3 control-label no-padding-right" for="form-field-[%f%]">
+						[% form.fields.$f.title %]
+					</label>
+
+					<div class="col-sm-7">
+						<div id="field_content_[%form.fields.$f.name%]">
+							<div class="text-center">
+								[% form.fields.$f.preset %]
+							</div>
+						</div>
+					</div>
 				</div>
 			[% ELSE %]
 				<div class="form-group [% form.fields.$f.class %]" id="field_div_[%form.fields.$f.name%]">
