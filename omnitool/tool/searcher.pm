@@ -641,8 +641,8 @@ sub build_search {
 	}
 
 	# what if no searches found?
-	# this search tool may require at least one search be defined
-	if ($n < $self->{attributes}{menus_required_for_search} && !$$searches[$n]{match_value} && $self->{attributes}{menus_required_for_search}) {
+	# this search tool may require one or more searches to be defined
+	if ($n < $self->{attributes}{menus_required_for_search} && $self->{attributes}{menus_required_for_search}) {
 		$self->{wide_search_blocked} = 1;
 	# otherwise, it allows super-wide searching, we'll match all records and limit to 500 items
 	} elsif (!$$searches[$n]{match_value} && $n == 0) {

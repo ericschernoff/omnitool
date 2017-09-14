@@ -256,35 +256,25 @@ sub search {
 			);
 		}
 
-		# if we are using a second/foreign table and the relationship_column does not relate to the main
-		# table's primary key, then the 'primary_table_column' tells us how to relate the results we just found
-		# to our datatype's table.
-		if ($table_key ne $primary_table && $$sql_query_plans{$table_key}{primary_table_column} && $$results[0]) {
+		# if we are using a second/foreign table then the 'primary_table_column' tells us how to relate 
+		# the results we just found to our datatype's table.
+		if ($table_key ne $primary_table && $$sql_query_plans{$table_key}{primary_table_column}) {
+			# fail the query if nothing was matched
+			$$results[0] ||= 'Ginger_Polly';
+
 			# we need the number of question marks of the results found in this query
 			$question_marks = $self->{belt}->q_mark_list(scalar(@$results));
-
-			# now resolve the results we found for 'relationship_column' to the primary key of our main table via
-			# the 'primary_table_column' table column on our datatype's table
-			$foreign_results = $self->{db}->list_select(
-				qq{select concat(code,'_',server_id) from }.$primary_table.
-				qq{ where $$sql_query_plans{$table_key}{primary_table_column} in ($question_marks)},
-				$results
-			);
-
-			# fail the query if nothing was matched
-			$$foreign_results[0] ||= 'Ginger_Polly';
 
 			# okay, so we will pull these into the primary table query, which will run last
 			# load this into the query plan for that primary table
 			$$sql_query_plans{$primary_table}{relationship_column} = qq{concat(code,'_',server_id)};
-			$question_marks = $self->{belt}->q_mark_list(scalar(@$foreign_results));
 			push (
 				@{ $$sql_query_plans{$primary_table}{query_logic} },
-				qq{ ( concat(code,'_',server_id) in ($question_marks) ) }
+				qq{ $$sql_query_plans{$table_key}{primary_table_column} in ($question_marks) }
 			);
 			push (
 				@{ $$sql_query_plans{$primary_table}{bind_values} },
-				@$foreign_results
+				@$results
 			);
 
 			# now do not add these @$results
