@@ -732,7 +732,7 @@ which were sent before.  You do have to supply all of the arguments if you want 
 but the most useful bit is being able to call the same exact search over and over. Very nice for keeping
 multiple folks' screens updated as they each make changes.
 
-Here is an xample query for cross-table relationships, since I feel like my explanation was kind of terrible:
+Here is an example query for cross-table relationships, since I feel like my explanation was kind of terrible:
 
 	# Find cities over 10,000 residents in Japan, with countries in a separate table.
 	$cities_object->search(
@@ -755,9 +755,34 @@ Here is an xample query for cross-table relationships, since I feel like my expl
 	The records for cities in Japan with more than 10,000 residents would be in $cities_object->{records} now,
 	with the found keys in $cities_object->{search_results}.
 
+=head2 simple_search()
+
+Utility method to save typing when your search() query only involves 'equals' tests and all match columns
+are in the primary table.  Perfect for when you just want to find load records where status='Active' or 
+similar tests.  You can also pass 'auto_load' => 1 to automatically load any found results; use the
+regular search() method for anything fancier.
+
+Usage:
+
+	$dt_obj->simple_search(
+		'field_one' => $field_one_match_val,
+		'field_two' => $field_two_match_val, # at least one of these is require
+		'auto_load' => 1, # optional; will auto-load the results
+	);
+	
+Exmaple:
+
+	$family_object->simple_search(
+		'type' => 'Dog',
+		'name' => 'Pollywocket',
+		'auto_load' => 1,
+	);
+
+	# will load up all the dogs in your family named Pollywocket ;)
+
 =head2 save()
 
-Somewhat important method: This is where we create and update data in OmniTool.
+Slightly important method: This is where we create and update data in OmniTool.
 
 	$dt_obj->save(
 		# args for idenitfying the record

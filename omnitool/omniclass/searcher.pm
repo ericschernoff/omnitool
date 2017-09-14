@@ -420,4 +420,49 @@ sub find_duplicates {
 	return ($duplicate_records,$duplicate_records_keys);
 }
 
+# utility method to reduce typing for simple searches, which are those where
+# all the match_column's are in the primary table and all the operator's are =
+# send a hash of match_column=>match_value pairs and it will run the bigger search() for yo
+# also include 'auto_load' => 1 in your hash to auto-load the results; use search() if you
+# need anything fancier
+sub simple_search {
+	my $self = shift;
+	
+	my (%args) = @_;
+	
+	# fail of they did not send a hash
+	if (ref(\%args) ne 'HASH') {
+		$self->{search_found_count} = 0;
+		$self->{search_results} = [];
+		return;
+	}
+	
+	# otherwise, continue
+	my ($search_options, $match_column);
+	
+	# build out our 'search_options' arrays
+	foreach $match_column (keys %args) {
+		next if $match_column eq 'auto_load' || !$args{$match_column};
+		push(@$search_options,{
+			$match_column => $args{$match_column}
+		});
+	}
+	
+	# fail if they did not send at least one good search
+	if (!$$search_options[0]) {
+		$self->{search_found_count} = 0;
+		$self->{search_results} = [];
+		return;	
+	}
+	
+	# now run the search
+	$self->search(
+		'search_options' => $search_options,
+		'auto_load' => $args{auto_load}
+	);
+	
+	# phew! what a long bit of code to write.  time for a break.
+
+}
+
 1;
