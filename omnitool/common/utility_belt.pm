@@ -985,7 +985,7 @@ sub template_process {
 	# can contain: include_path, template_file, template_vars, send_out, stop_here
 
 	# declare vars
-	my ($output, $tt);
+	my ($output, $tt, $tt_error);
 
 	# default include path
 	if (!$args{include_path}) {
@@ -1016,7 +1016,11 @@ sub template_process {
 	# $self->logger("Looking for $args{template_file} in $args{include_path}",'eric');
 
 	# process the template
-	$tt->process($args{template_file},$args{template_vars}, $output, {binmode => ':encoding(utf8)'}) || $self->mr_zebra($tt->error(),1);
+	$tt->process($args{template_file},$args{template_vars}, $output, {binmode => ':encoding(utf8)'});
+	
+	# make sure to throw error if there is one
+	$tt_error = $tt->error();
+	$self->mr_zebra("Template Error in $args{template_file}: $tt_error",1) if $tt_error;
 
 	# send it out to the client or return to the caller
 	if ($args{send_out}) {

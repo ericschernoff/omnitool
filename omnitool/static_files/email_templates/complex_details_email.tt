@@ -112,6 +112,11 @@
 	</td></tr></tbody></table>
 [% END %]
 
+[% IF email_vars.web_link.uri %]
+	<table width="100%" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;"><tbody><tr><td width="100%" style="font-family: Arial, sans-serif; line-height: 26px; color: red; font-size: 24px; font-weight: 500; margin-top: 0px; margin-right: 0px; margin-left: 0px; padding-bottom: 16px; padding-top: 7px; border-bottom-width: 1px; border-bottom-style: dotted; border-bottom-color: #e2e2e2;" valign="top" align="left">
+		<a href="[%email_vars..web_link.uri%]">[%email_vars.web_link.text%]</a>
+	</td></tr></tbody></table>
+[% END %]
 
 [% FOREACH tab_key IN email_vars.tabs.keys.sort %]
 	[%# skip if not supported type %]
