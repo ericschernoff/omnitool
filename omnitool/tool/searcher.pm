@@ -95,7 +95,8 @@ sub search {
 		'auto_load' => 1,
 		'sort_column' => $self->{display_options}{sort_column},
 		'sort_direction' => $self->{display_options}{sort_direction},
-		'limit_results' => 500, # hard limit to prevent memory issues
+		# let's try no limits for now
+		# 'limit_results' => 500, # hard limit to prevent memory issues
 	);
 
 	# debug code
@@ -648,7 +649,9 @@ sub build_search {
 		$$searches[$n]{match_column} = 'code';
 		$$searches[$n]{operator} = '>';
 		$$searches[$n]{match_value} = '0';
-		$self->{limit_results} = 500; # will pass to omniclass->search()
+		
+		# let's try no limits for now
+		# $self->{limit_results} = 500; # will pass to omniclass->search()
 	}
 
 	# assign the searches to $self for use above
