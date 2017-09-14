@@ -74,14 +74,18 @@
 							</div>
 						[% END %]
 
+						[%# set the large/medium col-size based on the number of columns
+								which will either be 2 or 3, so the value will be 4 or 6 %]
+						[% SET mdlg_column_size = 12 / tabs.$tab_key.data.size %]
+					
 						<div class="row">
 						[% IF tabs.$tab_key.type == 'info_groups' %]
 							[% FOREACH data_set IN tabs.$tab_key.data %]
-								<div class="col-xs-12 col-lg-4 col-md-4 col-sm-6">
+								<div class="col-xs-12 col-lg-[%mdlg_column_size%] col-md-[%mdlg_column_size%] col-sm-6">
 									<div class="profile-user-info">
 									[% FOREACH data_pair IN data_set %]
 										<div class="profile-info-row">
-											<div class="profile-info-name"> [% data_pair.0 %] </div>
+											<div class="profile-info-name text-nowrap"> [% data_pair.0 %] </div>
 											<div class="profile-info-value">
 											[% IF data_pair.1.0.uri != '' %]
 												[% FOREACH link_set IN data_pair.1 %]
