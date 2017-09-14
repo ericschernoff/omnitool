@@ -115,6 +115,9 @@ sub put_object {
 		$self->{luggage}{belt}->mr_zebra(qq{Error: swiftstack_client->put_object() requires three arguments: the container, the object_name, and the contents for the new object.},1);
 	}
 
+	# make sure the container is there
+	$self->put_container($container_name);
+
 	# prepare the request
 	my $req = HTTP::Request->new(PUT => $self->{storage_url}.'/'.$container_name.'/'.$object_name);
 		$req->header( 'X-Auth-Token' => $self->{auth_token} );
