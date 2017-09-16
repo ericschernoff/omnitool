@@ -10,8 +10,8 @@ by OmniTool.  Please see extensive notes in omniclass.pm
 $omnitool::omniclass::saver::VERSION = '6.0';
 # new way of doing something we've done in the past
 
-# time to grow up...but doesn't work right yet
-# use strict;
+# time to grow up
+use strict;
 
 # kick off the routine to find our data!
 sub save {
@@ -121,7 +121,7 @@ sub save {
 
 		# figure the params keys
 		$table_column = $self->{datatype_info}{fields}{$field}{table_column};
-		$params_key = $self->figure_the_key($table_column,$args);
+		$params_key = $self->figure_the_key($table_column,$args_ref);
 
 		# skip if blank
 		next if !$self->{luggage}{params}{$params_key};
@@ -203,7 +203,7 @@ sub do_create {
 		$self->{server_id}.','.$q_mark_list.')',
 		\@values
 	);
-	
+
 	# determine the new 'data_code' primary key
 	$data_code = $self->{db}->{last_insert_id}.'_'.$self->{server_id};
 
@@ -434,7 +434,7 @@ sub altcode_maker {
 	# need myself and my args
 	my $self = shift;
 	my ($args) = @_;
-	my ($month_year, $table_name);
+	my ($month_year, $table_name, $proposed_altcode);
 
 	# get month abbreviation from utility belt
 	$month_year = $self->{belt}->time_to_date(time(),'to_month_abbrev');
@@ -443,7 +443,20 @@ sub altcode_maker {
 	($table_name = $self->{table_name}) =~ s/_//g;
 
 	# mash together the month, username, table name, and auto_increment column, and send that mess out
-	return $month_year.$self->{luggage}{username}.'_'.$table_name.$self->{db}->{last_insert_id};
+	$proposed_altcode = $month_year.$self->{luggage}{username}.'_'.$table_name.$self->{db}->{last_insert_id};
+
+	# if that's more than 50 chars, try a version without the username
+	if (length($proposed_altcode) > 50) {
+		$proposed_altcode = $month_year.'_'.$table_name.$self->{db}->{last_insert_id};
+		# still over 50 chars? really stripped down version
+		if (length($proposed_altcode) > 50) {
+			$proposed_altcode = $month_year.'_'.$self->{dt}.'_'.$self->{db}->{last_insert_id};
+		}
+	}
+	# that is not the right way to handle that logic, but I still like it.
+
+	# send it out
+	return $proposed_altcode;
 
 }
 
@@ -491,20 +504,20 @@ sub figure_the_key {
 sub simple_save {
 	my $self = shift;
 	my (%args) = @_;
-	
+
 	my (@sent_keys, $data_code);
-	
+
 	# did they send a data code?
 	if ($args{data_code}) { # yes
 		$data_code = $args{data_code};
 		# don't pass that value into the save() params
 		delete($args{data_code});
-	
-	# no -- is there a loaded record?	
+
+	# no -- is there a loaded record?
 	} elsif ($self->{data_code}) {
 		$data_code = $self->{data_code};
 	}
-	
+
 	# if there is no data_code, we cannot proceed
 	if (!$data_code) {
 		$self->work_history(0,"ERROR: Can not use simple_save() without a data_code either passed in the args or a pre-loaded record.");
@@ -517,7 +530,7 @@ sub simple_save {
 		$self->work_history(0,"ERROR: Can not use simple_save() some params to send to save().");
 		return;
 	}
-	
+
 	# okay, send the command to save() to update the fields
 	$self->save(
 		'data_code' => $data_code,
