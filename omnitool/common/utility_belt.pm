@@ -172,9 +172,9 @@ sub date_fix {
 
 	# simple enough
 	if ($dt->month_abbr eq 'May') {
-		return 'May '.$dt->day.', '.$year;
+		return 'May '.$dt->day.', '.$dt->year;
 	} else {
-		return $dt->month_abbr.'. '.$dt->day.', '.$year;
+		return $dt->month_abbr.'. '.$dt->day.', '.$dt->year;
 	}
 }
 
@@ -1017,7 +1017,7 @@ sub template_process {
 
 	# process the template
 	$tt->process($args{template_file},$args{template_vars}, $output, {binmode => ':encoding(utf8)'});
-	
+
 	# make sure to throw error if there is one
 	$tt_error = $tt->error();
 	$self->mr_zebra("Template Error in $args{template_file}: $tt_error",1) if $tt_error;

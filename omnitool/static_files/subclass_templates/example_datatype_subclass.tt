@@ -41,7 +41,7 @@ sub field_XYZ {
 
 =cut
 	Quick example - not for real use.
-	foreach $r (@{$self->{records_keys}}) {
+	foreach my $r (@{$self->{records_keys}}) {
 		$self->{records}{$r}{enhanced_name}[0] = {
 			'text' => $self->{records}{$r}{name},
 			'uri' => '#/tools/ot_admin/tools_mgr/'.$self->{metainfo}{$r}{altcode},
