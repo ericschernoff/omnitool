@@ -26,6 +26,10 @@ $omnitool::omniclass::email_creator::VERSION = '6.0';
 # for sending out email
 use Email::Stuff;
 use Net::Domain qw(hostdomain);
+use File::Slurp;
+
+# for getting file manager objects
+use omnitool::common::file_manager;
 
 # time to grow up
 use strict;
@@ -175,7 +179,7 @@ sub send_outbound_email {
 	# if it's blank, we shall try to send the next 20 queued emails
 
 	# declare our vars
-	my ($pause_background_tasks, @driver_options, $db_status, $default_domain, $driver_name, $email_ids_list, $email_ids, $email_key, $email_keys, $email_password, $email_sending_info_encrypted, $email_sending_info, $email_username, $emails_to_send, $error_logfile, $file_contents, $file_id, $file_info, $mailer, $now, $protocol, $q_marks_list, $recipient, $send_logfile, $server_hostname);
+	my ($pause_background_tasks, @driver_options, $db_status, $default_domain, $driver_name, $email_ids_list, $email_ids, $email_key, $email_keys, $email_password, $email_sending_info_encrypted, $email_sending_info, $email_username, $emails_to_send, $error_logfile, $file_contents, $file_id, $file_info, $mailer, $now, $protocol, $q_marks_list, $recipient, $send_logfile, $server_hostname, $file_attachment);
 
 	# support multiple worker nodes, defaulting to 1
 	$ENV{WORKER_ID} ||= 1;
@@ -345,12 +349,25 @@ sub send_outbound_email {
 
 			# attach any files?
 			$$emails_to_send{$email_key}{attached_files} =~ s/\s//gi; # no spaces
+
 			foreach $file_id (split /,/, $$emails_to_send{$email_key}{attached_files}) {
+				# they may be attaching files from another datatype, so make sure we have
+				# a file_manager object
+				if (!$self->{file_manager}) {
+					$self->{file_manager} = omnitool::common::file_manager->new(
+						'luggage' => $self->{luggage},
+						'db' => $self->{db},
+					);				
+				}
+
 				# load file and its info; would prefer to do this just once above,
 				# but a bit afraid about making that work reliably
 				$file_contents = $self->{file_manager}->retrieve_file($file_id);
-				$file_info = $self->load_file_info($file_id);
-				$mailer->attach( $file_contents, filename => $$file_info{filename}, content_type => $$file_info{mime_type} );
+				$file_info = $self->{file_manager}->load_file_info($file_id);
+				# save the file to temp
+				$file_attachment = $ENV{OTHOME}.'/tmp/'.$$file_info{filename};
+				write_file($file_attachment, ${$file_contents});
+				$mailer->attach_file($file_attachment);
 			}
 
 			# now try to send the message
