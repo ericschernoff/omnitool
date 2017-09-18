@@ -324,6 +324,10 @@ sub search {
 			$self->{search_results}
 		);
 
+		# if they limited the results below what was actually found, then 
+		# be sure to adjust search_found_count
+		$self->{search_found_count} = scalar @{$self->{search_results}};
+
 	}
 
 	# if they want the post_search hook, let's run it here

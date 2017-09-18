@@ -95,8 +95,11 @@ sub search {
 		'auto_load' => 1,
 		'sort_column' => $self->{display_options}{sort_column},
 		'sort_direction' => $self->{display_options}{sort_direction},
-		# let's try no limits for now
-		# 'limit_results' => 500, # hard limit to prevent memory issues
+		# we will need to limit the returned results to 3,000 
+		# to prevent memory issues; also, let's sort by latest->oldest 
+		# the DB query to try and make these results better, since the
+		# sort below might be with incomplete results
+		'order_by' => 'code desc limit 3000',
 	);
 
 	# debug code
