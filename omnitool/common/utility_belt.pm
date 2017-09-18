@@ -982,7 +982,7 @@ sub template_process {
 	my $self = shift;
 
 	my (%args) = @_;
-	# can contain: include_path, template_file, template_vars, send_out, stop_here
+	# can contain: include_path, template_file, template_vars, send_out, save_file, stop_here
 
 	# declare vars
 	my ($output, $tt, $tt_error);
@@ -1022,11 +1022,16 @@ sub template_process {
 	$tt_error = $tt->error();
 	$self->mr_zebra("Template Error in $args{template_file}: $tt_error",1) if $tt_error;
 
-	# send it out to the client or return to the caller
-	if ($args{send_out}) {
+	# send it out to the client, save to the filesystem, or return to the caller
+	if ($args{send_out}) { # output to the client
 		$self->mr_zebra($output,2);
 		# the '2' tells mr_zebra to avoid logging an error
-	} else {
+
+	} elsif ($args{save_file}) { # save to the filesystem
+		write_file( $args{save_file}, $output);
+		return $args{save_file}; # just kick back the file name
+
+	} else { # just return
 		return $output;
 	}
 }
@@ -1698,6 +1703,7 @@ The argument should be in the form of a hash, whould should/can contain the foll
 	include_path = optional: the template file's directory; defaults to $ENV{OTHOME}/code/omnitool/static_files/server_side_templates/
 	send_out = optional; if filled, will send to the client via mr_zebra(); if empty, will return a variable
 	stop_here = optional; if filled along with 'send_out', will stop executing after sending out
+	save_file = optional; if filled with a filepath, will save the output to that filepath and return filepath back
 
 Examples:
 

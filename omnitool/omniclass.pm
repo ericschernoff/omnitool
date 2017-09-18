@@ -758,7 +758,7 @@ Here is an example query for cross-table relationships, since I feel like my exp
 =head2 simple_search()
 
 Utility method to save typing when your search() query only involves 'equals' tests and all match columns
-are in the primary table.  Perfect for when you just want to find load records where status='Active' or 
+are in the primary table.  Perfect for when you just want to find load records where status='Active' or
 similar tests.  You can also pass 'auto_load' => 1 to automatically load any found results; use the
 regular search() method for anything fancier.
 
@@ -769,7 +769,7 @@ Usage:
 		'field_two' => $field_two_match_val, # at least one of these is require
 		'auto_load' => 1, # optional; will auto-load the results
 	);
-	
+
 Exmaple:
 
 	$family_object->simple_search(
