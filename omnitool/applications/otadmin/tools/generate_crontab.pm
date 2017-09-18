@@ -71,7 +71,7 @@ sub perform_action {
 			.'OMNITOOL_ADMIN_USERNAME='.$self->{luggage}{username}."\n"
 			.'# SWIFTSTACK_NO_HOSTNAME_VERIFY=1');
 
-		push(@{ $self->{json_results}{paragraphs} },'# uncomment to prevent email from going out'."\n".'# IS_DEV=1');
+		push(@{ $self->{json_results}{paragraphs} },'# uncomment to prevent email from going out'."\n".'# OT_DEVELOPER=1');
 
 		# cycle through each datatype and show X entries, where X = support_email_and_tasks-2 if support_email_and_tasks > 4
 		foreach $dt (@{$datatypes_object->{records_keys}}) {

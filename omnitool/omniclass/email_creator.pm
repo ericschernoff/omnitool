@@ -247,7 +247,6 @@ sub send_outbound_email {
 		from }.$self->{database_name}.qq{.email_outbound where concat(code,'_',server_id) in ($q_marks_list)
 	}, ( 'bind_values' => $email_ids ) );
 
-
 	# double-check that some emails were found
 	if (!$$email_keys[0]) {
 		return;
@@ -343,7 +342,6 @@ sub send_outbound_email {
 
 			# add that recipient
 			$mailer->to( $recipient );
-
 
 			# attach any files?
 			$$emails_to_send{$email_key}{attached_files} =~ s/\s//gi; # no spaces
