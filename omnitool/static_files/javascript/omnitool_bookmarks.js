@@ -123,6 +123,10 @@ function Bookmark_Manager () {
 	this.manager_form = function () {
 		var current_tool_id = the_active_tool_ids['screen'];
 
+		// set some handy vars
+		manager_data.bookmark_name = $("#bookmark_to_manage option:selected").text();
+		manager_data.mobile_device = mobile_device;
+
 		// grab the menu selection
 		manager_data.form_action = $( "#bookmark_form_action" ).val();
 
@@ -130,16 +134,21 @@ function Bookmark_Manager () {
 		if (manager_data.form_action == 'share') {
 			// where are we?
 			var current_tool_id = the_active_tool_ids['screen'];
-
-			// construct our 'bookmark_share_uri' based on if we are in primary or specific hostname mode
-			if (uri_base != undefined && uri_base != '') {
-				manager_data.bookmark_share_uri = 'https://' + window.location.hostname + '/' + uri_base + '#' + tool_objects[current_tool_id]['tool_uri'] + '/bkmk'
-					+ $( "#bookmark_to_manage" ).val();
-			} else {
-				manager_data.bookmark_share_uri = 'https://' + window.location.hostname + '/#' + tool_objects[current_tool_id]['tool_uri'] + '/bkmk'
-					+ $( "#bookmark_to_manage" ).val();
-			}
-
+			
+			// probably on a different tool, so we need to call back to the server to get the proper uri
+			manager_data.share_bookmark = $( "#bookmark_to_manage" ).val();
+			$.when( query_tool(tool_objects[current_tool_id]['tool_uri'] + '/bookmark_manager',manager_data) ).done(function(json_response) {
+				// construct our 'bookmark_share_uri' based on if we are in primary or specific hostname mode
+				if (uri_base != undefined && uri_base != '') {
+					manager_data.bookmark_share_uri = 'https://' + window.location.hostname + '/' + uri_base + '#' + json_response.bookmark_uri;
+				} else {
+					manager_data.bookmark_share_uri = 'https://' + window.location.hostname + '/#' + json_response.bookmark_uril
+				}
+				// now reprocess
+				manager_data.selected = new Object();
+					manager_data.selected[manager_data.form_action] = 'SELECTED';
+				jemplate_bindings['system_modal'].process_json_data(manager_data);				
+			});
 		} else if (manager_data.form_action == 'make_default_for_instance' || manager_data.form_action == 'make_default_for_tool') {
 			manager_data.target_bookmark = $( "#bookmark_to_manage" ).val();
 			$.when( query_tool(tool_objects[current_tool_id]['tool_uri'] + '/bookmark_manager',manager_data) ).done(function(json_response) {
@@ -154,18 +163,11 @@ function Bookmark_Manager () {
 				// open it up & let jemplate handle the rest
 				open_system_modal(manager_data);
 			});
-
+		} else { // simple redisplay to show form
+			manager_data.selected = new Object();
+				manager_data.selected[manager_data.form_action] = 'SELECTED';
+			jemplate_bindings['system_modal'].process_json_data(manager_data);				
 		}
-
-		manager_data.selected = new Object();
-
-		// set some handy vars
-		manager_data.selected[manager_data.form_action] = 'SELECTED';
-		manager_data.bookmark_name = $("#bookmark_to_manage option:selected").text();
-		manager_data.mobile_device = mobile_device;
-
-		// now reprocess
-		jemplate_bindings['system_modal'].process_json_data(manager_data);
 	}
 
 	// need a function to keep the manager_data.selected_bookmark var in synch with

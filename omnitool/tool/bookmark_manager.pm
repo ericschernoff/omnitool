@@ -72,6 +72,17 @@ sub bookmark_manager {
 		$self->{json_results}{status_message} = $bookmark_broker->set_default_bookmark($self->{luggage}{params}{target_bookmark}, $self->{tool_datacode});
 	}
 
+	# maybe they want to share a bookmark?
+	if ($self->{luggage}{params}{form_action} eq 'share') {
+		$bookmark_broker->fetch_tool_bookmarks();
+		# get that one desired bookmark
+		my $bm = $self->{luggage}{params}{share_bookmark};
+		my $tool_id = $bookmark_broker->{bookmarks}{$bm}{tool_id}; # sanity
+		
+		# return the uri
+		$self->{json_results}{bookmark_uri} = '/tools/'.$self->{luggage}{session}{tools}{$tool_id}{uri_path_base}.'/bkmk'.$bm;
+		
+	}
 	
 	# delete a bookmark if they requested (and confirmed) that
 	if ($self->{luggage}{params}{delete_bookmark}) {
