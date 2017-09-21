@@ -111,7 +111,7 @@
 			To share this bookmark with others, please use this URL:
 			<br/><br/>
 			<div id="new_bookmark_share_uri" class="bolder bigger-120">[%new_bookmark_share_uri%]</div>
-			<button class="clipboard_copier btn btn-sm btn-white" data-clipboard-target="#new_bookmark_share_uri">
+			<button class="clipboard_copier btn btn-sm btn-white" data-clipboard-text="[%new_bookmark_share_uri%]">
 				<!--<img src="/non_ace_assets/clippy.svg" width="13" alt="Copy to clipboard">-->
 				Copy to Clipboard
 			</button>
@@ -173,9 +173,10 @@
 				</a>
 			[% ELSE %]
 				<br/><br/>
-				<div id="bookmark_share_uri" class="bolder bigger-120">
+				<div class="bolder bigger-120">
 				To share this bookmark with others, please use this URL:
-				<br/>[%bookmark_share_uri%]</div>
+					<div id="bookmark_share_uri">[%bookmark_share_uri%]</div>
+				</div>
 				<button class="clipboard_copier btn btn-sm btn-white" data-clipboard-target="#bookmark_share_uri">
 					<!--<img src="/non_ace_assets/clippy.svg" width="13" alt="Copy to clipboard">-->
 					Copy to Clipboard
