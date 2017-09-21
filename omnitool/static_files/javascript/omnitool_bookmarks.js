@@ -142,7 +142,7 @@ function Bookmark_Manager () {
 				if (uri_base != undefined && uri_base != '') {
 					manager_data.bookmark_share_uri = 'https://' + window.location.hostname + '/' + uri_base + '#' + json_response.bookmark_uri;
 				} else {
-					manager_data.bookmark_share_uri = 'https://' + window.location.hostname + '/#' + json_response.bookmark_uril
+					manager_data.bookmark_share_uri = 'https://' + window.location.hostname + '/#' + json_response.bookmark_uri;
 				}
 				// now reprocess
 				manager_data.selected = new Object();
