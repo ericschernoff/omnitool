@@ -247,16 +247,18 @@ sub yes_no_select {
 	my ($params_key);
 	$params_key = $self->figure_the_key($table_column,$args);
 
-	# if it's filled at all, that will mean 'yes'
-	if ($self->{luggage}{params}{$params_key} && $self->{luggage}{params}{$params_key} ne 'No') { # ace could set to 'on'
-		$self->{luggage}{params}{$params_key} = 'Yes';
-	# otherwise, no (adjust to make skip_blank work
-	} elsif (!$$args{skip_blanks} || $self->{luggage}{params}{$params_key}) {
-		$self->{luggage}{params}{$params_key} = 'No';
-	}
-	# default is 'No'
-	if (!$$args{skip_blanks}) {
-		$self->{luggage}{params}{$params_key} ||= 'No';
+	# if it's filled in, but not 'N/A', that will mean 'yes'
+	if ($self->{luggage}{params}{$params_key} ne 'N/A') {
+		if ($self->{luggage}{params}{$params_key} && $self->{luggage}{params}{$params_key} ne 'No') { # ace could set to 'on'
+			$self->{luggage}{params}{$params_key} = 'Yes';
+		# otherwise, no (adjust to make skip_blank work
+		} elsif (!$$args{skip_blanks} || $self->{luggage}{params}{$params_key}) {
+			$self->{luggage}{params}{$params_key} = 'No';
+		}
+		# default is 'No'
+		if (!$$args{skip_blanks}) {
+			$self->{luggage}{params}{$params_key} ||= 'No';
+		}
 	}
 }
 

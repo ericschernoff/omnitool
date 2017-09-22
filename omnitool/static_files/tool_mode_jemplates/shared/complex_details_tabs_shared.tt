@@ -271,6 +271,15 @@
 											</div>
 										[% END %]
 
+										[% IF data_row.eval_was_good_experience && data_row.eval_was_good_experience != 'N/A' %]
+											<div style="margin-left: 20px">
+												<i class="ace-icon fa fa-check-circle-o"></i>
+												<b>EVALUATION:</b> <u>Did You Have a Good Experience? [% data_row.eval_was_good_experience %]</u>
+											</div>
+										[% END %]
+										
+										
+
 										<div style="margin-left: 20px">
 											[% data_row.notes %]
 										</div>
