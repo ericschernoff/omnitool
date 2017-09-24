@@ -1,0 +1,69 @@
+[*#
+
+	Tool Jemplate to show horizantial search form below a chart.
+
+	Just be sure to select something for the "Display a Chart"
+	selector when configuring the view mode.
+
+*]
+
+<div class="row">
+<div class="col-xs-12" style="margin-top: 10px">
+
+	[% IF form.error_title %]
+		<div class="page-header">
+			<span class="red h3">[% form.error_title %] </span>
+		</div>
+	[% ELSIF error_title %]
+		<div class="page-header">
+			<span class="red h3">[% error_title %] </span>
+		</div>
+	[% END %]
+
+	[% IF form.submit_button_text %]
+		<form class="form-inline center" id="[*tool_and_instance*]_form" action="[*my_json_uri*]" method="post" role="form">
+
+		[% FOREACH hf IN form.hidden_fields.keys %]
+			<input type="hidden" name="[%hf%]" value="[%form.hidden_fields.$hf%]" />
+		[% END %]
+
+		[% FOREACH f IN form.field_keys %]
+			[% IF form.fields.$f.is_required %]
+				[% SET form.fields.$f.title = '* ' _ form.fields.$f.title %]
+			[% END %]
+			[% IF form.fields.$f.break_here %]
+				<div class="clearfix"></div>
+			[% END %]
+			<div class="form-group">
+			<label class="inline" for="form-field-[%f%]">
+				[% IF form.fields.$f.field_error %]
+					<span class="bold red">
+						[% form.fields.$f.title %]
+						<i class="ace-icon fa fa-exclamation-circle red"></i>
+					</span>
+				[% ELSE %]
+					[% form.fields.$f.title %]
+				[% END %]
+				[% IF form.fields.$f.instructions %]
+					<span class="help-button" data-rel="popover" data-trigger="hover" data-placement="right" data-content="[%form.fields.$f.instructions%]">?</span>
+				[% END %]
+			</label>
+			[% SET field_type = form.fields.$f.field_type %]
+			[% PROCESS $field_type %]
+			</div>
+		[% END %]
+
+		<button class="btn btn-white" type="submit">
+			[%form.submit_button_text%]
+		</button>
+
+		[% IF form.instructions %]
+			<div class="center">
+				[% form.instructions %]
+			</div>
+		[% END %]
+
+		</form>
+		<br/>
+
+	[% END %]

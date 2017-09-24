@@ -357,11 +357,15 @@ function post_data_fetch_operations (data) {
 		} else {
 			$('#quick_inline_actions_menu_' + data.the_tool_id).hide();
 		}
+
+		// show a top notice?
+		show_or_hide_element('top_notice', data.top_notice);
+
 	}
 
 	// empower any tool quick/inline actions drop-down menus
 	$('.tool-action-menu').chosen({search_contains: true});
-	
+
 	// if their session was flushed since we last checked
 	// reload the menubar, clear the backgrounded tools,
 	// and suggest reloading the current tool
@@ -618,7 +622,7 @@ function omnitool_controller (event,target_tool_uri) {
 		}
 
 		// if they are moving to a new phase/method of the active tool, update that tool's jemplate binding
-		if (this_active_tool != 'Not Found') {	
+		if (this_active_tool != 'Not Found') {
 			// if keep-warm = Never, we need to always start fresh
 			if (tool_objects[the_tool_id]['keep_warm'] == 'Never') {
 				if ($( "#"+tool_objects[the_tool_id]['tool_div'] ).length > 0) {
@@ -998,7 +1002,7 @@ function interactive_form_elements (tool_id,form_type) {
 				'redo',
 				null,
 				'viewSource'
-			],			
+			],
 			wysiwyg: {
 				hotKeys: {
 					'ctrl+b meta+b': 'bold',
