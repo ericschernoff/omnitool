@@ -260,6 +260,24 @@ sub load_last_saved_record {
 	);
 }
 
+# utility method to just load all records - kind of dangerous, but you are smart, right?
+sub load_all {
+	my $self = shift;
+	my (%args) = @_; # let them pass the other args to load
+	
+	# clean up args that could conflict with our missing
+	$args{data_codes} = [];
+	$args{altcodes} = [];
+	
+	# pass the instruction
+	$args{load_all} = 1;
+	
+	# send the command
+	$self->load(%args);
+	
+	# done
+}
+
 # subroutine to build a list of altcodes for the loaded data / akin to record_keys
 # not always needed, so not automatically done (yet)
 sub get_altcodes_keys {

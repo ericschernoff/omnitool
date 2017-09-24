@@ -627,6 +627,21 @@ Simple method to load up the most recently-saved record (created or updated) by 
 If you supply an argument, clear_records() will be called first, so that the loaded record will
 be the only one loaded (and be in $self->{data}).
 
+=head2 load_all()
+
+Simple utility method to let you load up all the records in the database for the given datatype.  Works
+the same as $dt_obj->load( 'load_all' => 1 ) and meant to save you some typing.  You can pass in all 
+the same args as you would for load(), except for 'data_codes' and 'altcodes'.
+
+Usage:
+
+	$dt_obj->load_all();  # simple load-all action
+	
+	$dt_obj->load_all( # little more complex
+		'skip_metainfo' => 1,
+		'load_fields' => 'some,field,names'
+	);
+
 =head2 clear_records()
 
 To clear out all loaded records from $dt_obj->{records} & $dt_obj->{records_keys}, just use this:
