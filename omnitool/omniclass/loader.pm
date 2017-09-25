@@ -93,7 +93,6 @@ sub load {
 		$load_column_list = ','.$load_column_list;
 	}
 
-
 	# build a nice sql query for grabbing the records from our main table
 	# pull our main data
 
