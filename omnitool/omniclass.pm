@@ -1024,7 +1024,8 @@ Usage:
 	$dt_obj->create_resolver_hash(
 		'field_name' => 'some_field_name', 		# optional; a key that who be under the 'records' hash; defaults to 'name'
 		'data_codes' => [list,of,data,codes],	# optional/suggested; the arrayref of data codes that we need to resolve
-												# if blank, tries for $self->{search_results}
+												# if blank, tries for $self->{search_results}, and if that is empty,
+												# it will try for $self->{records_keys}
 		'already_loaded' => 1,			# if set, indicates that the records are already loaded and do not reload
 										# useful when you are using 'auto_load' on a search() call
 	);

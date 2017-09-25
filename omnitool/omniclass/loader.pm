@@ -339,9 +339,9 @@ sub create_resolver_hash {
 	my ($data_code, $field_name, $field_value, $field, $load_field);
 
 	# if no data_codes sent and nothing in $self->{search_results}, then fail
-	if (!$args{data_codes}[0] && !$self->{search_results}[0]) {
+	if (!$args{data_codes}[0] && !$self->{search_results}[0] && !$self->{records_keys}[0]) {
 		$self->work_history(0,qq{Could not set up resolution hash.},
-			qq{You must specify either a list of data_codes or fill the \$self->{search_results} arrayref.}
+			qq{You must specify either a list of data_codes or have some records loaded or fill the \$self->{search_results} arrayref.}
 		);
 		return;
 	}
@@ -349,6 +349,10 @@ sub create_resolver_hash {
 	# if data_codes is empty, use search results
 	if (!$args{data_codes}[0]) {
 		$args{data_codes} = $self->{search_results};
+	}
+	# if data_codes is still empty, use records_keys
+	if (!$args{data_codes}[0]) {
+		$args{data_codes} = $self->{records_keys};
 	}
 
 	# field_name defaults to record names
