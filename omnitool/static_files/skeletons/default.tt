@@ -335,9 +335,9 @@
 
 			<!-- #section:basics/sidebar.horizontal -->
 			[% IF session.app_instance_info.ui_navigation_placement == 'Top' %]
-				<div id="sidebar" class="sidebar h-sidebar sidebar-fixed responsive">
+				<div id="sidebar" class="sidebar h-sidebar sidebar-fixed responsive" data-auto-hide=true>
 			[% ELSE %]
-				<div id="sidebar" class="sidebar sidebar-fixed responsive">
+				<div id="sidebar" class="sidebar sidebar-fixed responsive" data-auto-hide=true>
 			[% END %]
 
 				<!--
