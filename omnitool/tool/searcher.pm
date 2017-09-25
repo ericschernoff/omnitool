@@ -543,10 +543,10 @@ sub build_search {
 		# month-chooser?  have to adjust the 'match_column' based on the target column's name
 		} elsif ($self->{display_options}{$value_key} && $$this_tool_filter_menu{menu_type} eq 'Month Chooser') {
 
-			if ($$this_tool_filter_menu{applies_to_table_column} =~ /date/) { # YYYY-MM-DD date
+			if ($$this_tool_filter_menu{applies_to_table_column} =~ /time/) {  # going to be a unix epoch
+				$$searches[$n]{match_column} = 'from_unixtime('.$$this_tool_filter_menu{applies_to_table_column}.qq{,'%M %Y')};			
+			} else { # YYYY-MM-DD date
 				$$searches[$n]{match_column} = 'date_format('.$$this_tool_filter_menu{applies_to_table_column}.qq{,'%M %Y')};
-			} else { # going to be a unix epoch
-				$$searches[$n]{match_column} = 'from_unixtime('.$$this_tool_filter_menu{applies_to_table_column}.qq{,'%M %Y')};
 			}
 
 			# can only be = or != operators for this

@@ -225,8 +225,9 @@ sub advanced_search_form {
 		}
 
 		# field type is based off 'menu type' option
-		if ($$tool_filter_menu{menu_type} eq 'Single-Select') {
+		if ($$tool_filter_menu{menu_type} eq 'Single-Select' || $$tool_filter_menu{menu_type} eq 'Month Chooser') {
 			$form_field_type = 'single_select';
+			
 		} elsif ($$tool_filter_menu{menu_type} eq 'Multi-Select') {
 			$form_field_type = 'advanced_search_multi_select';
 
