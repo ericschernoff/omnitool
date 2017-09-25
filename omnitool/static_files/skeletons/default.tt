@@ -119,7 +119,7 @@
 			@media (min-width: 768px) {
 			  .modal-xl {
 				width: 90%;
-			   max-width:1200px;
+				max-width:1200px;
 			  }
 			}
 
@@ -207,7 +207,7 @@
 
 	<body class="[%session.app_instance_info.ui_ace_skin%]">
 		<!-- #section:basics/navbar.layout -->
-		<div id="navbar" class="navbar navbar-default navbar-fixed-top">
+		<div id="navbar" class="navbar navbar-default navbar-fixed-top navbar-collapse">
 			<script type="text/javascript">
 				try{ace.settings.check('navbar' , 'fixed')}catch(e){}
 			</script>
@@ -236,7 +236,7 @@
 					</span>
 				</div>
 
-				<div class="navbar-menu navbar-header pull-right" role="navigation">
+				<div class="navbar-buttons navbar-header pull-right collapse navbar-collapse" role="navigation">
 					[% IF username != 'public' %]
 						<!-- #section:basics/navbar.nav -->
 						<ul class="nav ace-nav">
@@ -326,7 +326,7 @@
 
 			</div><!-- /.navbar-container -->
 		</div>
-
+		
 		<!-- /section:basics/navbar.layout -->
 		<div class="main-container" id="main-container">
 			<script type="text/javascript">
@@ -373,7 +373,6 @@
 				<div class="main-content-inner">
 					<!-- breadcrumb area, for jemplate -->
 					<div class="breadcrumbs breadcrumbs-fixed" id="breadcrumbs">
-
 					</div>
 					<div class="page-content" id="page-content" style="margin-top: 10px">
 
@@ -470,9 +469,6 @@
 			}
 
 			jQuery(function($) {
-
-				// $('.input-mask-phone').mask('(999) 999-9999');
-				//$(".knob").knob();
 
 				var $sidebar = $('.sidebar').eq(0);
 				if( !$sidebar.hasClass('h-sidebar') ) return;

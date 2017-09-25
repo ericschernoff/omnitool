@@ -50,6 +50,18 @@ $( document ).ready(function() {
 	var timezone_name = moment.tz.guess();
 	// yes, this follows the user's computer time and/or desires.  that's OK, it should
 
+	// extremely ugly hack by a Bootstrap newbie to make the navbar-collapse work with .navbar-fixed-top
+	$(window).on('resize', function(){
+		if ($(window).width() < 768 && $('#navbar').hasClass('navbar-fixed-top')) {
+			$('#navbar').removeClass('navbar-fixed-top');
+		} else if (!($('#navbar').hasClass('navbar-fixed-top'))) {
+			$('#navbar').addClass('navbar-fixed-top');
+		}
+	});
+	if ($(window).width() < 768) {
+		$('#navbar').removeClass('navbar-fixed-top');
+	}
+
 	// first, grab the instance information, passing in the utc_offset value
 	$.when( query_tool("/ui/get_instance_info?set_utc_offset=" + utc_offset + '&set_timezone_name=' + timezone_name,{}) ).done(function(json) {
 		// we are using template toolkit on the server side now to populate
