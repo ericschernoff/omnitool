@@ -16,6 +16,18 @@ sub init {
 	};
 }
 
+# special field to make browsing into Manage Tools easier
+sub field_enhanced_name {
+	my $self = shift;
+	my ($args) = @_;
+	foreach $r (@{$self->{records_keys}}) {
+		$self->{records}{$r}{enhanced_name}[0] = {
+			'text' => $self->{records}{$r}{name}, # .'-'.$self->{metainfo}{$r}{nice_update_time},
+			'uri' => '#/tools/ot_admin/tools_mgr/'.$self->{metainfo}{$r}{altcode},
+		};
+	}
+}
+
 # build options for supporting 'app code directory' field
 sub options_app_code_directory {
 	my $self = shift;
