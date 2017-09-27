@@ -1,6 +1,6 @@
 [%# Breadcrumb Jemplate: display our pathway to the top? if we aren't there already %]
 
-<div class="pull-left width-75" id="breadcrumbs_area">
+<div class="pull-left width-90" id="breadcrumbs_area">
 [% IF breadcrumbs.1 %]
 	<ul class="breadcrumb">
 	[% SET n = 1 %]
@@ -11,7 +11,11 @@
 				[%bc.tool_name%]
 			</li>
 		[% ELSE %]
-			<li>
+			[% IF n == 1 %]
+				<li>
+			[% ELSE %]
+				<li class="hidden-768">
+			[% END %]
 				<i class="ace-icon fa [%bc.icon_fa_glyph%]"></i>
 				<a href="[%bc.uri%]">[%bc.tool_name%]</a>
 			</li>
@@ -23,7 +27,7 @@
 </div>
 
 <!-- search box & quick start -->
-<div class="nav-search appwide-search">
+<div class="nav-search appwide-search pull-right">
 <form class="form-search">
 
 [% IF appwide_quickstart_tool_uri && appwide_quickstart_tool_uri != 'None' %]
