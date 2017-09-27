@@ -189,6 +189,12 @@
 			body.modal-open {
 				overflow: auto;
 			}
+
+			/* recaptcha on smaller devices - from https://geekgoddess.com/how-to-resize-the-google-nocaptcha-recaptcha/ */
+			@media screen and (max-height: 575px){
+				#rc-imageselect, .g-recaptcha {transform:scale(0.77);-webkit-transform:scale(0.77);transform-origin:0 0;-webkit-transform-origin:0 0;}
+			}
+
 		</style>
 
 		<!-- Google's reCaptcha library -->
@@ -326,7 +332,7 @@
 
 			</div><!-- /.navbar-container -->
 		</div>
-		
+
 		<!-- /section:basics/navbar.layout -->
 		<div class="main-container" id="main-container">
 			<script type="text/javascript">

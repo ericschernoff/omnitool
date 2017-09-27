@@ -44,6 +44,13 @@
 		<!-- Google's reCaptcha library -->
 		<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
+		<style>
+			/* recaptcha on smaller devices - from https://geekgoddess.com/how-to-resize-the-google-nocaptcha-recaptcha/ */
+			@media screen and (max-height: 575px){
+				#rc-imageselect, .g-recaptcha {transform:scale(0.77);-webkit-transform:scale(0.77);transform-origin:0 0;-webkit-transform-origin:0 0;}
+			}
+		</style>
+
 	</head>
 	<body class="login-layout blur-login">
 		<div class="main-container">
