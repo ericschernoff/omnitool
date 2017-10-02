@@ -101,7 +101,7 @@ sub load {
 			'.'.$self->{table_name}.' where '.$search_logic,
 		( 'bind_values' => [@$bind_values] )
 	);
-
+	
 	# and for our metainfo; skip if they explicity said skip_metainfo or if the datatype call for it
 	if (!$args{skip_metainfo} && $self->{datatype_info}{metainfo_table} ne 'No Metainfo') {
 		# need question_marks for placeholders in IN list

@@ -349,6 +349,8 @@ sub search {
 		$self->{search_results} = $actual_results;
 	}
 
+	# $self->{belt}->benchmarker('OmniClass Search Run for '.$self->{table_name});
+
 	# OK, do they want to auto-load the search results
 	if ($args{auto_load} || $args{simple_query_mode}) { # yep, proceed
 		$self->load(
@@ -363,6 +365,8 @@ sub search {
 			'simple_query_mode' => $args{simple_query_mode},
 		);
 		$args{already_loaded} = 1; # for below
+
+		# $self->{belt}->benchmarker('OmniClass AutoLoad Done for '.$self->{table_name});
 	}
 
 	# and/or would they rather set up a resolver hash

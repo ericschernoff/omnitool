@@ -168,7 +168,7 @@ sub omniclass_tree {
 	$args{search_options} = '';
 
 	# declare our variables
-	my ($record, $child_object, %children_by_type, $child, $child_type, $child_table, $child_data_code, $translated_tree_dts, $tree_dt, $possible_table_name, %all_children_by_type, $tree_datatype, %loader_objects, $tree_datatype, $this_object, $this_child_type, $child_id, $parent_type, $parent_data_code);
+	my (%all_children_by_type, %all_records_by_type, $child_data_code, $child_record, $child_table, $child_type, $child, $loader_objects, $possible_table_name, $r, $record, $translated_tree_dts, $tree_datatype, $tree_dt);
 
 	# return silently if there is no parent object
 	return if !$parent_object;
@@ -193,20 +193,63 @@ sub omniclass_tree {
 	# Let us attempt to make this faster. We want to load all data for each tree_datatype
 	# at once, and then assign it into the appropriate objects within the tree below
 
-	# first, get the complete list of children records for each tree_datatype
+	# first, get the complete list of children records for each record and tree_datatype
 	foreach $record (@{$parent_object->{records_keys}}) {
 		foreach $child (split /,/, $parent_object->{metainfo}{$record}{children}) {
 			($child_type,$child_data_code) = split /:/, $child;
-			# %all_children_by_type will be a hash of arrays, keyed by type
+			# all_children_by_type is where we will keep the children sorted by parent and type
 			push(@{$all_children_by_type{$record}{$child_type}}, $child_data_code);
+			# and all_records_by_type is where we will keep all children, just sorted by type
+			push(@{$all_records_by_type{$child_type}}, $child_data_code);
 		}
+	}
+	
+	# now load up the records for each tree type
+	foreach $tree_datatype (split /,/, $args{tree_datatypes}) {
+		next if !$all_records_by_type{$child_type}[0];
 
+		# load up these records all at once
+		$args{dt} = $tree_datatype;
+		$args{data_codes} = $all_records_by_type{$tree_datatype};
+
+		$$loader_objects{$tree_datatype} = $self->omniclass_object(%args);
+
+	}
+
+	# avoid re-loading all these
+	$args{data_codes} = [];
+
+	# and now create a tree object under each record, for each child-type, and transport
+	# the child records
+	foreach $record (@{$parent_object->{records_keys}}) {
 		foreach $tree_datatype (split /,/, $args{tree_datatypes}) {
 			$args{dt} = $tree_datatype;
-			$args{data_codes} = $all_children_by_type{$record}{$tree_datatype};
 			next if !$all_children_by_type{$record}{$tree_datatype}[0];
 
 			$parent_object->{children_objects}{$record}{$tree_datatype} = $self->omniclass_object(%args);
+
+			# load the found records into this new object
+			# first the record_keys
+			$parent_object->{children_objects}{$record}{$tree_datatype}->{records_keys} = $all_children_by_type{$record}{$tree_datatype};
+			# then the records themselves
+			foreach $child_record (@{ $all_children_by_type{$record}{$tree_datatype} }) {
+				# main record
+				$parent_object->{children_objects}{$record}{$tree_datatype}->{records}{$child_record}
+					 = $$loader_objects{$tree_datatype}->{records}{$child_record};
+				# metainfo
+				$parent_object->{children_objects}{$record}{$tree_datatype}->{metainfo}{$child_record}
+					 = $$loader_objects{$tree_datatype}->{metainfo}{$child_record};
+			}
+			
+			# now put the first one in it's privileged spot
+			$r = $parent_object->{children_objects}{$record}{$tree_datatype}->{records_keys}[0];
+			$parent_object->{children_objects}{$record}{$tree_datatype}->{data} = $parent_object->{children_objects}{$record}{$tree_datatype}->{records}{$r};
+			$parent_object->{children_objects}{$record}{$tree_datatype}->{data}{metainfo} = $parent_object->{children_objects}{$record}{$tree_datatype}->{metainfo}{$r};
+			# convenience: the data_code of that first record
+			$parent_object->{children_objects}{$record}{$tree_datatype}->{data_code} = $r;
+			# and HYPER-convenience: the parent_string value of that first record
+			$parent_object->{children_objects}{$record}{$tree_datatype}->{parent_string} = $tree_datatype.':'.$r;
+
 
 			# let's alias that to the name of the table, for sanity's sake when coding elsewhere
 			$child_table = $parent_object->{children_objects}{$record}{$tree_datatype}->{table_name};
@@ -215,7 +258,6 @@ sub omniclass_tree {
 			# go recursive to get the children's objects
 			# $child_object = $parent_object->{children_objects}{$record}{$tree_datatype};
 			# $args{current_children} = $parent_object->{metainfo}{$record}{children};
-			$args{data_codes} = [];
 			$self->omniclass_tree($parent_object->{children_objects}{$record}{$tree_datatype},%args);
 
 		}
