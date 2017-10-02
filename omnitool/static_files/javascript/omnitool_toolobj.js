@@ -120,41 +120,8 @@ function Tool (tool_attributes) {
 				// empower the tool search drop-down menus
 				$('.tool-search-menu').chosen({search_contains: true});
 
-				// support keyword search - screens only
-				if (this_tool_type_short == 'screen') {
-					// 1. Pause any search refreshing while we are working in the quick search field
-					$('.quick_keyword_fields').focusin(function(e) {
-						tool_objects[this_tool_id]['search_paused'] = 'Yes';
-					});
-					$('.quick_keyword_fields').blur(function(e) {
-						tool_objects[this_tool_id]['search_paused'] = 'No';
-					});
-
-					// 2. Use the enter key to submit the keyword search
-					$('.quick_keyword_fields').keyup(function(e) {
-						if (e.which == 13) { // that's the enter key
-							tool_objects[this_tool_id].process_quick_search('quick_keyword',this.value);
-						}
-						// show or hide the 'clear' link based on field value
-						if (this.value != '') {
-							$('#clear_quick_search_button_'+this_tool_id).show();
-						} else {
-							$('#clear_quick_search_button_'+this_tool_id).hide();
-						}
-					});
-
-					// hide the clear keyword button by default?
-					if ($('#quick_keyword_'+this_tool_id).val() == '') {
-						$('#clear_quick_search_button_'+this_tool_id).hide();
-					}
-
-					// support allowing them to make the quick-search field an auto-suggest
-					// field by naming a function $JS_CLASS_NAME + '_auto_suggest'
-					var quick_select_auto_suggest = this_javascript_class + '_auto_suggest';
-					if (typeof window[quick_select_auto_suggest] == 'function') {
-						window[quick_select_auto_suggest]();
-					}
-				}
+				// run the routines to enable the quick-search fields
+				tool_objects[this_tool_id].quick_search_enable();
 
 				// now grab the Jemplate for the display area
 				if (jemplate_bindings[ this_tool_display_div ] == undefined || $.isEmptyObject(jemplate_bindings[ this_tool_display_div ])) {
@@ -576,6 +543,8 @@ function Tool (tool_attributes) {
 							$('#tool_controls_'+this_tool_id).html(tool_controls_html);
 							// empower the tool search drop-down menus
 							$('.tool-search-menu').chosen({search_contains: true});
+							// empower the quick search keyword
+							tool_objects[this_tool_id].quick_search_enable();
 							// and now call post_data_fetch_operations()
 							post_data_fetch_operations(json_data);
 							loading_modal_display('hide');
@@ -694,6 +663,46 @@ function Tool (tool_attributes) {
 			open_system_modal(json_data);
 		});
 	}
+
+	// function to power the quick-search keyword search - screens only
+	this.quick_search_enable = function () {
+		var this_tool_id = this['the_tool_id'];
+
+		if (this['tool_type_short'] == 'screen') {
+			// 1. Pause any search refreshing while we are working in the quick search field
+			$('.quick_keyword_fields').focusin(function(e) {
+				this['search_paused'] = 'Yes';
+			});
+			$('.quick_keyword_fields').blur(function(e) {
+				this['search_paused'] = 'No';
+			});
+
+			// 2. Use the enter key to submit the keyword search
+			$('.quick_keyword_fields').keyup(function(e) {
+				if (e.which == 13) { // that's the enter key
+					tool_objects[this_tool_id].process_quick_search('quick_keyword',this.value);
+				}
+				// show or hide the 'clear' link based on field value
+				if (this.value != '') {
+					$('#clear_quick_search_button_'+this_tool_id).show();
+				} else {
+					$('#clear_quick_search_button_'+this_tool_id).hide();
+				}
+			});
+
+			// hide the clear keyword button by default?
+			if ($('#quick_keyword_'+this_tool_id).val() == '') {
+				$('#clear_quick_search_button_'+this_tool_id).hide();
+			}
+
+			// support allowing them to make the quick-search field an auto-suggest
+			// field by naming a function $JS_CLASS_NAME + '_auto_suggest'
+			var quick_select_auto_suggest = this['javascript_class'] + '_auto_suggest';
+			if (typeof window[quick_select_auto_suggest] == 'function') {
+				window[quick_select_auto_suggest]();
+			}
+		}
+	}	
 
 	// function to power the Previous / Next links in action screen tools
 	this.prev_next_links = function (navigation_to_altcode) {
