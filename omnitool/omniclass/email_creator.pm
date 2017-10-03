@@ -100,6 +100,11 @@ sub add_outbound_email {
 
 		}
 	}
+	
+	# if this is development, redirect all emails to the the actual user
+	if ($ENV{OT_DEVELOPER}) {
+		$args{to_addresses} = $self->{luggage}{username};
+	}
 
 	# if they sent an email_vars hashref, load that into $self->{email_vars} for now
 	$self->{email_vars} = $args{email_vars};
@@ -337,11 +342,6 @@ sub send_outbound_email {
 			# if the recipient does have a suffix, apply the default system domain
 			if ($recipient !~ /\@/) {
 				$recipient .= '@'.$default_domain;
-			}
-
-			# if this is development, redirect all emails to the OMNITOOL_ADMIN
-			if ($ENV{OT_DEVELOPER}) {
-				$recipient = $ENV{OMNITOOL_ADMIN};
 			}
 
 			# add that recipient
