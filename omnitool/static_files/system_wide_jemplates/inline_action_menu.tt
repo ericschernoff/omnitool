@@ -1,6 +1,6 @@
-[% IF inline_actions.6.button_name %] 
+[% IF inline_actions.6.button_name %]
 	<!-- five or more gets select menu; very common for this second menu -->
-	<select style="padding: 20px; min-width: 144px;" class="tool-action-menu" tabindex="2" onchange="tool_objects[ the_active_tool_ids['screen'] ].quick_action_link($(this));"> 
+	<select style="padding: 20px; min-width: 144px;" class="tool-action-menu" tabindex="2" onchange="tool_objects[ the_active_tool_ids['screen'] ].quick_action_link($(this));">
 		<option selected value="">Quick Actions</option>
 		[% IF lock_user %]
 			<option value="">LOCKED ([%lock_user%])</option>
@@ -19,11 +19,11 @@
 
 	</select>
 
-[% ELSIF inline_actions.0.button_name %] 
+[% ELSIF inline_actions.0.button_name %]
 	<!-- regular drop-down -->
 	<button data-toggle="dropdown" class="btn btn-white bolder dropdown-toggle">
 		<i class="ace-icon fa fa-bolt"></i>
-		<span class="green">Quick Actions</span>
+		<span class="green hidden-480">Quick Actions</span>
 		<i class="ace-icon fa fa-caret-down"></i>
 	</button>
 	<ul class="dropdown-menu">

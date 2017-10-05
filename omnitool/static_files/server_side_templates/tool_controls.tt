@@ -23,7 +23,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 	<div class="btn-group">
 		<button data-toggle="dropdown" class="btn btn-white dropdown-toggle">
 			<i class="ace-icon fa fa-bolt"></i>
-			<span class="green">Quick Actions</span>
+			<span class="green hidden-480">Quick Actions</span>
 			<i class="ace-icon fa fa-caret-down"></i>
 		</button>
 		<ul class="dropdown-menu">
@@ -87,7 +87,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 	<!-- quick search menu -->
 		[% SET this_menu = 'menu_' _ search_menu %]
 		[% SET this_menu_link = 'menu_link_' _ search_menu %]
-		
+
 		<!-- trigger another menu if that menu is also in quick actions -->
 		[% SET is_trigger_menu = 0 %]
 		[% IF tool_configs.tool_filter_menus.$search_menu.trigger_menu %]
@@ -96,20 +96,20 @@ Expects all of $self for a Tool.pm class/sub-class.
 				[% SET is_trigger_menu = 1 %]
 			[% END %]
 		[% END %]
-		[% SET menu_onchange = "tool_objects['" _ tool_and_instance _ "'].process_quick_search('" _ this_menu _ "',\$(this).val());" %] 
+		[% SET menu_onchange = "tool_objects['" _ tool_and_instance _ "'].process_quick_search('" _ this_menu _ "',\$(this).val());" %]
 
 		[%# also support triggering another menu %]
 		[% IF is_trigger_menu %]
 			[% SET menu_onchange = menu_onchange _ "tool_objects['" _ tool_and_instance _ "'].trigger_menu('quick_menu_" _ tool_configs.tool_filter_menus.$search_menu.trigger_menu _ "',this.options[this.selectedIndex].value);" %]
 		[% END %]
-		
-		<select id="quick_[%this_menu%]" style="padding: 20px; min-width: 144px;" data-placeholder="[% tool_configs.tool_filter_menus.$search_menu.name %]" class="tool-search-menu" tabindex="2" onchange="[%menu_onchange%]"> 
+
+		<select id="quick_[%this_menu%]" style="padding: 20px; min-width: 144px;" data-placeholder="[% tool_configs.tool_filter_menus.$search_menu.name %]" class="tool-search-menu" tabindex="2" onchange="[%menu_onchange%]">
 			<option value="[%tool_configs.tool_filter_menus.$search_menu.options_keys.0%]">[% tool_configs.tool_filter_menus.$search_menu.name %]</option>
 			[% FOREACH option_value IN tool_configs.tool_filter_menus.$search_menu.options_keys %]
 				[% IF display_options.$this_menu == option_value %]
 					<option SELECTED value="[%option_value%]">[%tool_configs.tool_filter_menus.$search_menu.options.$option_value%]</option>
 				[% ELSE %]
-					<option value="[%option_value%]">[%tool_configs.tool_filter_menus.$search_menu.options.$option_value%]</option> 
+					<option value="[%option_value%]">[%tool_configs.tool_filter_menus.$search_menu.options.$option_value%]</option>
 				[% END %]
 			[% END %]
 		</select>
