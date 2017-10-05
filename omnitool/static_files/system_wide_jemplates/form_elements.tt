@@ -59,7 +59,12 @@
 
 [% BLOCK single_select %]
 
-	[%# support onchange events %]
+	[%# support making it easy to call in the trigger_menu function %]
+	[% IF form.fields.$f.trigger_menu_target && form.fields.$f.trigger_menu_server_method %]
+		[% SET form.fields.$f.onchange = "tool_objects['" _ the_tool_id _ "'].trigger_menu('" _ form.fields.$f.trigger_menu_target _ "',this.options[this.selectedIndex].value,'" _ form.fields.$f.trigger_menu_server_method _ "',this.options[this.selectedIndex].value,'');" %]
+	[% END %]
+
+	[%# support onchange events of all kinds %]
 	[% IF form.fields.$f.onchange %]
 		[% SET form.fields.$f.onchange = 'onchange="' _ form.fields.$f.onchange _ '"' %]
 	[% END %]
@@ -77,7 +82,13 @@
 [% END %]
 
 [% BLOCK single_select_plain %]
-	[%# support onchange events %]
+
+	[%# support making it easy to call in the trigger_menu function %]
+	[% IF form.fields.$f.trigger_menu_target && form.fields.$f.trigger_menu_server_method %]
+		[% SET form.fields.$f.onchange = "tool_objects['" _ the_tool_id _ "'].trigger_menu('" _ form.fields.$f.trigger_menu_target _ "',this.options[this.selectedIndex].value,'" _ form.fields.$f.trigger_menu_server_method _ "',this.options[this.selectedIndex].value,'');" %]
+	[% END %]
+
+	[%# support onchange events of all kinds %]
 	[% IF form.fields.$f.onchange %]
 		[% SET form.fields.$f.onchange = 'onchange="' _ form.fields.$f.onchange _ '"' %]
 	[% END %]
