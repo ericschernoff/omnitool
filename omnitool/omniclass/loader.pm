@@ -101,7 +101,7 @@ sub load {
 			'.'.$self->{table_name}.' where '.$search_logic,
 		( 'bind_values' => [@$bind_values] )
 	);
-	
+
 	# and for our metainfo; skip if they explicity said skip_metainfo or if the datatype call for it
 	if (!$args{skip_metainfo} && $self->{datatype_info}{metainfo_table} ne 'No Metainfo') {
 		# need question_marks for placeholders in IN list
@@ -263,18 +263,47 @@ sub load_last_saved_record {
 sub load_all {
 	my $self = shift;
 	my (%args) = @_; # let them pass the other args to load
-	
+
 	# clean up args that could conflict with our missing
 	$args{data_codes} = [];
 	$args{altcodes} = [];
-	
+
 	# pass the instruction
 	$args{load_all} = 1;
-	
+
 	# send the command
 	$self->load(%args);
-	
+
 	# done
+}
+
+# handy utility method that accepts one or more data_codes or altcodes, and does a do_clear an then load()
+# nothing fancy, just a very simple way to load data
+sub simple_load {
+	my $self = shift;
+
+	# require arg is one or more data_codes or altcodes
+	my (@items_to_load) = @_;
+
+	# return empty if nothing sent
+	return if !$items_to_load[0];
+
+	my (%args);
+
+	# otherwise, are these altcodes or data_codes?  should all be the same!
+	if ($items_to_load[0] !~ /^\d+\_\d+$/) { # looks like their altcodes
+		$args{altcodes} = \@items_to_load;
+	} else { # data_codes
+		$args{data_codes} = \@items_to_load;
+	}
+
+	# make sure to clear records
+	$args{do_clear} = 1;
+
+	# do it
+	$self->load(%args);
+
+	# all done ;)
 }
 
 # subroutine to build a list of altcodes for the loaded data / akin to record_keys
