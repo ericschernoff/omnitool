@@ -1375,6 +1375,17 @@ function interactive_form_plus_diagram (tool_id) {
 	});
 }
 
+// small ui function to support the 'Search Controls' button to reveal the search controls in XS mode
+function xs_show_search_controls () {
+	// show the controls
+	$('#search-controls').removeClass('hidden-xs');
+	// hide the button
+	$('#search-controls-toggle').hide();
+	// fix the menus
+	$('.tool-search-menu').chosen('destroy');
+	$('.tool-search-menu').chosen({search_contains: true});
+}
+
 // support for sub-data widgets (within widgets) in WidgetsV3.tt
 // if you drink enough coffee, you maybe can get this to work for lots of jemplates
 function show_sub_data_widgets ( sub_data_container_id, clicked_button_id ) {

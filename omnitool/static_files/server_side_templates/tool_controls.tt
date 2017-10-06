@@ -80,7 +80,10 @@ Expects all of $self for a Tool.pm class/sub-class.
 [%# End quick actions and change views. %]
 
 [%# search-related buttons %]
-
+<div class="btn-group" id="search-controls-toggle">
+	<button type="button" class="btn btn-white visible-xs" onclick="xs_show_search_controls();">Search Controls</button>
+</div>
+<span id="search-controls" class="hidden-xs">
 [%# show up to four search menus - chosen drop-down menus %]
 [% FOREACH search_menu IN quick_search_menus %]
 	<div class="btn-group" id="field_div_quick_menu_[%search_menu%]">
@@ -143,7 +146,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 		</ul>
 		</div>
 	[% END %]
-
+</span>
 [% END %]
 
 <!-- show Refresh Data for all tools -->
