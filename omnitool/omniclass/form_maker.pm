@@ -279,7 +279,7 @@ sub setup_field {
 	my $self = shift;
 
 	# declare variables
-	my ($preset_value, $delimiter, $params_key, $key, $line, $name, $o, $option_values, $options_hook_method, $table_column, $value, $this_part, $part, @street_address_parts);
+	my ($preset_value, $delimiter, $params_key, $key, $line, $name, $o, $option_values, $options_hook_method, $table_column, $value, $this_part, $part, @street_address_parts, $datatype_table_name,$datatype_display_field,$related_omniclass_object);
 
 	# takes two args: the ID of the datatype_field (or 'name'), the %$form hashref,
 	# and the ID for the loaded record we want to use
@@ -418,6 +418,16 @@ sub setup_field {
 			# get an 'open' in there
 			$$form{fields}{$key}{options}{Open} = 'Open Access';
 			unshift(@{$$form{fields}{$key}{options_keys}}, 'Open');
+
+		# maybe they want to simply relate to another omniclass datatype via
+		# the prep_menu_options() method: will be table_name.display_field
+		} elsif ($self->{datatype_info}{fields}{$field}{option_values} =~ /^[a-z0-9\_]+\.[a-z0-9\_]+$/i) {
+			($datatype_table_name,$datatype_display_field) = split /\./, $self->{datatype_info}{fields}{$field}{option_values};
+			$related_omniclass_object = $self->get_omniclass_object(
+				'dt' => $datatype_table_name,
+				'load_all' => 1,
+			);
+			($$form{fields}{$key}{options}, $$form{fields}{$key}{options_keys}) = $related_omniclass_object->prep_menu_options($datatype_display_field);
 
 		# otherwise a list in the field specification; could be just comma-separated,
 		# double-semicolon-separated, or name=value pairs on separate lines
