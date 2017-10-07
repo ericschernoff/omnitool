@@ -322,13 +322,13 @@
 [% END %]
 
 [% BLOCK street_address %]
-	<div class="form-control">
+	<div class="input-group">
 		<p>
-			<input type="text" value="[%form.fields.$f.presets.street_one%]" name="[%form.fields.$f.name%]_street_one" placeholder="Street Address Line 1"/>
-			<input type="text" value="[%form.fields.$f.presets.street_two%]" name="[%form.fields.$f.name%]_street_two" placeholder="Street Address Line 2"/>
+			<input class="form-control" type="text" value="[%form.fields.$f.presets.street_one%]" name="[%form.fields.$f.name%]_street_one" placeholder="Street Address Line 1"/>
+			<input class="form-control" type="text" value="[%form.fields.$f.presets.street_two%]" name="[%form.fields.$f.name%]_street_two" placeholder="Street Address Line 2"/>
 		</p>
 		<p>
-			<input type="text" value="[%form.fields.$f.presets.city%]" name="[%form.fields.$f.name%]_city" placeholder="City" />,
+			<input type="text" value="[%form.fields.$f.presets.city%]" name="[%form.fields.$f.name%]_city" placeholder="City" />
 			<input type="text" value="[%form.fields.$f.presets.state%]" name="[%form.fields.$f.name%]_state" placeholder="State" />
 		</p>
 		<p>
