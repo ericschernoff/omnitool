@@ -417,6 +417,28 @@ sub tools_javascript_classes {
 
 }
 
+# method to send out the appropriate menubar/navar template
+sub menubar_template {
+	my $self = shift;
+
+	# if we are using top_menu_skeleton.tt, we need to use ui_menu_top.tt for menubar_template
+	my $menubar_template = 'ui_menu.tt'; # all others use the plain version
+	if ($self->{luggage}{session}{app_instance_info}{ui_template} eq 'top_menu_skeleton.tt') {
+		$menubar_template = 'ui_menu_top.tt';
+	}
+
+	# we will use jemplate_process() from our utility belt, making sure the jemplate
+	# is called 'ui_menu.tt' on the client
+	my $template_content = read_file($ENV{OTHOME}.'/code/omnitool/static_files/system_wide_jemplates/'.$menubar_template);
+
+	return $self->{luggage}{belt}->jemplate_process(
+		'template_content' => $template_content,
+		'template_name' => 'ui_menu.tt',
+		# 'stop_here' => 1,
+	);
+}
+
+
 # empty destructor, to avoid AUTOLOAD being the desctructor
 sub DESTROY {
 	my $self = shift;
@@ -432,7 +454,6 @@ sub AUTOLOAD {
 	# perhaps they want one of our special Jemplates
 	# here is our dispatch table for that
 	my $jemplate_methods = {
-		'menubar_template' => 'ui_menu.tt',
 		'full_screen_form' => 'full_screen_form.tt',
 		'form_elements_template' => 'form_elements.tt',
 		'breadcrumbs_template' => 'breadcrumbs.tt',
@@ -607,14 +628,14 @@ Otherwise, it relies on the 'jemplate' CGI param being filled in.
 Please note some of the 'false' methods created in AUTOLOAD() which utilize send_jemplate() to
 send out some system-wide Jemplates.
 
-How about a nice update?  You can call in your application-specific Jemplates by prepending 
-'jemplates/' to the filename you send.  So you can add something like this to your 
+How about a nice update?  You can call in your application-specific Jemplates by prepending
+'jemplates/' to the filename you send.  So you can add something like this to your
 application_extra_skeleton_classes.tt file (which is under $app_code_directory/javascript):
 
 <script src="/ui/send_jemplate?jemplate=jemplates/my_great_jemplate.tt[%uri_base_param_amp%]"></script>
 
-Substituting out 'my_great_jemplate.tt' for the filename.  Make sure that file only contains a 
-[% BLOCK %] of Jemplate goodness to be used in your custom Tool View Mode Jemplates or via 
+Substituting out 'my_great_jemplate.tt' for the filename.  Make sure that file only contains a
+[% BLOCK %] of Jemplate goodness to be used in your custom Tool View Mode Jemplates or via
 custom JavaScript like this:
 
 	data.block_name = 'my_great_jemplate_block';

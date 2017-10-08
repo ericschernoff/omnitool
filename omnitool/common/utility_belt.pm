@@ -554,12 +554,18 @@ sub jemplate_process {
 		eval {
 			$js_compiled_template = Jemplate->compile_template_files(@template_files);
 		};
+		if ($@) {
+			$self->logger('Processing error: '.$@,'jemplate');
+		}
 	}
 
 	# also see if there was any content sent
 	if ($args{template_content} && $args{template_name}) {
 		eval {
 			$js_compiled_template .= "\n".Jemplate->compile_template_content($args{template_content}, $args{template_name});
+		};
+		if ($@) {
+			$self->logger('Processing error: '.$@,'jemplate');
 		}
 	}
 

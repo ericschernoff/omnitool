@@ -1,0 +1,214 @@
+<!-- features and functions javascripts -->
+
+<!--[if !IE]> -->
+<script type="text/javascript">
+	window.jQuery || document.write("<script src='/non_ace_assets/jquery-2.1.4.min.js'>"+"<"+"/script>");
+</script>
+<!-- <![endif]-->
+<!--[if IE]>
+<script type="text/javascript">
+ window.jQuery || document.write("<script src='/ace/assets/js/jquery1x.js'>"+"<"+"/script>");
+</script>
+<![endif]-->
+
+<script type="text/javascript">
+	if('ontouchstart' in document.documentElement) document.write("<script src='/ace/assets/js/jquery.mobile.custom.js'>"+"<"+"/script>");
+</script>
+
+<!-- ace scripts -->
+<script src="/ace/assets/js/bootstrap.js"></script>
+<script src="/ace/assets/js/jquery-ui.js"></script>
+<script src="/ace/assets/js/ace/elements.scroller.js"></script>
+<script src="/ace/assets/js/ace/elements.fileinput.js"></script>
+<script src="/ace/assets/js/ace/elements.typeahead.js"></script>
+<script src="/ace/assets/js/ace/elements.wizard.js"></script>
+<script src="/ace/assets/js/ace/elements.aside.js"></script>
+<script src="/ace/assets/js/ace/elements.colorpicker.js"></script>
+<script src="/ace/assets/js/ace/ace.js"></script>
+<script src="/ace/assets/js/ace/ace.touch-drag.js"></script>
+<script src="/ace/assets/js/ace/ace.sidebar.js"></script>
+<script src="/ace/assets/js/ace/ace.sidebar-scroll-1.js"></script>
+<script src="/ace/assets/js/ace/ace.submenu-hover.js"></script>
+<script src="/ace/assets/js/ace/ace.widget-box.js"></script>
+<script src="/ace/assets/js/ace/ace.settings.js"></script>
+<script src="/ace/assets/js/ace/ace.settings-rtl.js"></script>
+<script src="/ace/assets/js/ace/ace.widget-on-reload.js"></script>
+<script src="/ace/assets/js/ace/ace.searchbox-autocomplete.js"></script>
+<script src="/ace/assets/js/bootstrap-tag.js"></script>
+
+<!-- datatables -->
+<script src="/non_ace_assets/jquery.dataTables.min.js"></script>
+<script src="/non_ace_assets/dataTables.buttons.min.js"></script>
+<script src="/non_ace_assets/jszip.min.js"></script>
+<script src="/non_ace_assets/buttons.html5.min.js"></script>
+
+<!-- more features and functions -->
+<script src="/non_ace_assets/bootstrap-datepicker.js"></script>
+<script src="/ace/assets/js/date-time/bootstrap-timepicker.js"></script>
+<script src="/ace/assets/js/date-time/moment.js"></script>
+<script src="/non_ace_assets/moment-timezone-with-data.min.js"></script>
+<script src="/non_ace_assets/Chart.bundle.min.js"></script>
+<script src="/ace/assets/js/date-time/daterangepicker.js"></script>
+<script src="/ace/assets/js/date-time/bootstrap-datetimepicker.js"></script>
+<script src="/non_ace_assets/fullcalendar.min.js"></script>
+<script src="/ace/assets/js/jquery.maskedinput.js"></script>
+<script src="/non_ace_assets/chosen-1.8.2/chosen.jquery.js"></script>
+<script src="/ace/assets/js/jquery.hotkeys.js"></script>
+<script src="/ace/assets/js/bootstrap-wysiwyg.js"></script>
+<script src="/ace/assets/js/ace/elements.wysiwyg.js"></script>
+<script src="/ace/assets/js/jquery.gritter.js"></script>
+
+<!-- inline scripts related to this page -->
+<script type="text/javascript">
+
+	// show second sidebar-collapser for safari users
+	if (/^((?!chrome).)*safari/i.test(navigator.userAgent) && navigator.userAgent.indexOf('Mac')>1) {
+		$('#sidebar-collapse-safari').show();
+	}
+
+	jQuery(function($) {
+
+		var $sidebar = $('.sidebar').eq(0);
+		if( !$sidebar.hasClass('h-sidebar') ) return;
+
+		$(document).on('settings.ace.top_menu' , function(ev, event_name, fixed) {
+			if( event_name !== 'sidebar_fixed' ) return;
+
+			var sidebar = $sidebar.get(0);
+			var $window = $(window);
+
+			//return if sidebar is not fixed or in mobile view mode
+			var sidebar_vars = $sidebar.ace_sidebar('vars');
+
+			if( !fixed || ( sidebar_vars['mobile_view'] || sidebar_vars['collapsible'] ) ) {
+				$sidebar.removeClass('lower-highlight');
+				//restore original, default marginTop
+				sidebar.style.marginTop = '';
+				$window.off('scroll.ace.top_menu')
+				return;
+			}
+
+			 var done = false;
+
+			 $window.on('scroll.ace.top_menu', function(e) {
+				var scroll = $window.scrollTop();
+				scroll = parseInt(scroll / 4);//move the menu up 1px for every 4px of document scrolling
+				if (scroll > 17) scroll = 17;
+
+				if (scroll > 16) {
+					if(!done) {
+						$sidebar.addClass('lower-highlight');
+						done = true;
+					}
+				}
+				else {
+					if(done) {
+						$sidebar.removeClass('lower-highlight');
+						done = false;
+					}
+				}
+				sidebar.style['marginTop'] = (17-scroll)+'px';
+			 }).triggerHandler('scroll.ace.top_menu');
+			}).triggerHandler('settings.ace.top_menu', ['sidebar_fixed' , $sidebar.hasClass('sidebar-fixed')]);
+
+		 $(window).on('resize.ace.top_menu', function() {
+			$(document).triggerHandler('settings.ace.top_menu', ['sidebar_fixed' , $sidebar.hasClass('sidebar-fixed')]);
+		 });
+
+	});
+</script>
+
+
+<!-- if they are using a special 'app uri' for the primary hostname, tell the JS about that param -->
+<script type="text/javascript">
+	var uri_base = '[%uri_base%]';
+</script>
+
+[% IF uri_base %]
+	[% SET uri_base_param_amp = '&uri_base=' _ uri_base %]
+	[% SET uri_base_param_no_amp = '?uri_base=' _ uri_base %]
+[% END %]
+
+<!-- class for Tool objects to drive interactives with Tool.pm -->
+<script src="/ui/load_javascript?javascript_file=omnitool_toolobj.js[%uri_base_param_amp%]"></script>
+
+<!-- the primary omnitool-specific JS class -->
+<script src="/ui/load_javascript?javascript_file=omnitool_routines.js[%uri_base_param_amp%]"></script>
+
+<!-- omnitool bookmark manager -->
+<script src="/ui/load_javascript?javascript_file=omnitool_bookmarks.js[%uri_base_param_amp%]"></script>
+
+<!-- support for network diagrams via Vis.js -->
+<script src="/ui/load_javascript?javascript_file=omnitool_diagram_obj.js[%uri_base_param_amp%]"></script>
+
+<!-- the very-excting template engine -->
+<script src="/ui/load_javascript?javascript_file=Jemplate.js[%uri_base_param_amp%]"></script>
+
+<!-- handy jquery.alphanumeric class for restricting inputs: http://www.shiguenori.com/material/alphanumeric/ -->
+<!-- did not want to put under /ace, as that should include only stuff which came with Ace Admin -->
+<!-- support alphanumeric-only fields / short_text_clean -->
+<script src="/non_ace_assets/jquery.alphanumeric.js"></script>
+<!-- countdown timer for locking tools -->
+<script src="/non_ace_assets/jquery.countdown.js"></script>
+<!-- handle form submissions via ajax, including file uploads -->
+<script src="/non_ace_assets/jquery.form.js"></script>
+<!-- copy to clipboard function -->
+<script src="/non_ace_assets/clipboard.js"></script>
+
+<!-- printing function -->
+<script src="/non_ace_assets/printThis.js"></script>
+
+<!-- Jemplate template with standard modal head/foot bits -->
+<script src="/ui/modal_parts_template[%uri_base_param_no_amp%]"></script>
+
+<!-- Jemplate template to render all the types of form elements we can support -->
+<script src="/ui/form_elements_template[%uri_base_param_no_amp%]"></script>
+
+<!-- Jemplate template to render the most common form layout -->
+<script src="/ui/full_screen_form[%uri_base_param_no_amp%]"></script>
+
+<!-- small Jemplate for rendering complex / multi-line fields from omniclass field hooks -->
+<script src="/ui/complex_fields_template[%uri_base_param_no_amp%]"></script>
+
+<!-- small Jemplate for rendering inline action tools links  -->
+<!-- <script src="/ui/inline_action_buttons_template[%uri_base_param_no_amp%]"></script> -->
+<script src="/ui/inline_action_menu_template[%uri_base_param_no_amp%]"></script>
+
+<!-- combination of all Javascript classes needed for tools in this Application: tools.javascript_class -->
+<script src="/ui/tools_javascript_classes[%uri_base_param_no_amp%]"></script>
+
+<!-- div for system message modal, handled via omnitool_routines's open_system_modal() -->
+<div id="system_modal" class="modal fade" tabindex="-1">
+</div>
+
+<!-- content-is-loading modal -->
+<div id="modal-loading" class="modal" tabindex="-1" style="z-index: 9998;">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="blue bigger">
+				<i class="ajax-loading-icon fa fa-spin fa-spinner fa-2x blue"></i>
+				<span id="modal-loading-text">Loading Content...</span>
+				</h4>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- div for network diagram functions -->
+<div id="edge-popUp" class="network_edge_pop_up" style="z-index: 9990;">
+	<span id="edge-operation">edge</span> <br>
+	<table style="margin:auto;">
+	<tr>
+		<td>label</td><td><input id="edge-label" value="new value" /></td>
+	</tr>
+	</table>
+	<input type="button" value="Save Edge Connection" id="edge-saveButton" />
+	<input type="button" value="Cancel" id="edge-cancelButton" />
+</div>
+
+
+[%# do they have a application_extra_skeleton_classes.tt file in their application's javascripts directory? %]
+[% IF application_extra_skeleton_classes %]
+	[% PROCESS "application_extra_skeleton_classes.tt" %]
+[% END %]
