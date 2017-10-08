@@ -1,6 +1,5 @@
 [%#
-	Client-side template for generating tools menu for the 'top_menu_skeleton.tt'
-	skeleton -- this puts the 'sidebar' across the top.
+	Client-side template for generating tools menu, AKA the sidebar.
 	Use with Jemplate.
 	Depends on https://XYZ.omnitool-domain.com/ui/build_navigation
 	(omnitool::ui::build_navigation)
@@ -16,27 +15,18 @@
 		and probably the Bookmarks.
 	%]
 	[% IF tool.child_tools.size %]
-		<li class="transparent user-min">
-			<a href="#" data-toggle="dropdown" class="dropdown-toggle menubar_tool_link">
+
+		<li class="hover">
+			<a href="#[%tool.uri%]" class="menubar_tool_link">
 				<i class="menu-icon fa [% tool.icon_fa_glyph %] "></i>
 				<span class="menu-text"> [% tool.button_name %] </span>
 				<b class="arrow fa fa-angle-down"></b>
 			</a>
 			<b class="arrow"></b>
-			<ul class="dropdown-navbar dropdown-menu dropdown-caret dropdown-close" id="ot_actions_[%loop.count%]">
-				[% IF tool.uri %]
-					<li>
-					<a href="#[%tool.uri%]" class="menubar_tool_link">
-					<i class="menu-icon fa fa-caret-right"></i>
-						[% tool.button_name %]
-					</a>
-					</li>
-				[% END %]
-
+			<ul class="submenu" id="ot_actions_[%loop.count%]">
 				[% FOREACH child_tool IN tool.child_tools %]
 					<li>
 					<a href="#[%child_tool.uri%]" class="menubar_tool_link">
-						<i class="menu-icon fa fa-caret-right"></i>
 						[% child_tool.button_name %]
 					</a>
 					</li>
@@ -49,28 +39,26 @@
 	%]
 	[% ELSIF tool.sub_menus.size %]
 
-		<li class="transparent user-min">
-			<a href="#" data-toggle="dropdown" class="dropdown-toggle menubar_tool_link">
+		<li class="hover">
+			<a href="#" class="dropdown-toggle menubar_tool_link">
 				<i class="menu-icon fa [% tool.icon_fa_glyph %] "></i>
 				<span class="menu-text"> [% tool.button_name %] </span>
 				<b class="arrow fa fa-angle-down"></b>
 			</a>
 			<b class="arrow"></b>
-			<ul class="dropdown-navbar dropdown-menu dropdown-caret dropdown-close" id="ot_actions_[%loop.count%]">
+			<ul class="submenu" id="ot_actions_[%loop.count%]">
 
 		[% FOREACH sub_menu IN tool.sub_menus %]
-			<li>
-				<a href="#" data-toggle="dropdown" class="dropdown-toggle menubar_tool_link">
+			<li class="hover">
+				<a href="#" class="dropdown-toggle menubar_tool_link">
 					<i class="menu-icon fa [% sub_menu.icon_fa_glyph %] "></i>
 					<span class="menu-text"> [% sub_menu.button_name %] </span>
-					<b class="arrow fa fa-angle-down"></b>
+					<b class="arrow fa fa-caret-right"></b>
 				</a>
-				<b class="arrow"></b>
-				<ul class="dropdown-navbar dropdown-menu dropdown-caret dropdown-close" id="ot_actions_[%loop.count%]">
+				<ul class="submenu" id="ot_actions_[%loop.count%]">
 					[% FOREACH bookmark IN sub_menu.bookmarks %]
 						<li>
 						<a href="#[%bookmark.uri%]" class="menubar_tool_link">
-							<i class="menu-icon fa fa-caret-right"></i>
 							[% bookmark.button_name %]
 						</a>
 						</li>
@@ -85,10 +73,11 @@
 	%]
 	[% ELSE %]
 
-		<li class="transparent user-min">
+		<li class="hover">
 			<a href="#[%tool.uri%]" class="menubar_tool_link">
-				<i class="menu-icon fa [% tool.icon_fa_glyph %]"></i>
-				<span class="menu-text">[% tool.button_name %]</span>
+				<i class="menu-icon fa [% tool.icon_fa_glyph %] "></i>
+				<span class="menu-text"> [% tool.button_name %] </span>
+				<b class="arrow fa fa-angle-down"></b>
 			</a>
 		</li>
 

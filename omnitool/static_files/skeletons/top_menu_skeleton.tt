@@ -9,26 +9,6 @@
 		[%#  include CSS/javascripts %]
 		[% INCLUDE skeleton_parts/top_css_javascript.tt %]
 
-		<style>
-			.spacer {
-				margin-top: 20px; /* define margin as you see fit */
-			}
-
-			@media (min-width: 768px) {
-				.navbar .navbar-nav {
-					display: inline-block;
-					float: none;
-					vertical-align: top;
-				}
-
-				.navbar .navbar-collapse {
-					text-align: center;
-				}
-			}
-
-			.navbar { margin-bottom: 0 }
-		</style>
-
 	</head>
 
 	[%# make double sure there is a setting for skin %]
@@ -44,44 +24,151 @@
 
 	<body class="[%session.app_instance_info.ui_ace_skin%]">
 
-		<div class="navbar navbar-default navbar-fixed-top">
-			<div class="navbar-container container">
-				<div id="navbar" class="navbar-buttons navbar-header pull-right" role="navigation">
-					<ul class="nav ace-nav" id="ot_menubar">
-					<!-- nav-list: loading via ui_menu.tt -->
-					</ul>
+		<div id="navbar" class="navbar navbar-default navbar-fixed-top navbar-collapse">
+
+			<div class="navbar-container" id="navbar-container">
+
+				<!-- #section:basics/sidebar.mobile.toggle -->
+				<button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler" data-target="#sidebar">
+					<span class="sr-only">Toggle sidebar</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+
+				[%# Default logo %]
+				[% IF session.app_instance_info.ui_logo == '' %]
+					[% SET session.app_instance_info.ui_logo = '/ui_icons/ginger_face.png' %]
+				[% END %]
+
+				<div class="navbar-header pull-left">
+					<span class="navbar-brand">
+						<small>
+							<img class="hidden-480 padding-right-2" src="[%session.app_instance_info.ui_logo%]"/>
+							<span id="ot_tool_title" ></span>
+						</small>
+					</span>
 				</div>
-			</div>
+
+				<div class="navbar-buttons navbar-header pull-right collapse navbar-collapse" role="navigation">
+					[% IF username != 'public' %]
+						<!-- #section:basics/navbar.nav -->
+						<ul class="nav ace-nav">
+
+							[% switch_into_instances = [] %]
+							[% FOREACH instance IN session.appinst_keys %]
+								[% IF instance != session.app_instance && session.all_app_instance_info.$instance.has_switch_into_access %]
+									[% switch_into_instances.push(instance) %]
+								[% END %]
+							[% END %]
+
+							[% IF switch_into_instances.0 %]
+								<li class="transparent user-min hidden-xs">
+									<a data-toggle="dropdown" class="dropdown-toggle" href="#">
+										<span id="ot_instance_title">[% session.app_instance_info.inst_name %]</span>
+										<i class="ace-icon fa fa-caret-down"></i>
+									</a>
+									<ul class="dropdown-menu-right dropdown-navbar dropdown-menu dropdown-caret dropdown-close">
+										[% FOREACH the_instance IN switch_into_instances %]
+											<li><a href="/[%session.all_app_instance_info.$the_instance.uri_base_value%]" target="_blank">[%session.all_app_instance_info.$the_instance.inst_name%]</a></li>
+											<!-- relies on the uri_base_value because your hostnames may not always be in DNS -->
+										[% END %]
+									</ul>
+								</li>
+							[% ELSE %]
+								<li class="transparent user-min">
+									<span id="ot_instance_title" class="white" style="margin-right: 10px">&nbsp;[% session.app_instance_info.inst_name %]&nbsp;</span>
+								</li>
+							[% END %]
+
+							<li class="transparent user-min">
+								<a data-toggle="dropdown" class="dropdown-toggle" href="#">
+									<i class="fa fa-bookmark white"></i>
+									Bookmark / Share
+									<i class="ace-icon fa fa-caret-down"></i>
+								</a>
+								<ul class="dropdown-menu-right dropdown-navbar dropdown-menu dropdown-caret dropdown-close">
+									<li><a href="#" class="bookmark_create">Create Bookmark</a></li>
+									<li><a href="#" id="bookmark_manage">Manage Bookmarks</a></li>
+									<li><a href="#" class="bookmark_create">Share Current View</a></li>
+								</ul>
+							</li>
+
+							<li class="transparent user-min">
+
+								<a data-toggle="dropdown" class="dropdown-toggle" href="#">
+									<span id="ot_user_fullname">[%session.their_name%]</span>
+									<i class="ace-icon fa fa-caret-down"></i>
+								</a>
+
+								<ul class="dropdown-menu-right dropdown-navbar dropdown-menu dropdown-caret dropdown-close">
+									<li>
+										<a href="/[%system_uri_base%]#/tools/user_api_keys" target="_blank">
+											<i class="ace-icon fa fa-key"></i>
+											Your API Keys
+										</a>
+									</li>
+
+									[% IF allow_password_changing == 'Yes' %]
+										<li>
+											[% IF uri_base %]
+												<a href="/[%uri_base%]/?change_my_password=1">
+											[% ELSE %]
+												<a href="/?change_my_password=1">
+											[% END %]
+												<i class="ace-icon fa fa-user"></i>
+												Change My Password
+											</a>
+										</li>
+									[% END %]
+
+									<li>
+										[% IF uri_base %]
+											<a href="/ui/signout?uri_base=[%uri_base%]">
+										[% ELSE %]
+											<a href="/ui/signout">
+										[% END %]
+											<i class="ace-icon fa fa-power-off"></i>
+											Sign Out
+										</a>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					[% END %]
+				</div>
+
+			</div><!-- /.navbar-container -->
 		</div>
 
 		<!-- /section:basics/navbar.layout -->
-
-		<!-- start main container -->
 		<div class="main-container" id="main-container">
+			<!-- #section:basics/navbar.layout -->
+			<div id="sidebar" class="sidebar h-sidebar responsive" data-auto-hide=true>
+				<!-- nav-list: loading via ui_menu.tt -->
+				<ul class="nav nav-list" id="ot_menubar">
+				</ul><!-- /.nav-list -->
+			</div>
+
+			<!-- /section:basics/sidebar.horizontal -->
+
 			<!-- main-content area-->
 			<div class="main-content" style="margin-right: 0 !important">
 				<div class="main-content-inner">
-
-					<div class="row">
-						<div class="col-xs-12 pull-left">
-							<span class="navbar-brand">
-								<small>
-									<img class="hidden-480 padding-right-2" src="[%session.app_instance_info.ui_logo%]"/>
-									<span id="ot_tool_title" ></span>
-								</small>
-							</span>
-						</div>
-					</div>
-
 					<!-- breadcrumb area, for jemplate -->
 					<div class="breadcrumbs breadcrumbs-fixed" id="breadcrumbs">
 					</div>
-
 					<div class="page-content" id="page-content" style="margin-top: 10px">
 
 						<!-- omnitool_controller() will place tools content in here -->
 
 					</div><!-- /.page-content -->
+
+				<script type="text/javascript">
+					try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+				</script>
+
+
 				</div>
 			</div><!-- /.main-content -->
 
@@ -90,6 +177,7 @@
 					<!-- #section:basics/footer -->
 					<div class="footer-content">
 					<!-- Footer Content Would Go Here -->
+
 					</div>
 					<!-- /section:basics/footer -->
 				</div>
