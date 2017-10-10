@@ -118,7 +118,7 @@ function Tool (tool_attributes) {
 				$("#page-content").append( tool_html );
 
 				// empower the tool search drop-down menus
-				$('.tool-search-menu').chosen({search_contains: true});
+				enable_chosen_menu('.tool-search-menu');
 
 				// run the routines to enable the quick-search fields
 				tool_objects[this_tool_id].quick_search_enable();
@@ -542,7 +542,7 @@ function Tool (tool_attributes) {
 							// load them in
 							$('#tool_controls_'+this_tool_id).html(tool_controls_html);
 							// empower the tool search drop-down menus
-							$('.tool-search-menu').chosen({search_contains: true});
+							enable_chosen_menu('.tool-search-menu');
 							// empower the quick search keyword
 							tool_objects[this_tool_id].quick_search_enable();
 							// and now call post_data_fetch_operations()

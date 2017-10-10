@@ -376,7 +376,8 @@ function post_data_fetch_operations (data) {
 	}
 
 	// empower any tool quick/inline actions drop-down menus
-	$('.tool-action-menu').chosen({search_contains: true});
+	enable_chosen_menu('.tool-action-menu');
+
 
 	// if their session was flushed since we last checked
 	// reload the menubar, clear the backgrounded tools,
@@ -940,11 +941,9 @@ function interactive_form_elements (tool_id,form_type) {
 	// very cool chosen.jquery.js for options menus
 	if (tool_objects[tool_id]['tool_type_short'] == 'modal' || form_type == 'advanced_search_form') {
 		// modal select needs to be the width of the widest option to work
-		$('.chosen-select').chosen({width: "95%", search_contains: true});
+		enable_chosen_menu('.chosen-select', '95%');
 	} else { // otherwise, natural width
-		$('.chosen-select').chosen({search_contains: true});
-		// NOTE: Uncommenting this breaks the Results_SearchForm.tt --> find a workaround if you need it
-		// $('.chosen-select').chosen({width: "100%", search_contains: true});
+		enable_chosen_menu('.chosen-select');
 	}
 
 	// let's make radio buttons highlight their area when they are clicked / selected
@@ -1375,6 +1374,30 @@ function interactive_form_plus_diagram (tool_id) {
 	});
 }
 
+// function to enable chosen menus properly, based on the type of device
+function enable_chosen_menu (jquery_identifier, custom_width) {
+	if (jquery_identifier == undefined) { // can't do much without this
+		return;
+	}
+	
+	// set up our options object
+	var chosen_options = new Array;
+	if (custom_width != undefined) { // make sure to send it with percent sign at the end
+		chosen_options.width = custom_width;
+	}
+	
+	// if it's a desktop browser, enable search for 4+ options
+	if (mobile_device != 1) {
+		chosen_options.search_contains = true;
+		chosen_options.disable_search_threshold = 4;
+	} else { // otherwise, disable search
+		chosen_options.disable_search = true;
+	}
+	
+	// alright enable the menu(s)
+	$(jquery_identifier).chosen(chosen_options);
+}
+
 // small ui function to support the 'Search Controls' button to reveal the search controls in XS mode
 function xs_show_search_controls () {
 	// show the controls
@@ -1383,7 +1406,7 @@ function xs_show_search_controls () {
 	$('#search-controls-toggle').hide();
 	// fix the menus
 	$('.tool-search-menu').chosen('destroy');
-	$('.tool-search-menu').chosen({search_contains: true});
+	enable_chosen_menu('.tool-search-menu');
 }
 
 // support for sub-data widgets (within widgets) in WidgetsV3.tt
