@@ -1380,19 +1380,20 @@ function enable_chosen_menu (jquery_identifier, custom_width) {
 		return;
 	}
 	
+	// chosen is un-supported on a mobile browser
+	if (mobile_device == 1) {
+		return; 
+	}
+	
 	// set up our options object
 	var chosen_options = new Array;
 	if (custom_width != undefined) { // make sure to send it with percent sign at the end
 		chosen_options.width = custom_width;
 	}
-	
-	// if it's a desktop browser, enable search for 4+ options
-	if (mobile_device != 1) {
-		chosen_options.search_contains = true;
-		chosen_options.disable_search_threshold = 4;
-	} else { // otherwise, disable search
-		chosen_options.disable_search = true;
-	}
+
+	// show search if there are 4+ options	
+	chosen_options.search_contains = true;
+	chosen_options.disable_search_threshold = 4;
 	
 	// alright enable the menu(s)
 	$(jquery_identifier).chosen(chosen_options);
@@ -1404,9 +1405,11 @@ function xs_show_search_controls () {
 	$('#search-controls').removeClass('hidden-xs');
 	// hide the button
 	$('#search-controls-toggle').hide();
-	// fix the menus
-	$('.tool-search-menu').chosen('destroy');
-	enable_chosen_menu('.tool-search-menu');
+	// fix the menus - if on desktop, chosen is un-supported on a mobile browser
+	if (mobile_device != 1) {
+		$('.tool-search-menu').chosen('destroy');
+		enable_chosen_menu('.tool-search-menu');
+	}
 }
 
 // support for sub-data widgets (within widgets) in WidgetsV3.tt

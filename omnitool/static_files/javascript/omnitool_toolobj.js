@@ -439,7 +439,7 @@ function Tool (tool_attributes) {
 				}
 
 				// if this is a chosen menu, update it
-				if ( $("#"+trigger_menu).hasClass('chosen-select') || $("#"+trigger_menu).hasClass('tool-search-menu')) {
+				if ( $("#"+trigger_menu).hasClass('chosen-select') ) {
 					$("#"+trigger_menu).trigger("chosen:updated");
 				}
 
