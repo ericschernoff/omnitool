@@ -342,7 +342,6 @@ sub advanced_search_trigger_menu_options {
 	return $self->{json_results};
 }
 
-# method to build the 'breadcrumbs' list which should be the chain of tools up to the top
 # reusable method to build filter menu options for one or more menus
 # expects an array of filter menu keys
 sub build_filter_menu_options {
@@ -452,7 +451,7 @@ sub build_filter_menu_options {
 		# make sure there is any 'Any/All' option upfront - only for month choosers/single selects and those who allow it
 		if ($$this_tool_filter_menu{options_keys}[0] ne 'Any' && $$this_tool_filter_menu{menu_type} =~ /Month Chooser|Single-Select/ && $$this_tool_filter_menu{support_any_all_option} ne 'No') {
 			unshift(@{ $$this_tool_filter_menu{options_keys} },'Any');
-			$$this_tool_filter_menu{options}{Any} = 'Any/All';
+			$$this_tool_filter_menu{options}{Any} = 'Any '.$$this_tool_filter_menu{name};
 		}
 
 		# figure out current / default value for this menu;

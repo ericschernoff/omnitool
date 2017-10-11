@@ -74,7 +74,7 @@ sub search {
 		$self->{json_results} = {
 			'error_message' => 'This search requires at least '.
 				num2en( $self->{attributes}{menus_required_for_search} ).
-				' menu/keyword '.$choice_word.".\nPlease adjust search above.",
+				' option '.$choice_word.".\nPlease adjust search above.",
 			'datatype_name' => $self->{omniclass_object}{datatype_info}{name},
 		};
 		return;

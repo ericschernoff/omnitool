@@ -108,7 +108,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 		[% END %]
 
 		<select id="quick_[%this_menu%]" style="padding: 20px; min-width: 144px;" data-placeholder="[% tool_configs.tool_filter_menus.$search_menu.name %]" class="tool-search-menu" tabindex="2" onchange="[%menu_onchange%]">
-			<option value="[%tool_configs.tool_filter_menus.$search_menu.options_keys.0%]">[% tool_configs.tool_filter_menus.$search_menu.name %]</option>
+			<!-- <option value="[%tool_configs.tool_filter_menus.$search_menu.options_keys.0%]">[% tool_configs.tool_filter_menus.$search_menu.name %]</option> --> 
 			[% FOREACH option_value IN tool_configs.tool_filter_menus.$search_menu.options_keys %]
 				[% IF display_options.$this_menu == option_value %]
 					<option SELECTED value="[%option_value%]">[%tool_configs.tool_filter_menus.$search_menu.options.$option_value%]</option>
