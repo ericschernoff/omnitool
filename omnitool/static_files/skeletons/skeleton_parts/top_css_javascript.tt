@@ -24,7 +24,7 @@
 
 <!-- bootstrap & fontawesome -->
 <link rel="stylesheet" href="/ace/assets/css/bootstrap.css" />
-<link rel="stylesheet" href="/ace/assets/css/font-awesome.css" />
+<link rel="stylesheet" href="/non_ace_assets/font-awesome-4.7.0/css/font-awesome.css" />
 
 <!-- core plugin styles -->
 <link rel="stylesheet" href="/ace/assets/css/jquery-ui.custom.css" />
