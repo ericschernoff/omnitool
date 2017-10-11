@@ -120,36 +120,6 @@ Expects all of $self for a Tool.pm class/sub-class.
 	</div>
 [% END %]
 
-<span style="white-space: nowrap">
-[% IF attributes.tool_type.match('Search') %]
-	[% IF has_advanced_search %]
-		<div class="btn-group" id="advanced_search_features">
-		<button data-toggle="dropdown" class="btn btn-white dropdown-toggle">
-			Adv<span class="hidden-1025">anced...</span>
-			<span class="badge badge-info" id="advanced_features_badge"></span>
-			<i class="ace-icon fa fa-caret-down"></i>
-		</button>
-		<ul class="dropdown-menu">
-			<li>
-				<a onclick="tool_objects['[%tool_and_instance%]'].show_advanced_search()">
-				<i class="ace-icon fa fa-search"></i>
-				Advanced Search
-				<span class="badge badge-info" id="advanced_search_filters_badge"></span>
-				</a>
-			</li>
-			<li>
-				<a onclick="tool_objects['[%tool_and_instance%]'].show_advanced_sort()">
-				<i class="ace-icon fa fa-arrows-alt"></i>
-				Advanced Sorting
-				<span class="badge badge-info" id="advanced_sort_options_badge"></span>
-				</a>
-			</li>
-		</ul>
-		</div>
-	[% END %]
-</span>
-[% END %]
-
 <!-- show Refresh Data for all tools -->
 <div class="btn-group">
 
@@ -200,6 +170,25 @@ Expects all of $self for a Tool.pm class/sub-class.
 			Clear
 		</button>
 	</div>
+[% END %]
+
+<span style="white-space: nowrap">
+[% IF attributes.tool_type.match('Search') %]
+	[% IF has_advanced_search %]
+		<div class="btn-group" id="advanced_search_features">
+			<button class="btn btn-white" onclick="tool_objects['[%tool_and_instance%]'].show_advanced_search()">
+			<i class="ace-icon fa fa-search-plus"></i>
+			<span class="badge badge-info" id="advanced_search_filters_badge"></span>
+			</button>
+
+			<button class="btn btn-white" onclick="tool_objects['[%tool_and_instance%]'].show_advanced_sort()">
+			<i class="ace-icon fa fa-sort"></i>
+			<span class="badge badge-info" id="advanced_sort_options_badge"></span>
+			</button>
+		</ul>
+		</div>
+	[% END %]
+</span>
 [% END %]
 
 [%# Support lock counter %]
