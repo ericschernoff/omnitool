@@ -99,6 +99,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 				[% SET is_trigger_menu = 1 %]
 			[% END %]
 		[% END %]
+		
 		[% SET menu_onchange = "tool_objects['" _ tool_and_instance _ "'].process_quick_search('" _ this_menu _ "',\$(this).val());" %]
 
 		[%# also support triggering another menu %]

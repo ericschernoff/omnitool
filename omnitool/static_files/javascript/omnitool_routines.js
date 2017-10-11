@@ -1078,7 +1078,10 @@ function reset_form (form_id) {
 	var $form = $('#'+form_id);
 	$form.find('input:text, input:password, input:file, textarea').val('');
     $form.find('select option:selected').removeAttr('selected');
-    	 $form.find('select').trigger('chosen:updated');
+		$form.find('select').each(function(i, v) {
+			$(v).trigger('chosen:updated');
+		});
+    	$form.find('select').trigger('chosen:updated');
     $form.find('input:checkbox, input:radio').removeAttr('checked');
 
 	// bootstrap-tags is less fun ;)  this is the way i got it to work, since each time you removed

@@ -439,9 +439,7 @@ function Tool (tool_attributes) {
 				}
 
 				// if this is a chosen menu, update it
-				if ( $("#"+trigger_menu).hasClass('chosen-select') ) {
-					$("#"+trigger_menu).trigger("chosen:updated");
-				}
+				$("#"+trigger_menu).trigger("chosen:updated");
 
 				// if this target menu triggers another menu (i.e. three menus in a chain), call that
 				// change routine to reset the next menu's options
