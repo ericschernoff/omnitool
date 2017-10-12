@@ -560,6 +560,8 @@ To load up data from your MySQL database into the OmniClass object:
 		'do_clear' => 1 or 0, # optional, defaults to 0, which tells load() to clear any previously-loaded records first
 		'skip_metainfo' => 1 or 0, # optional, defaults to 0; filling-in will skip loading in data from 'metainfo' table
 		'skip_hooks' => 0 or 1, # optional; if '1', skip pre_load or post_load hooks and any virtual field routines
+		'load_records_limit' => some_integer, # optional, if filled, will limit the number of results which will be loaded
+											  # meant for use with tool::searcher() to limit searching
 		'load_fields' => 'comma,list,of,fields', # optional; allows you to specify which table columns will be retrieved
 			# and which virtual field rotuines will be run (name those 'field_HOOK' like the methods)
 			# if blank loads all columns and runs all load routines.

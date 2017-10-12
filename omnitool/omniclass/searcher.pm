@@ -373,6 +373,7 @@ sub search {
 			'skip_metainfo' => $args{skip_metainfo},
 			'load_fields' => $args{load_fields},
 			'simple_query_mode' => $args{simple_query_mode},
+			'load_records_limit' => $args{load_records_limit},
 		);
 		$args{already_loaded} = 1; # for below
 

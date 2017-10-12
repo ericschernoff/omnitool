@@ -18,7 +18,7 @@ sub search {
 	my $self = shift;
 
 	# declare vars
-	my ($dt_obj, $search_opts_key, $target_datatype, $tool_datacode, $tool_mode_id, $include_fields, $advanced_sort_options, $display_option);
+	my ($dt_obj, $search_opts_key, $target_datatype, $tool_datacode, $tool_mode_id, $include_fields, $advanced_sort_options, $display_option, $load_records_limit);
 
 	# target our target datatype
 	$self->{target_datatype} = $self->{attributes}{target_datatype};
@@ -80,12 +80,22 @@ sub search {
 		return;
 	}
 
+	# we need to know the tool mode ID no matter what
+	$tool_mode_id = $self->{display_options}{tool_mode};
+
 	# choose our sorting field/key and direction
 	# if none sent, choose the defaults for the this Tool View Mode
 	if (!$self->{display_options}{sort_column}) {
-		$tool_mode_id = $self->{display_options}{tool_mode};
 		$self->{display_options}{sort_column} = $self->{tool_configs}{tool_mode_configs}{$tool_mode_id}{default_sort_column};
 		$self->{display_options}{sort_direction} = $self->{tool_configs}{tool_mode_configs}{$tool_mode_id}{default_sort_direction};
+	}
+
+	# if the view calls for a limit, enforce it in the loader module (so we can see that too many were found)
+	if ($self->{tool_configs}{tool_mode_configs}{$tool_mode_id}{max_results} ne 'No Max') {
+		$load_records_limit = $self->{tool_configs}{tool_mode_configs}{$tool_mode_id}{max_results};
+	# 'no max' should really be 10,000
+	} else {
+		$load_records_limit = 10000;
 	}
 
 	# finally, run the search
@@ -95,11 +105,8 @@ sub search {
 		'auto_load' => 1,
 		'sort_column' => $self->{display_options}{sort_column},
 		'sort_direction' => $self->{display_options}{sort_direction},
-		# we will need to limit the returned results to 3,000 
-		# to prevent memory issues; also, let's sort by latest->oldest 
-		# the DB query to try and make these results better, since the
-		# sort below might be with incomplete results
-		'order_by' => 'code desc limit 3000',
+		'order_by' => 'code desc', # fallback sorting
+		'load_records_limit' => $load_records_limit,
 	);
 
 	# debug code

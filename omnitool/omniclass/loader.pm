@@ -95,6 +95,11 @@ sub load {
 
 	# build a nice sql query for grabbing the records from our main table
 	# pull our main data
+	
+	# if they want to limit the number of records to load, so so in the SQL
+	if ($args{load_records_limit}) {
+		$search_logic .= ' order by code desc limit '.$args{load_records_limit};
+	}
 
 	($records,$r_keys) = $self->{db}->sql_hash(
 		qq{select concat(code,'_',server_id),name}.$load_column_list.qq{ from }.$self->{database_name}.
@@ -103,15 +108,16 @@ sub load {
 	);
 
 	# and for our metainfo; skip if they explicity said skip_metainfo or if the datatype call for it
-	if (!$args{skip_metainfo} && $self->{datatype_info}{metainfo_table} ne 'No Metainfo') {
+	if (!$args{skip_metainfo} && $self->{datatype_info}{metainfo_table} ne 'No Metainfo' && $$r_keys[0]) {
 		# need question_marks for placeholders in IN list
-		$metainfo_q_list = $self->{belt}->q_mark_list(scalar @{$args{data_codes}});
+		$metainfo_q_list = $self->{belt}->q_mark_list(scalar @$r_keys);
 
-		# grab it
+		# grab them
 		($metainfo,$m_keys) = $self->{db}->sql_hash(
 			'select data_code,altcode,table_name,originator,create_time,updater,update_time,parent,children from '.
-			$self->{database_name}.'.'.$self->{metainfo_table}.qq{ where the_type=? and data_code in ($metainfo_q_list)},
-			( 'bind_values' => [$self->{dt}, @{$args{data_codes}}] )
+			$self->{database_name}.'.'.$self->{metainfo_table}.
+			qq{ where the_type=? and data_code in ($metainfo_q_list)},
+			( 'bind_values' => [$self->{dt}, @$r_keys] )
 		);
 
 		# let's make the created / updated times prettier, unless they don't want to run the hooks
