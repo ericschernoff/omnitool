@@ -28,7 +28,7 @@ sub search {
 	# need myself and my args
 	my $self = shift;
 	my (%args) = @_;
-	my (@table_keys, $key, $foreign_results, $did, $primary_table, $actual_queries_run, $sql_statement_logic, $table_key, $sql_query_plans, $actual_results, $search_result, $limit_count, @match_values, $question_marks, $args_ref, @bind_values, $math_operator_list, $operator_list, $r, $results, $search_count, $so, %found, $dt,$order_by);
+	my (@table_keys, $key, $foreign_results, $did, $primary_table, $actual_queries_run, $sql_statement_logic, $table_key, $sql_query_plans, $actual_results, $search_result, $limit_count, @match_values, $question_marks, $args_ref, @bind_values, $math_operator_list, $operator_list, $r, $results, $search_count, $so, %found, $dt,$order_by, $conjunction);
 
 	# for this method, we want to save the search_options and other arguments so that search()
 	# could be called again with no arguments and execute the same search
@@ -116,6 +116,9 @@ sub search {
 				$$so{extra_logic} = 'parent like ? and ';
 				push(@bind_values,$self->{dt}.':%');
 				# note: you wouldn't pull the parent from metainfo, so the above 'extra_logic' is not needed here
+
+				# fix the primary relationship column to match parent
+				$$so{primary_table_column} ||= "concat('".$self->{dt}.":',code,'_',server_id)";
 
 			# translate 'data_code' to it's true meaning (but not for metainfo)
 			} elsif ($$so{relationship_column} eq 'data_code' && $$so{table_name} !~ /metainfo/) {
@@ -232,8 +235,15 @@ sub search {
 		$$did{$table_key}++;
 		next if $table_key eq $primary_table && $$did{$primary_table} < 2;
 
+		# if we are on the primary table, allow for a 'match-any' attitude
+		if ($args{match_any} && $table_key eq $primary_table) {
+			$conjunction = ' or ';
+		} else { # otherwise, has to be and (match-all)
+			$conjunction = ' and ';
+		}
+
 		# combine the SQL logic for this targeted table
-		$sql_statement_logic = join( ' and ', @{ $$sql_query_plans{$table_key}{query_logic} } );
+		$sql_statement_logic = join( $conjunction , @{ $$sql_query_plans{$table_key}{query_logic} } );
 
 		# alright, let's build a nice sql statement & run it too
 		# use ()'s for the primary logic and include $$so{additional_logic} in those, as it may be an 'or' value
@@ -265,8 +275,8 @@ sub search {
 			# we need the number of question marks of the results found in this query
 			$question_marks = $self->{belt}->q_mark_list(scalar(@$results));
 
-			# okay, so we will pull these into the primary table query, which will run last
-			# load this into the query plan for that primary table
+			# okay, so we will pull these into the primary table query, which will run last.
+			# Load this into the query plan for that primary table
 			$$sql_query_plans{$primary_table}{relationship_column} = qq{concat(code,'_',server_id)};
 			push (
 				@{ $$sql_query_plans{$primary_table}{query_logic} },

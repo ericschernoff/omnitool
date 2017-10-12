@@ -104,7 +104,6 @@ sub search {
 
 	# debug code
 	# $self->{belt}->benchmarker('Search run');
-	# $self->{belt}->logger($self->{searches},'eric');
 
 	# if they want tree-mode, give it to them
 	if ($self->{omniclass_object}->{search_found_count} && $self->{attributes}{load_trees} eq 'Yes') {
@@ -113,7 +112,7 @@ sub search {
 
 	# if they specified a global keyword, apply it here, to the already built data
 	# so hopefully our search is tight and we do not have too many results
-	if ($self->{display_options}{quick_keyword}) {
+	if ($self->{display_options}{quick_keyword} && !$self->{skip_keyword_matching}) {
 		# use method below, which will remove the records from omniclass_object which do not match
 		$self->quick_search_keyword_match();
 	}
@@ -191,6 +190,9 @@ sub search {
 	if ($self->can('json_results_modify')) {
 		$self->json_results_modify();
 	}
+
+	# debug code
+	# $self->{belt}->benchmarker('Search all done and ready.');
 
 }
 

@@ -725,6 +725,9 @@ This how you search (and load) data.  Meant to take the place of SQL 'select' st
 		],
 		'log_search' => 1 or blank, # for debugging, if filled, will log the SQL and values of the search into the USERNAME_searches log
 									# where 'USERNAME' is $self->{luggage}{username}
+		'match_any' => 1 or blank, # tells search() to use the 'or' logic on the search options for the primary table
+								   # so that only one search option has to match the record to be a match
+								   # if blank, it will default to 'and,' which means all must match to qualify a record
 		'order_by' => 'some_col', # sorts the results based on an 'order by' SQL clause against the primary table, so any/all
 								  # specified columns must be in the primary datatype table.  Regular SQL syntax, minus the
 								  # 'order by' bit; very useful when you are not auto-loading records.
