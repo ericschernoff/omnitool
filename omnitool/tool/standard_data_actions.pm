@@ -127,6 +127,21 @@ sub perform_form_action {
 	$self->{json_results}{form_was_submitted} = 1;
 }
 
+# let's allow a trigger menu to be in a standard forms 
+sub standard_form_trigger_menu_options {
+	my $self = shift;
+
+	# we need the omniclass object
+	$self->get_omniclass_object( 'dt' => $self->{target_datatype} );
+
+	# and then use the 'trigger_menu_options' method in there
+	$self->{json_results} = $self->{omniclass_object}->trigger_menu_options();
+
+	# done ;)
+	return $self->{json_results};
+	
+}
+
 
 1;
 
