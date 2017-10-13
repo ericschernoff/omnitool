@@ -100,7 +100,7 @@ sub tool_controls {
 		$self->{tool_configs}{tool_mode_configs}{$mode_view}{uri} = $self->{my_base_uri}.'/tool_mode'.$mode_view;
 	}
 
-	# now the quick-search menus; limit to two
+	# now the quick-search menus; limit to four
 	$menu_cnt = 0;
 	foreach $filter_menu ( @{ $self->{tool_configs_keys}{tool_filter_menus} }) {
 
@@ -227,7 +227,7 @@ sub advanced_search_form {
 		# field type is based off 'menu type' option
 		if ($$tool_filter_menu{menu_type} eq 'Single-Select' || $$tool_filter_menu{menu_type} eq 'Month Chooser') {
 			$form_field_type = 'single_select';
-			
+
 		} elsif ($$tool_filter_menu{menu_type} eq 'Multi-Select') {
 			$form_field_type = 'advanced_search_multi_select';
 
@@ -406,7 +406,7 @@ sub build_filter_menu_options {
 			# 'display_field_name' is optional and defaults to 'name'
 			($datatype_table_name,$display_field_name) = split /\./, $$this_tool_filter_menu{menu_options_method};
 			$display_field_name ||= 'name';
-			
+
 			if ($datatype_table_name) {
 				$menu_omniclass_object = $self->{luggage}{object_factory}->omniclass_object(
 					'dt' => $datatype_table_name,

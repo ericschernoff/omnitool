@@ -17,6 +17,20 @@ Expects all of $self for a Tool.pm class/sub-class.
 </button>
 </div>
 
+<!-- show Refresh Data for all tools -->
+<div class="btn-group">
+
+[%# indicate if tool has a search query refresh interval %]
+[% IF attributes.query_interval %]
+	[% SET refresh_button_title = 'title="Search auto-runs every ' _ attributes.query_interval _ ' seconds."' %]
+[% END %]
+
+<button class="btn btn-white" [%refresh_button_title%] onclick="tool_objects['[%tool_and_instance%]'].refresh_json_data()">
+	<i class="fa fa-refresh green"></i>
+</button>
+</div>
+
+
 [%# Process quick actions %]
 <!-- quick actions menu goes here -->
 [% IF quick_actions.0 && quick_actions.1 %]
@@ -99,7 +113,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 				[% SET is_trigger_menu = 1 %]
 			[% END %]
 		[% END %]
-		
+
 		[% SET menu_onchange = "tool_objects['" _ tool_and_instance _ "'].process_quick_search('" _ this_menu _ "',\$(this).val());" %]
 
 		[%# also support triggering another menu %]
@@ -108,7 +122,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 		[% END %]
 
 		<select id="quick_[%this_menu%]" style="padding: 20px; min-width: 144px;" data-placeholder="[% tool_configs.tool_filter_menus.$search_menu.name %]" class="tool-search-menu" tabindex="2" onchange="[%menu_onchange%]">
-			<!-- <option value="[%tool_configs.tool_filter_menus.$search_menu.options_keys.0%]">[% tool_configs.tool_filter_menus.$search_menu.name %]</option> --> 
+			<!-- <option value="[%tool_configs.tool_filter_menus.$search_menu.options_keys.0%]">[% tool_configs.tool_filter_menus.$search_menu.name %]</option> -->
 			[% FOREACH option_value IN tool_configs.tool_filter_menus.$search_menu.options_keys %]
 				[% IF display_options.$this_menu == option_value %]
 					<option SELECTED value="[%option_value%]">[%tool_configs.tool_filter_menus.$search_menu.options.$option_value%]</option>
@@ -119,19 +133,6 @@ Expects all of $self for a Tool.pm class/sub-class.
 		</select>
 	</div>
 [% END %]
-
-<!-- show Refresh Data for all tools -->
-<div class="btn-group">
-
-[%# indicate if tool has a search query refresh interval %]
-[% IF attributes.query_interval %]
-	[% SET refresh_button_title = 'title="Search auto-runs every ' _ attributes.query_interval _ ' seconds."' %]
-[% END %]
-
-<button class="btn btn-white" [%refresh_button_title%] onclick="tool_objects['[%tool_and_instance%]'].refresh_json_data()">
-	<i class="fa fa-refresh green"></i>
-</button>
-</div>
 
 <!-- support the 'return' links in action tools -->
 [% IF attributes.link_type != 'Menubar' %]
