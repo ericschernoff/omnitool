@@ -562,6 +562,8 @@ sub do_task {
 		$status_message = $@;
 		$status_message .= ' (eval message)';
 		$do_auto_retry = 1; # since we had a hard-error, try a retry in an hour
+	} elsif (!length($result)) { # didn't get a result, do auto retry
+		$do_auto_retry = 1; 
 	}
 
 	# print "$result - $status_message - $task_id\n";
