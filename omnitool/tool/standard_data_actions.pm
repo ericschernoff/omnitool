@@ -74,9 +74,9 @@ sub perform_form_action {
 	my $p;
 
 	# test code, uncomment as needed for debug
-	foreach $p (keys %{ $self->{luggage}{params} }) {
-		$self->{json_results}{params}{$p} = $self->{luggage}{params}{$p};
-	}
+#	foreach $p (keys %{ $self->{luggage}{params} }) {
+#		$self->{json_results}{params}{$p} = $self->{luggage}{params}{$p};
+#	}
 =cut
 	# for the jemplate
 		[% FOREACH p IN params.keys %]
@@ -126,22 +126,6 @@ sub perform_form_action {
 	# tell jemplate what to show -- should not need this, but leaving for now
 	$self->{json_results}{form_was_submitted} = 1;
 }
-
-# let's allow a trigger menu to be in a standard forms 
-sub standard_form_trigger_menu_options {
-	my $self = shift;
-
-	# we need the omniclass object
-	$self->get_omniclass_object( 'dt' => $self->{target_datatype} );
-
-	# and then use the 'trigger_menu_options' method in there
-	$self->{json_results} = $self->{omniclass_object}->trigger_menu_options();
-
-	# done ;)
-	return $self->{json_results};
-	
-}
-
 
 1;
 

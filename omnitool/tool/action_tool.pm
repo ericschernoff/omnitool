@@ -490,5 +490,22 @@ sub autocomplete_suggester {
 	return [];
 }
 
+# very generic trigger menu handler, which presumes a trigger_menu_options()
+# method in your omniclass object; meant for use in the standard create/update form
+sub standard_form_trigger_menu_options {
+	my $self = shift;
+
+	# we need the omniclass object
+	$self->get_omniclass_object( 'dt' => $self->{target_datatype} );
+
+	# and then use the 'trigger_menu_options' method in there
+	$self->{json_results} = $self->{omniclass_object}->trigger_menu_options();
+
+	# done ;)
+	return $self->{json_results};
+
+}
+
+
 1;
 

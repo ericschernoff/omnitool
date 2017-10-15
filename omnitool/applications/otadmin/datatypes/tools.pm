@@ -48,9 +48,9 @@ sub prepare_for_form_fields {
 			'skip_hooks' => 1,
 			'load_fields' => 'target_datatype',
 			'data_codes' => [$new_parent_data_code]
-		);		
+		);
 		$parent_tool_target_datatype = $plain_tool_omniclass_object->{data}{target_datatype};
-	}	
+	}
 
 	# if we have a parent, and it's an application, that's our parent app ID
 	if ($new_parent_type eq '1_1') { # our parent is an application
@@ -113,7 +113,7 @@ sub options_perl_module {
 	($options,$options_keys) = $self->options_from_directory($class_path,'pm');
 
     # add in our core / factory tool modules
-    foreach $core_class ('standard_delete','standard_data_actions','singleton_data_actions','basic_data_view','view_details','basic_calendar','setup_diagram') {
+    foreach $core_class ('standard_delete','standard_data_actions','singleton_data_actions','subform_data_actions','basic_data_view','view_details','basic_calendar','setup_diagram') {
 		$$options{$core_class} = $core_class;
 		unshift(@$options_keys,$core_class);
 	}
@@ -214,11 +214,11 @@ sub options_link_match_field {
 			foreach $dtf (@options_keys) {
 				$options{$dtf} = $dt_name.': '.$options{$dtf};
 			}
-		
+
 			# and include the my target DT's name in the additional options
 			$dt = $self->{data}{target_datatype};
 			$dt_name = $self->{parent_app_datatypes}{$dt}{name};
-		
+
 			foreach $dtf (@{ $self->{my_datatype_fields_keys} }) {
 				$options{$dtf} = $dt_name.': '.$self->{my_datatype_fields_names}{$dtf}{name};
 				push(@options_keys,$dtf);

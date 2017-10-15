@@ -12,6 +12,7 @@ use omnitool::tool;
 use omnitool::tool::standard_data_actions; # for the standard create/update functions
 use omnitool::tool::singleton_data_actions; # for the singleton create/update functions
 use omnitool::tool::standard_delete; # for the standard delete function
+use omnitool::tool::subform_data_actions; # for the subforms create/update functions
 use omnitool::tool::basic_data_view; # for the standard view functions
 use omnitool::tool::view_details; # for displaying complex data details via complex_details_tabs_shared.tt
 use omnitool::tool::basic_calendar; # for a super-basic calendar
@@ -203,7 +204,7 @@ sub omniclass_tree {
 			push(@{$all_records_by_type{$child_type}}, $child_data_code);
 		}
 	}
-	
+
 	# now load up the records for each tree type
 	foreach $tree_datatype (split /,/, $args{tree_datatypes}) {
 		next if !$all_records_by_type{$child_type}[0];
@@ -240,7 +241,7 @@ sub omniclass_tree {
 				$parent_object->{children_objects}{$record}{$tree_datatype}->{metainfo}{$child_record}
 					 = $$loader_objects{$tree_datatype}->{metainfo}{$child_record};
 			}
-			
+
 			# now put the first one in it's privileged spot
 			$r = $parent_object->{children_objects}{$record}{$tree_datatype}->{records_keys}[0];
 			$parent_object->{children_objects}{$record}{$tree_datatype}->{data} = $parent_object->{children_objects}{$record}{$tree_datatype}->{records}{$r};
@@ -404,11 +405,12 @@ sub tool_object {
 	# create/update/delete/display functions, and it loads straight from
 	# omnitool::tool::standard_data_actions = create/update
 	# omnitool::tool::singleton_data_actions = create/update when there can be only one!
+	# omnitool::tool::subform_data_actions = create/update when there will be sub-data forms
 	# omnitool::tool::standard_delete = deletes
 	# omnitool::tool::basic_data_view = display
 	# omnitool::tool::basic_calendar = calendar --> action tool, very basic
 	# omnitool::tool::setup_diagram --> framework for our network diagram tools
-	} elsif ($class_name =~ /^(standard_data_actions|singleton_data_actions|standard_delete|basic_data_view|basic_calendar|setup_diagram|view_details)$/) {
+	} elsif ($class_name =~ /^(standard_data_actions|subform_data_actions|singleton_data_actions|standard_delete|basic_data_view|basic_calendar|setup_diagram|view_details)$/) {
 
 		# already loaded above, so we just need to create the object with the proper luggage
 		$the_class_name = 'omnitool::tool::'.$class_name;
