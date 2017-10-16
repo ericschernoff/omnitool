@@ -93,6 +93,9 @@ sub generate_form {
 		if ($subdata_object->{datatype_info}{fields}{$field}{field_type} eq 'single_select') {
 			$subdata_object->{datatype_info}{fields}{$field}{field_type} = 'single_select_plain';
 		}
+		
+		# hide the hiddens
+		next if $subdata_object->{datatype_info}{fields}{$field}{field_type} eq 'hidden_field';
 
 		# we need headings for the batch-entry area
 		push( @{$self->{json_results}{headings}},
