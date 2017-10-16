@@ -565,6 +565,15 @@ sub do_task {
 	} elsif (!length($result)) { # didn't get a result, do auto retry
 		$do_auto_retry = 1; 
 	}
+	
+	# if $result starts with "ERROR: No", then the method does not exist and
+	# they got the AUTOLOAD routine in omniclass.pm
+	if ($result =~ /^ERROR: No/) {
+		# noodle out the meaningful status message
+		($status_message = $result) =~ s/^ERROR: //;
+		$result = 'Error';
+		$do_auto_retry = 0; # no reason to try this
+	}
 
 	# print "$result - $status_message - $task_id\n";
 
