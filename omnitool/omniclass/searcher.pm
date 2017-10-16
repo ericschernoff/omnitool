@@ -131,6 +131,9 @@ sub search {
 
 		# no match column? default to 'name'
 		$$so{match_column} ||= 'name';
+		
+		# if they set match_column to 'data_code', translate that to what it means
+		$$so{match_column} = qq{concat(code,'_',server_id)} if $$so{match_column} eq 'data_code';
 
 		# make sure the operator is lowercase to match our list
 		$$so{operator} = lc($$so{operator});
