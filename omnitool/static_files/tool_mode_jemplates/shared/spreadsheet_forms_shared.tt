@@ -29,7 +29,7 @@
 			</div>
 		[% END %]
 
-		<form class="form-horizontal center" id="[%the_tool_id%]_form" action="[%my_json_uri%]" method="post" role="form">
+		<form class="form-horizontal" id="[%the_tool_id%]_form" action="[%my_json_uri%]" method="post" role="form">
 		<input type="hidden" name="form_submitted" value="1" />
 
 		[% IF instructions %]
