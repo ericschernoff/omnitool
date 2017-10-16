@@ -167,6 +167,12 @@ sub perform_form_action {
 
 	# saving the main record will be very similiar to our older brother, standard_data_actions:
 
+	# fix the name field
+	if ($self->{luggage}{params}{multi}{name}[0]) {
+		$self->{luggage}{params}{name} = $self->{luggage}{params}{multi}{name}[0];
+	}
+
+
 	# thankfully, omniclass->save() handles 99% of this for us and pulls from $self->{luggage}{params}
 	# we just need to decide how to call it
 	if ( $self->{attributes}{uri_path_base} =~ /create/ ) { # data-create, need parent

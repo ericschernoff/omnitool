@@ -477,6 +477,11 @@ sub simple_search {
 		return;	
 	}
 	
+	# if they want to auto-load, then clear the previously-loaded records
+	if ($args{auto_load}) {
+		$self->clear_records();
+	}
+	
 	# now run the search
 	$self->search(
 		'search_options' => $search_options,

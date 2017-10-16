@@ -170,6 +170,16 @@
 						[% ELSIF tabs.$tab_key.type == 'table' %]
 
 							<div class="col-xs-12">
+							
+								[% IF tabs.$tab_key.text_block %]
+									[% IF !(matches = tabs.$tab_key.text_block.match('<br/>')) %]
+										[% tabs.$tab_key.text_block.replace("\n", '<br/>') %]
+									[% ELSE %]
+										[% tabs.$tab_key.text_block %]
+									[% END %]
+									
+									<br/><br/>
+								[% END %]
 
 							[% IF tabs.$tab_key.data_table %]
 								<table class="table table-bordered datatable_ready" style="width: 100%">

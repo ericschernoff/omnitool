@@ -13,8 +13,11 @@
 
 	<div class="page-header h3">
 		[% IF !hide_altcode && altcode %]
-			[%altcode%]: [% data_title %]
-		[% ELSE %]
+			[%altcode%]
+			[%IF data_title != 'Not Named' %]
+				: [% data_title %]
+			[% END %]
+		[% ELSIF data_title != 'Not Named' %]
 			[% data_title %]
 		[% END %]
 	</div>
@@ -123,6 +126,17 @@
 
 			[% ELSIF tabs.$tab_key.type == 'table' %]
 				<div class="col-xs-12">
+
+				[% IF tabs.$tab_key.text_block %]
+					[% IF !(matches = tabs.$tab_key.text_block.match('<br/>')) %]
+						[% tabs.$tab_key.text_block.replace("\n", '<br/>') %]
+					[% ELSE %]
+						[% tabs.$tab_key.text_block %]
+					[% END %]
+					
+					<br/><br/>
+				[% END %]
+
 				<table class="table table-bordered" style="width: 100%">
 
 				[% SET num = 0 %]
@@ -170,7 +184,8 @@
 										[% END %]
 									<!-- Or just plain text -->
 									[% ELSE %]
-										[%heading%]
+										[% SET heading = heading _ ' ' %]
+										[% heading.replace("\n", '<br/>') %]
 									[% END %]
 								</td>
 								[% SET field_count = field_count + 1 %]
