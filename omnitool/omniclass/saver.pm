@@ -306,6 +306,10 @@ sub do_update {
 		next if $$args{skip_blanks} && !(length($self->{luggage}{params}{$params_key}));
 		# testing with length() allows them to send a 0
 
+		# if it's a hidden_field, it may be blank for a normal form update, allowing
+		# for the parent to set these via post_save
+		next if $self->{datatype_info}{fields}{$field}{field_type} eq 'hidden_field' && !(length($self->{luggage}{params}{$params_key}));
+
 		# add to the update SQL
 		$update_sql .= $table_column.'=?, ';
 
