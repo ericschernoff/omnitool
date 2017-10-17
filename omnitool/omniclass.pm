@@ -928,6 +928,9 @@ That code is equivalent to:
 
 So a bit less code, especially if you have a record already loaded and can use $dt_object->{data_code},
 
+NOTE:  This is not appropriate if you have a complex post_save() and need to skip_hooks to avoid it.
+This is best used for simpler, background data types.
+
 =head2 simple_sort()
 
 This method will sort the keys of the loaded records, aka $dt_obj->{records_keys}, given one field name

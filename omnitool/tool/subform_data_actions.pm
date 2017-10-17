@@ -189,7 +189,7 @@ sub perform_form_action {
 		$self->{omniclass_object}->save(
 			'data_code' => $self->{luggage}{params}{main_record},
 		);
-
+		
 		# instruct action_tool to release the lock
 		$self->{unlock} = 1;
 	}
