@@ -128,11 +128,13 @@
 								[% FOREACH text_block_pair IN tabs.$tab_key.text_blocks %]
 									[% IF text_block_pair.1 %]
 										<h3>[% text_block_pair.0 %]</h3>
+										<span class="bigger-120">
 										[% IF text_block_pair.1.match('<br') %]
 											[% text_block_pair.1 %]
 										[% ELSE %]
 											[% text_block_pair.1.replace("\n", '<br/>') %]
 										[% END %]
+										</span>
 									[% END %]
 								[% END %]
 								</div>
@@ -141,24 +143,26 @@
 						[% ELSIF tabs.$tab_key.type == 'text_blocks' %]
 							<div class="col-xs-12" style="margin-right: 10pt; margin-left: 10pt">
 							[% IF !tabs.$tab_key.data.1 && !tabs.$tab_key.force_multiple %]
-
+								<span class="bigger-120">
 								[% IF !(matches = tabs.$tab_key.data.0.1.match('<br/>')) %]
 									[% tabs.$tab_key.data.0.1.replace("\n", '<br/>') %]
 								[% ELSE %]
 									[% tabs.$tab_key.data.0.1 %]
 								[% END %]
+								</span>
 
 							[% ELSE %]
 
 								[% FOREACH data_pair IN tabs.$tab_key.data %]
 									[% IF data_pair.1 %]
 									<h3>[% data_pair.0 %]</h3>
-
+									<span class="bigger-120">
 									[% IF !(matches = data_pair.1.match('<br/>')) %]
 										[% data_pair.1.replace("\n", '<br/>') %]
 									[% ELSE %]
 										[% data_pair.1 %]
 									[% END %]
+									</span>
 
 									[% END %]
 								[% END %]
@@ -174,7 +178,6 @@
 						[% ELSIF tabs.$tab_key.type == 'table' %]
 
 							<div class="col-xs-12">
-							
 								[% IF tabs.$tab_key.text_block %]
 									[% IF !(matches = tabs.$tab_key.text_block.match('<br/>')) %]
 										[% tabs.$tab_key.text_block.replace("\n", '<br/>') %]
