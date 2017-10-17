@@ -36,16 +36,20 @@
 
 						[% NEXT IF !tabs.$tab_key.data.0 %]
 
-						[% IF n == 0 %]
-							<li class="active">
-						[% ELSE %]
-							<li>
-						[% END %]
+						[% IF n == 0 || !tabs.$tab_key.combine_with_previous %]
 
-						<a data-toggle="tab" href="#[%tab_info.$tab_key.0%]">
-							[%tab_info.$tab_key.1%]
-						</a>
-						</li>
+							[% IF n == 0 %]
+								<li class="active">
+							[% ELSE %]
+								<li>
+							[% END %]
+							
+							<a data-toggle="tab" href="#[%tab_info.$tab_key.0%]">
+								[%tab_info.$tab_key.1%]
+							</a>
+							</li>
+						
+						[% END %]
 
 						[% SET n = n + 1 %]
 					[% END %]
@@ -59,7 +63,7 @@
 					[% FOREACH tab_key IN tab_info.sort %]
 						[% IF n == 0 %]
 							<div id="[%tab_info.$tab_key.0%]" class="tab-pane fade in active">
-						[% ELSE %]
+						[% ELSIF !tabs.$tab_key.combine_with_previous %]
 							<div id="[%tab_info.$tab_key.0%]" class="tab-pane">
 						[% END %]
 
@@ -177,8 +181,6 @@
 									[% ELSE %]
 										[% tabs.$tab_key.text_block %]
 									[% END %]
-									
-									<br/><br/>
 								[% END %]
 
 							[% IF tabs.$tab_key.data_table %]
@@ -320,7 +322,11 @@
 						[% SET n = n + 1 %]
 
 						</div><!-- /.row -->
-						</div><!-- /.tab -->
+						
+						[% IF n == 1 || !tabs.$tab_key.combine_with_next %]
+							</div><!-- /.tab -->
+						[% END %]
+						
 					[% END %]
 
 				</div><!-- /.tab-content -->
