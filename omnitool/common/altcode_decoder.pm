@@ -106,7 +106,7 @@ sub name_and_parent_from_altcode {
 	# we need to get the parent's datatype's metainfo table
 	($parent_type,$parent_datacode) = split /:/, $parent_string;
 	# use method below to get the metainfo table 
-	$parent_metainfo_table = $self->figure_metainfo_table($datatype);
+	$parent_metainfo_table = $self->figure_metainfo_table($parent_type);
 	
 	# and the record's parent's altcode
 	($parent_altcode) = $self->{db}->quick_select(qq{
