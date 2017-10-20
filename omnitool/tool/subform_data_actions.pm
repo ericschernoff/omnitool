@@ -52,6 +52,10 @@ sub generate_form {
 		$new_parent_string = $self->figure_new_parent($action_arg);
 
 	}
+	
+	# if a post_form routine kicks us back, we may need to fix these two params
+	$self->{luggage}{params}{name} =~ s/,.*//g;
+	$self->{luggage}{params}{new_parent} =~ s/,.*//g;
 
 	# now generate the form for the primary/main record
 	$self->{json_results}{form} = $self->{omniclass_object}->form(
@@ -171,7 +175,6 @@ sub perform_form_action {
 	if ($self->{luggage}{params}{multi}{name}[0]) {
 		$self->{luggage}{params}{name} = $self->{luggage}{params}{multi}{name}[0];
 	}
-
 
 	# thankfully, omniclass->save() handles 99% of this for us and pulls from $self->{luggage}{params}
 	# we just need to decide how to call it
