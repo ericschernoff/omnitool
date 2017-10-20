@@ -264,6 +264,11 @@ sub perform_form_action {
 		$n++;
 	}
 
+	# if the primary record type has a post_save, let's run it (again) now
+	if ($self->{omniclass_object}->can('post_save')) {
+		$self->{omniclass_object}->post_save();
+	}
+
 	# back to standard procedures: prepare a return message
 	# was it successful?
 	if ($self->{omniclass_object}->{status}[-1]{success}) { # yes, show message
