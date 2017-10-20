@@ -256,11 +256,14 @@ function post_data_fetch_operations (data) {
 	if (data['menu'] != undefined && data['menu'][0]['button_name'] != undefined) { // it's the menubar
 		$( ".menubar_tool_link" ).click(function() {
 			if ( $(this).attr("href") != '#' && $(this).attr("href") == location.hash ) {
+				
+				omnitool_controller({},$(this).attr("href"));
+				
 				// it's going to be a screen if they can see the menubar and the link appears in the menubar
-				var the_tool_id = the_active_tool_ids['screen'];
+				// var the_tool_id = the_active_tool_ids['screen'];
 
 				// refresh the data and the jemplate
-				tool_objects[the_tool_id].refresh_json_data();
+				// tool_objects[the_tool_id].refresh_json_data();
 			}
 		});
 	}
@@ -603,7 +606,7 @@ function omnitool_controller (event,target_tool_uri) {
 			return; // no need to continue
 		}
 	} else {
-		var tool_uri = target_tool_uri;
+		var tool_uri = target_tool_uri.replace( /^#/, '' );
 	}
 
 	// no double slashes
@@ -617,15 +620,22 @@ function omnitool_controller (event,target_tool_uri) {
 	// we don't want to build objects on a per-uri basis, but rather per-tool_id
 	$.when( get_tool_id_for_uri(tool_uri) ).done(function(the_tool_id) {
 
-		// clean the bookmark portion of the URL off
-		tool_uri = tool_uri.replace(/\/bkmk[^\/]*/,'');
-
 		// if the tool was not found, jump to the default
 		if (the_tool_id == 'TOOL_NOT_FOUND') {
 			location.hash = '#' + default_tool;
 			return; // no need to continue
 		}
 
+		// if they are loading a bookmark, force reload the whole tool
+		var loading_bookmark = 0;
+		if (tool_uri.match(/\/bkmk[^\/]*/)) {
+			loading_bookmark = 1;
+			// clean off the bookmark portion of the URL
+			tool_uri = tool_uri.replace(/\/bkmk[^\/]*/,'');
+			// location.hash = '#' + tool_uri;
+		}
+	
+		// now see if it is the active tool
 		var this_active_tool = 'Not Found';
 		for (var tool_type in the_active_tool_ids) {
 			if (tool_type !='message' && the_active_tool_ids[tool_type] == the_tool_id) {
@@ -633,11 +643,11 @@ function omnitool_controller (event,target_tool_uri) {
 				break; // no need to continue
 			}
 		}
-
+		
 		// if they are moving to a new phase/method of the active tool, update that tool's jemplate binding
 		if (this_active_tool != 'Not Found') {
 			// if keep-warm = Never, we need to always start fresh
-			if (tool_objects[the_tool_id]['keep_warm'] == 'Never') {
+			if (tool_objects[the_tool_id]['keep_warm'] == 'Never' || loading_bookmark == 1) {
 				if ($( "#"+tool_objects[the_tool_id]['tool_div'] ).length > 0) {
 					// first delete
 					$( "#"+tool_objects[the_tool_id]['tool_div'] ).remove();
