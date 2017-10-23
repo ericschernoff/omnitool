@@ -1329,6 +1329,11 @@ Usage:
 	($options, $options_keys) = $dt_object->prep_menu_options('field_name');
 	# Uses 'field_name' for the values in %$options
 
+	($options, $options_keys) = $dt_object->prep_menu_options('field_name',1);
+	# Uses 'field_name' for the values in %$options
+	# and adds a 'None' option on the front...so if you want 'none', you have to 
+	# specify a field name.
+
 =head2 find_duplicates()
 
 Helps to identify records with duplicate values, such as staff members with the same birth date or files with the same

@@ -618,8 +618,8 @@ sub check_for_loaded_record {
 sub prep_menu_options {
 	my $self = shift;
 
-	# alternative field?
-	my ($use_field) = @_;
+	# alternative field? or have a 'none'
+	my ($use_field,$include_none_option) = @_;
 
 	# default to name
 	$use_field ||= 'name';
@@ -638,6 +638,12 @@ sub prep_menu_options {
 	@$options_keys = sort  {
 		$$options{$a} <=> $$options{$b} || $$options{$a} cmp $$options{$b}
 	} keys %$options;
+
+	# do they want a 'none'?
+	if ($include_none_option) {
+		$$options{none} = 'None';
+		unshift(@$options_keys,'none');
+	}
 
 	# send them out
 	return ($options, $options_keys);
