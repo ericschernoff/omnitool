@@ -152,7 +152,7 @@
 			[% IF session.app_instance_info.ui_navigation_placement == 'Top' %]
 				<div id="sidebar" class="sidebar h-sidebar sidebar-fixed responsive" data-auto-hide=true>
 			[% ELSE %]
-				<div id="sidebar" class="sidebar sidebar-fixed responsive compact" data-auto-hide=true>
+				<div id="sidebar" class="sidebar sidebar-fixed responsive" data-auto-hide=true>
 			[% END %]
 
 				<!--
