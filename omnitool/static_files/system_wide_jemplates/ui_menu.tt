@@ -15,28 +15,17 @@
 		and probably the Bookmarks.
 	%]
 	[% IF tool.child_tools.size %]
-
-		<li>
-			<a href="#" class="dropdown-toggle menubar_tool_link">
+		<li class="hover">
+			<a href="#[%tool.uri%]" class="menubar_tool_link">
 				<i class="menu-icon fa [% tool.icon_fa_glyph %] "></i>
 				<span class="menu-text"> [% tool.button_name %] </span>
-				<b class="arrow fa fa-angle-down"></b>
+				<b class="arrow fa fa-angle-right"></b>
 			</a>
 			<b class="arrow"></b>
 			<ul class="submenu" id="ot_actions_[%loop.count%]">
-				[% IF tool.uri %]
-					<li>
-					<a href="#[%tool.uri%]" class="menubar_tool_link">
-					<i class="menu-icon fa fa-caret-right"></i>
-						[% tool.button_name %]
-					</a>
-					</li>
-				[% END %]
-
 				[% FOREACH child_tool IN tool.child_tools %]
 					<li>
 					<a href="#[%child_tool.uri%]" class="menubar_tool_link">
-						<i class="menu-icon fa fa-caret-right"></i>
 						[% child_tool.button_name %]
 					</a>
 					</li>
@@ -49,28 +38,27 @@
 	%]
 	[% ELSIF tool.sub_menus.size %]
 
-		<li>
+		<li class="hover">
 			<a href="#" class="dropdown-toggle menubar_tool_link">
 				<i class="menu-icon fa [% tool.icon_fa_glyph %] "></i>
 				<span class="menu-text"> [% tool.button_name %] </span>
-				<b class="arrow fa fa-angle-down"></b>
+				<b class="arrow fa fa-angle-right"></b>
 			</a>
 			<b class="arrow"></b>
 			<ul class="submenu" id="ot_actions_[%loop.count%]">
 
 		[% FOREACH sub_menu IN tool.sub_menus %]
-			<li>
+			<li class="hover">
 				<a href="#" class="dropdown-toggle menubar_tool_link">
 					<i class="menu-icon fa [% sub_menu.icon_fa_glyph %] "></i>
 					<span class="menu-text"> [% sub_menu.button_name %] </span>
-					<b class="arrow fa fa-angle-down"></b>
+					<b class="arrow fa fa-angle-right"></b>
 				</a>
 				<b class="arrow"></b>
 				<ul class="submenu" id="ot_actions_[%loop.count%]">
 					[% FOREACH bookmark IN sub_menu.bookmarks %]
 						<li>
 						<a href="#[%bookmark.uri%]" class="menubar_tool_link">
-							<i class="menu-icon fa fa-caret-right"></i>
 							[% bookmark.button_name %]
 						</a>
 						</li>

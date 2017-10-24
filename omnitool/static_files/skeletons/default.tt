@@ -152,7 +152,7 @@
 			[% IF session.app_instance_info.ui_navigation_placement == 'Top' %]
 				<div id="sidebar" class="sidebar h-sidebar sidebar-fixed responsive" data-auto-hide=true>
 			[% ELSE %]
-				<div id="sidebar" class="sidebar sidebar-fixed responsive" data-auto-hide=true>
+				<div id="sidebar" class="sidebar sidebar-fixed responsive compact" data-auto-hide=true>
 			[% END %]
 
 				<!--
@@ -160,7 +160,7 @@
 					try{ace.settings.check('sidebar' , 'fixed')}catch(e){}
 				</script>
 				-->
-
+				<div class="space-10"></div>
 				<!-- nav-list: loading via ui_menu.tt -->
 				<ul class="nav nav-list" id="ot_menubar">
 				</ul><!-- /.nav-list -->
