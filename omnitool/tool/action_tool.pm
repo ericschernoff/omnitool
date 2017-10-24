@@ -326,8 +326,8 @@ sub validate_form {
 
 		# first check the special-formatting fields
 		# stealing regexp's from http://www.runningcoder.org/jqueryvalidation/documentation/
-		# web address
-		if ($field_type eq 'web_url' && $self->{luggage}{params}{$param_name} !~ /^(https?:\/\/)?((([a-z0-9]-*)*[a-z0-9]+\.?)*([a-z0-9]+))(\/[\w?=\.-]*)*$/) {
+		# web address -- only if it's filled
+		if ($field_type eq 'web_url' && $self->{luggage}{params}{$param_name} && $self->{luggage}{params}{$param_name} !~ /^(https?:\/\/)?((([a-z0-9]-*)*[a-z0-9]+\.?)*([a-z0-9]+))(\/[\w?=\.-]*)*$/) {
 			$self->{json_results}{form}{fields}{$field}{field_error} = 1; # jemplate will handle properly
 
 			# try to block form processing
