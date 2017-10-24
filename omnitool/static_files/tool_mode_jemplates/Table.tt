@@ -127,7 +127,7 @@
 	[* END *]
 	[% IF found_inline_actions %]
 	<td>
-		[%# more than five actions --> drop-down menu %]
+		[%# more than five actions --> chosen drop-down menu %]
 		[% IF max_actions_per_record > 6 %]
 			<div class="btn-group dropdown" style="background-color: silver">
 				<select onchange="tool_objects['[*tool_and_instance*]'].quick_action_link($(this));" class="tool-action-menu" style="min-width: 144px">
@@ -147,7 +147,8 @@
 				[% END %]
 				</select>
 			</div>
-		[% ELSIF records.$record_key.inline_actions.0 %]
+		[%# more than five actions --> bootstrap drop-down menu %]
+		[% ELSIF records.$record_key.inline_actions.1 %]
 			<div class="btn-group dropdown">
 			<button data-toggle="dropdown" type="button" class="btn btn-white btn-sm dropdown-toggle">
 				<i class="ace-icon fa fa-bolt"></i>
@@ -172,6 +173,12 @@
 			[% END %]
 			</ul>
 			</div>
+		[%# one action - simple link %]
+		[% ELSIF records.$record_key.inline_actions.0 %]
+			<a href="[%records.$record_key.inline_actions.0.uri%]">
+				<i class="ace-icon fa [% records.$record_key.inline_actions.0.icon_fa_glyph %]"></i>
+				[% records.$record_key.inline_actions.0.button_name %]
+			</a>
 		[% END %]
 	</td>
 	[% END %]

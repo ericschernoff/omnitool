@@ -63,7 +63,7 @@ sub search {
 			$self->work_history(0,qq{Search was canceled.},
 				qq{Canceled within 'pre_search' hook.}
 			);
-			return;
+			return;		
 		}
 
 	}

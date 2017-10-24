@@ -140,7 +140,7 @@
 						[%# maybe they want to clearly display the field instructions %]
 						[% IF form.fields.$f.instructions && display_field_instructions %]
 							<div class="space-2"></div>
-							<div class="help-block ">
+							<div class="help-block" id="[%f%]_instructions">
 								[% form.fields.$f.instructions %]
 							</div>
 						[% END %]

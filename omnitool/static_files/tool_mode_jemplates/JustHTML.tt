@@ -19,7 +19,7 @@
 		</div>
 	[% END %]
 
-[% html_content %]
+	[% html_content %]
 
 </div>
 </div>
