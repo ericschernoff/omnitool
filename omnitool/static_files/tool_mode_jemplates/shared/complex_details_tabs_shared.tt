@@ -108,7 +108,7 @@
 												[% ELSE %]
 													<a href="[%data_pair.1.uri%]" target="_blank">[%data_pair.1.text%]</a>
 												[% END %]
-											[% ELSIF data_pair.1.match('^http') %]
+											[% ELSIF data_pair.1 && data_pair.1.match('^http') %]
 												<a href="[%data_pair.1%]" target="_blank">[%data_pair.1%]</a>
 											[% ELSIF data_pair.1 %]
 												<span>[% data_pair.1.replace("\n", '<br/>') %]</span>

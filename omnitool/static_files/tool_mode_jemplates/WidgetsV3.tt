@@ -66,13 +66,6 @@
 		[* first_field = included_records_fields.shift *]
 		[* first_field_name = included_field_names.shift *]
 
-		[*# background color from record-coloring rules - goes in the toolbar *]
-		[% IF metainfo.$record_key.record_color %]
-			[% SET row_bgcolor = metainfo.$record_key.record_color %]
-		[% ELSE %]
-			[% SET row_bgcolor = 'ffffff' %]
-		[% END %]
-
 		[%#
 			Let's try to have each widget handled separately, in hopes that we could process just one at a time.
 			So the 'the_result_wide_widget_' block is below.
@@ -86,6 +79,13 @@
 
 [%# Let's try to have each widget handled separately, in hopes that we could process just one at a time. %]
 [% BLOCK the_result_wide_widget_[*tool_and_instance*] %]
+
+[*# background color from record-coloring rules - goes in the toolbar *]
+[% IF metainfo.$record_key.record_color %]
+	[% SET row_bgcolor = metainfo.$record_key.record_color %]
+[% ELSE %]
+	[% SET row_bgcolor = 'ffffff' %]
+[% END %]
 
 <div class="widget-box widget-color-blue2">
 	<div class="widget-header widget-header-small">
@@ -207,5 +207,6 @@
 [% BLOCK singleton_wide_widget_[*tool_and_instance*] %]
 	[% SET record_key = records_keys.0 %]
 	[% SET skip_subdata = 1 %]
+
 	[% PROCESS the_result_wide_widget_[*tool_and_instance*] %]
 [% END %]
