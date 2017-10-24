@@ -120,6 +120,15 @@ sub get_basic_details_hash {
 				$self->{included_field_names}[$n], $self->{omniclass_object}->{data}{$db_column}
 			]);
 
+		} elsif (ref($self->{omniclass_object}->{data}{$db_column}) eq 'ARRAY') {
+			push(@{ $$details_hash{tabs}{1}{data}[$num] }, [
+				$self->{included_field_names}[$n], {
+					'uri' => $self->{omniclass_object}->{data}{$db_column}[0]{uri},
+					'text' => $self->{omniclass_object}->{data}{$db_column}[0]{text},
+				}
+			]);
+			$num++;
+			$num = 0 if $num > 1; # only 0 or 1
 		} else { # two-column info_groups
 			push(@{ $$details_hash{tabs}{1}{data}[$num] }, [
 				$self->{included_field_names}[$n], $self->{omniclass_object}->{data}{$db_column}.' '
