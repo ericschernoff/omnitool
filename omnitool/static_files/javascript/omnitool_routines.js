@@ -1087,11 +1087,16 @@ function append_spreadsheet_form (the_tool_id) {
 function reset_form (form_id) {
 	var $form = $('#'+form_id);
 	$form.find('input:text, input:password, input:file, textarea').val('');
-    $form.find('select option:selected').removeAttr('selected');
-		$form.find('select').each(function(i, v) {
-			$(v).trigger('chosen:updated');
-		});
-    	$form.find('select').trigger('chosen:updated');
+  //  $form.find('select option:selected').removeAttr('selected');
+	$form.find('select').each(function(i, v) {
+		// select menus can be funny -- grab the first one with a valid option
+		$(v).prop("selectedIndex", 0);
+		if ($(v).val() == '') {
+			$(v).prop("selectedIndex", 1);
+		}
+		$(v).trigger("chosen:updated");
+	});
+    //	$form.find('select').trigger('chosen:updated');
     $form.find('input:checkbox, input:radio').removeAttr('checked');
 
 	// bootstrap-tags is less fun ;)  this is the way i got it to work, since each time you removed
