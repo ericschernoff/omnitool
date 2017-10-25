@@ -15,12 +15,6 @@
 		though we do recommend reloading the page prior to proceeding.
 	[% END %]
 
-[% ELSIF advanced_search_mode %]
-	[% PROCESS advanced_search_form %]
-
-[% ELSIF advanced_sort_mode %]
-	[% PROCESS advanced_sort_form %]
-
 [% ELSIF bookmark_mode %]
 	[% PROCESS bookmark_functions %]
 
@@ -33,7 +27,7 @@
 
 [% ELSIF searching_spinner %]
 	[% PROCESS searching_spinner %]
-	
+
 [%# if they do this, they are likely going to cram existing HTML in there %]
 [% ELSIF modal_body_id %]
 	<div id="[%modal_body_id%]">
@@ -215,161 +209,6 @@
 	[% END %]
 [% END %]
 
-[%# templates for the advanced search form %]
-[% BLOCK advanced_search_form %]
-
-	[% IF form.instructions %]
-		<div class="alert alert-block">
-			[% form.instructions %]
-		</div>
-	[% END %]
-
-	<form class="form-horizontal" id="[%tool_and_instance%]_advanced_search_form" action="[%form.target_url%]" method="post" role="form">
-	[% FOREACH hf IN form.hidden_fields.keys %]
-		<input type="hidden" name="[%hf%]" value="[%form.hidden_fields.$hf%]" />
-	[% END %]
-
-	<div class="row">
-	[% SET n = 0 %]
-	[% FOREACH f IN form.field_keys %]
-
-		[% IF form.fields.$f.both_columns %]
-			<div class="col-sm-8" id="field_div_[%form.fields.$f.name%]">
-		[% ELSE %]
-			<div class="col-sm-5" id="field_div_[%form.fields.$f.name%]">
-		[% END %]
-			<div class="form-group">
-				<label for="form-field-[%f%]" class="col-md-5 control-label">
-					[% IF form.fields.$f.field_error %]
-						<span class="bold red">
-							[% form.fields.$f.title %]
-							<i class="ace-icon fa fa-exclamation-circle red"></i>
-						</span>
-					[% ELSE %]
-						[% form.fields.$f.title %]
-					[% END %]
-					[% IF form.fields.$f.instructions %]
-						<span class="help-button" data-rel="popover" data-trigger="hover" data-placement="right" data-content="[%form.fields.$f.instructions%]">?</span>
-					[% END %]
-				</label>
-				<div class="col-md-7">
-					[% SET field_type = form.fields.$f.field_type %]
-					[% PROCESS $field_type %]
-
-					[% IF form.fields.$f.error_instructions %]
-						<div class="space-2"></div>
-						<div class="help-block col-md-8 red bolder">
-							[%form.fields.$f.error_instructions%]
-						</div>
-					[% END %]
-				</div>
-			</div>
-
-			[% IF !form.fields.$f.both_columns %]
-				[% SET n = n + 1 %]
-				[% IF n == 2 || form.fields.$f.clearfix %]
-					</div>
-					<div class="row">
-					[% SET n = 0 %]
-				[% END %]
-			[% END %]
-
-		</div>
-
-	[% END %]
-	</div>
-
-	<div class="clearfix form-group">
-		<div class="col-xs-12 col-md-12 align-center">
-			<button class="btn btn-info" type="submit">
-				<i class="ace-icon fa fa-check bigger-110"></i>
-				[%form.submit_button_text%]
-			</button>
-
-			or
-
-			<button class="btn btn-white" type="button" onclick="reset_form('[%tool_and_instance%]_advanced_search_form')">
-				<i class="ace-icon fa fa-remove bigger-110"></i>
-				Reset All Options
-			</button>
-		</div>
-	</div>
-
-	</form>
-
-[% END %]
-
-[%# templates for the advanced sort form %]
-[% BLOCK advanced_sort_form %]
-
-	<div class="alert alert-block">
-		This form allows you configure up to four fields and directions to sort your results. <b>Note:</b> This does not work well for Enhanced Table Modes.
-		<br/><br/>
-		Tip: Be sure to use the 'Bookmark / Share' menu to save your Search &amp; Sort options!
-	</div>
-
-	<form class="form-horizontal" id="[%tool_and_instance%]_advanced_sort_form" action="[%form.target_url%]" method="post" role="form">
-
-	[% FOREACH hf IN form.hidden_fields.keys %]
-		<input type="hidden" name="[%hf%]" value="[%form.hidden_fields.$hf%]" />
-	[% END %]
-
-	<div class="row">
-	[% SET directions = ['Up','Down'] %]
-	[% FOREACH f IN form.field_keys %]
-		<div class="col-md-5">
-		<div class="form-group">
-			<label for="form-field-[%form.fields.$f.order_number%]" class="col-md-5 control-label">
-				Sort Field [%form.fields.$f.order_number%]:
-			</label>
-			<div class="col-md-7">
-				<!-- 'preset' => $self->{display_options}{'advanced_sort_'.$num} -->
-				<select name="advanced_sort_[%form.fields.$f.order_number%]" onchange="tool_objects['[%tool_and_instance%]'].advanced_sort_validate();" id="form-field-[%form.fields.$f.order_number%]" class="form-control">
-					<option value="-">-</option>
-					[% SET num = 0 %]
-					[% FOREACH field IN form.included_records_fields %]
-						[% FOREACH direction IN directions %]
-							[% SET field_value = field _ ' | ' _ direction %]
-							[% IF form.fields.$f.preset == field_value %]
-								[% SET sel = 'selected' %]
-							[% ELSE %]
-								[% SET sel = '' %]
-							[% END %]
-							<option [%sel%] value="[%field%] | [%direction%]">[% form.included_field_names.$num %] - [% direction %]</option>
-						[% END %]
-					[% SET num = num + 1 %]
-
-					[% END %]
-				</select>
-			</div>
-		</div>
-		</div>
-	[% END %]
-
-	</div>
-
-	<div id="advanced_sort_warning" class="help-block col-md-12 red bolder align-center">
-		Warning: Each menu should be set to a unique value.
-	</div>
-
-	<div class="clearfix form-group">
-		<div class="col-xs-12 col-md-12 align-center">
-			<button class="btn btn-info" type="submit">
-				<i class="ace-icon fa fa-check bigger-110"></i>
-				Save and Use These Sort Options
-			</button>
-
-			or
-
-			<button class="btn btn-white" type="button" onclick="reset_form('[%tool_and_instance%]_advanced_sort_form')">
-				<i class="ace-icon fa fa-remove bigger-110"></i>
-				Clear and Reset These Sort Options
-			</button>
-		</div>
-	</div>
-
-	</form>
-[% END %]
 
 [%# template for results tables %]
 [% BLOCK results_table %]

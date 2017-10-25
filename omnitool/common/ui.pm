@@ -461,6 +461,7 @@ sub AUTOLOAD {
 		# 'inline_action_buttons_template' => 'inline_action_buttons.tt',
 		'inline_action_menu_template' => 'inline_action_menu.tt',
 		'system_modals_template' => 'system_modals.tt',
+		'advanced_search_and_sort_template' => 'advanced_search_and_sort.tt',
 		'modal_parts_template' => 'modal_parts.tt',
 		'process_any_div' => 'process_any_div.tt',
 	};

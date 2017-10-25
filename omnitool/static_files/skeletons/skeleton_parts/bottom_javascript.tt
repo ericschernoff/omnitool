@@ -170,6 +170,9 @@
 <!-- small Jemplate for rendering complex / multi-line fields from omniclass field hooks -->
 <script src="/ui/complex_fields_template[%uri_base_param_no_amp%]"></script>
 
+<!-- Jemplate template for advanced search/sort features -->
+<script src="/ui/advanced_search_and_sort_template[%uri_base_param_no_amp%]"></script>
+
 <!-- small Jemplate for rendering inline action tools links  -->
 <!-- <script src="/ui/inline_action_buttons_template[%uri_base_param_no_amp%]"></script> -->
 <script src="/ui/inline_action_menu_template[%uri_base_param_no_amp%]"></script>

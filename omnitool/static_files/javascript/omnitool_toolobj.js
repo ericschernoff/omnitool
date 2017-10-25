@@ -607,19 +607,41 @@ function Tool (tool_attributes) {
 		var adv_search_name = this['name'] + ': Advanced Searching';
 		var adv_search_url = this['tool_uri'] + '/advanced_search_form';
 		var tool_id = this['the_tool_id'];
-		// query for the advanced search form and send into the modal
-		$.when( query_tool(adv_search_url,{}) ).done(function(json_data) {
-			json_data.modal_title_icon = 'fa-binoculars';
-			json_data.modal_title = adv_search_name;
-			json_data.advanced_search_mode = 1;
-			json_data.no_close_button = 1;
-			json_data.tool_and_instance = tool_id;
-			// open it up
-			open_system_modal(json_data);
-			// enliven the form
-			interactive_form_elements(tool_id,'advanced_search_form');
-		});
+		var form_display_div = $('#advanced_search_' + tool_id);
 
+		if (form_display_div.is(':visible')) { // already visible, disappear it
+			form_display_div.html('');
+			form_display_div.hide();
+			$('#advanced_search_text').html('Adv. Search');
+
+		} else { // otherwise, load and show!
+
+			// only one of sort and search can be shown at once
+			if ($('#advanced_sort_' + tool_id).is(':visible')) {
+				this.show_advanced_sort();
+			}
+
+			// query for the advanced search form and send into the modal
+			$.when( query_tool(adv_search_url,{}) ).done(function(json_data) {
+				json_data.modal_title_icon = 'fa-binoculars';
+				json_data.modal_title = adv_search_name;
+				json_data.advanced_search_mode = 1;
+				json_data.no_close_button = 1;
+				json_data.tool_and_instance = tool_id;
+				// open it up
+				json_data.block_name = 'advanced_search_form';
+				jemplate_bindings['process_any_div'].element_id = '#advanced_search_' + tool_id;
+				jemplate_bindings['process_any_div'].process_json_data(json_data); // advanced_search_form
+
+				// now toggle it
+				form_display_div.show();
+				$('#advanced_search_text').html('Hide Adv. Search');
+
+				// enliven the form
+				interactive_form_elements(tool_id,'advanced_search_form');
+			});
+
+		}
 	}
 
 	// routine to handle opening the advanced sort form modal
@@ -628,18 +650,42 @@ function Tool (tool_attributes) {
 		var adv_sort_name = this['name'] + ': Advanced Sorting';
 		var adv_sort_url = this['tool_uri'] + '/advanced_sort_form';
 		var tool_id = this['the_tool_id'];
-		// query for the advanced search form and send into the modal
-		$.when( query_tool(adv_sort_url,{}) ).done(function(json_data) {
-			json_data.modal_title_icon = 'fa-arrows';
-			json_data.modal_title = adv_sort_name;
-			json_data.advanced_sort_mode = 1;
-			json_data.no_close_button = 1;
-			json_data.tool_and_instance = tool_id;
-			// open it up
-			open_system_modal(json_data);
-			// enliven the form
-			interactive_form_elements(tool_id,'advanced_sort_form');
-		});
+
+		var form_display_div = $('#advanced_sort_' + tool_id);
+
+		if (form_display_div.is(':visible')) { // already visible, disappear it
+			form_display_div.html('');
+			form_display_div.hide();
+			$('#advanced_sort_text').html('Sort');
+
+		} else {
+
+			// only one of sort and search can be shown at once
+			if ($('#advanced_search_' + tool_id).is(':visible')) {
+				this.show_advanced_search();
+			}
+
+			// query for the advanced search form and send into the modal
+			$.when( query_tool(adv_sort_url,{}) ).done(function(json_data) {
+				json_data.modal_title_icon = 'fa-arrows';
+				json_data.modal_title = adv_sort_name;
+				json_data.advanced_sort_mode = 1;
+				json_data.no_close_button = 1;
+				json_data.tool_and_instance = tool_id;
+
+				// open it up
+				json_data.block_name = 'advanced_sort_form';
+				jemplate_bindings['process_any_div'].element_id = '#advanced_sort_' + tool_id;
+				jemplate_bindings['process_any_div'].process_json_data(json_data); // advanced_search_form
+
+				// now toggle it
+				form_display_div.show();
+				$('#advanced_sort_text').html('Hide Sort');
+
+				// enliven the form
+				interactive_form_elements(tool_id,'advanced_sort_form');
+			});
+		}
 	}
 
 	// validation routine for that advanced sort form
@@ -700,7 +746,7 @@ function Tool (tool_attributes) {
 				window[quick_select_auto_suggest]();
 			}
 		}
-	}	
+	}
 
 	// function to power the Previous / Next links in action screen tools
 	this.prev_next_links = function (navigation_to_altcode) {
