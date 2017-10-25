@@ -160,7 +160,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 
 <!-- Quick search box -->
 [% IF has_search_box %]
-	<div class="btn-group">
+	<div class="btn-group" id="quick_keyword_controls">
 	<span class="input-icon">
 		<input type="text" size="12" name='quick_keyword' id="quick_keyword_[%tool_and_instance%]" class="quick_keyword_fields" placeholder="Sticky Search" value="[%display_options.quick_keyword%]"/>
 		<i class="ace-icon fa fa-search quick_keyword_fields_icon"></i>

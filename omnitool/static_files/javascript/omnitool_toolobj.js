@@ -609,10 +609,14 @@ function Tool (tool_attributes) {
 		var tool_id = this['the_tool_id'];
 		var form_display_div = $('#advanced_search_' + tool_id);
 
+		// jump to the top
+		goToTop();
+
 		if (form_display_div.is(':visible')) { // already visible, disappear it
 			form_display_div.html('');
 			form_display_div.hide();
-			$('#advanced_search_text').html('Adv. Search');
+			$('#search-controls').show();
+			$('#quick_keyword_controls').show();
 
 		} else { // otherwise, load and show!
 
@@ -635,7 +639,8 @@ function Tool (tool_attributes) {
 
 				// now toggle it
 				form_display_div.show();
-				$('#advanced_search_text').html('Hide Adv. Search');
+				$('#search-controls').hide();
+				$('#quick_keyword_controls').hide();
 
 				// enliven the form
 				interactive_form_elements(tool_id,'advanced_search_form');
@@ -651,12 +656,15 @@ function Tool (tool_attributes) {
 		var adv_sort_url = this['tool_uri'] + '/advanced_sort_form';
 		var tool_id = this['the_tool_id'];
 
+		// jump to the top
+		goToTop();
+
+		// sanity
 		var form_display_div = $('#advanced_sort_' + tool_id);
 
 		if (form_display_div.is(':visible')) { // already visible, disappear it
 			form_display_div.html('');
 			form_display_div.hide();
-			$('#advanced_sort_text').html('Sort');
 
 		} else {
 
@@ -680,7 +688,6 @@ function Tool (tool_attributes) {
 
 				// now toggle it
 				form_display_div.show();
-				$('#advanced_sort_text').html('Hide Sort');
 
 				// enliven the form
 				interactive_form_elements(tool_id,'advanced_sort_form');

@@ -1392,6 +1392,11 @@ function interactive_form_plus_diagram (tool_id) {
 	});
 }
 
+// reusable command to go to the top
+function goToTop () {
+	$("html, body").animate({ scrollTop: 0 }, "slow");
+}
+
 // function to enable chosen menus properly, based on the type of device
 function enable_chosen_menu (jquery_identifier, custom_width) {
 	if (jquery_identifier == undefined) { // can't do much without this
