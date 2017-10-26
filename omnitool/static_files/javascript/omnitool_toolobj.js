@@ -543,6 +543,9 @@ function Tool (tool_attributes) {
 							enable_chosen_menu('.tool-search-menu');
 							// empower the quick search keyword
 							tool_objects[this_tool_id].quick_search_enable();
+							// but keep it hidden, since we are in advanced search mode
+							$('#search-controls').hide();
+							$('#quick_keyword_controls').hide();
 							// and now call post_data_fetch_operations()
 							post_data_fetch_operations(json_data);
 							loading_modal_display('hide');
