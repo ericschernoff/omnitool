@@ -486,9 +486,6 @@ function Tool (tool_attributes) {
 			if ($('#form-field-1').val() == '') {
 				$('#form-field-1').val('DO_CLEAR');
 			}
-
-			// close the advanced search/sort modal, as we are pushing the search logic to the display
-			$("#system_modal").modal('hide');
 		}
 
 		// have this expost for use in the nested function below
@@ -550,6 +547,17 @@ function Tool (tool_attributes) {
 							post_data_fetch_operations(json_data);
 							loading_modal_display('hide');
 						});
+						
+						// fix the keywords back to blank
+						$(".advanced_search_keyword_texbox").each(function() {
+							if ($(this).val() == 'DO_CLEAR') {
+								$(this).val('');
+							}
+						});
+						// same for the quick keyword
+						if ($('#form-field-1').val() == 'DO_CLEAR') {
+							$('#form-field-1').val('');
+						}
 
 					// regular display of results in the screen
 					} else {

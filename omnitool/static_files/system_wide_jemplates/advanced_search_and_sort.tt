@@ -56,7 +56,7 @@
 					[% IF form.fields.$f.preset == 'DO_CLEAR' %]
 						[% SET form.fields.$f.preset = '' %]
 					[% END %]
-				
+					
 					[% SET field_type = form.fields.$f.field_type %]
 					[% PROCESS $field_type %]
 
