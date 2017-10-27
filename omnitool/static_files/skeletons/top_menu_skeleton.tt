@@ -44,8 +44,8 @@
 				<div class="navbar-header pull-left">
 					<span class="navbar-brand">
 						<small>
-							<img class="hidden-480 padding-right-2" src="[%session.app_instance_info.ui_logo%]"/>
-							<span id="ot_tool_title" ></span>
+							<img style="border-right: white 1px solid" class="hidden-480 padding-right-2" src="[%session.app_instance_info.ui_logo%]"/>
+							<span class="h3 align-middle" id="ot_tool_title" ></span>
 						</small>
 					</span>
 				</div>
@@ -54,6 +54,12 @@
 					[% IF username != 'public' %]
 						<!-- #section:basics/navbar.nav -->
 						<ul class="nav ace-nav">
+
+							<!-- notification area; powered by 
+								omnitool/static_files/system_wide_jemplates/navbar_notifications.tt
+								and omnitool::common::ui::notifications()
+							-->
+							<li class="transparent user-min" id="navbar_notification_area"></li>
 
 							[% switch_into_instances = [] %]
 							[% FOREACH instance IN session.appinst_keys %]

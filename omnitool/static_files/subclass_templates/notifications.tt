@@ -1,0 +1,45 @@
+package omnitool::applications::[%app_code_directory%]::notifications;
+# generate the notifications hash for the navbar
+# This will feed into /opt/omnitool/distribution/omnitool/static_files/system_wide_jemplates/navbar_notifications.tt
+# which then gets loaded into the navbar, right next to the change-instance menu.
+# It will get refreshed every time omnitool_controller() runs, which is every
+# time the location hash changes.
+# Adds functionality to the %$luggage data structure generated when
+# you log into either of the [%app_name%] applications.
+
+$omnitool::applications::[%app_code_directory%]::notifications::VERSION = '1.0';
+
+# this works for perl and not lorelei
+use strict;
+
+# method to generate the notifications hash
+sub notifications {
+	# must receive the memory reference to the luggage we've already packed
+	my ($luggage) = @_;
+
+	if (!$$luggage{belt}->{all_hail}) {
+		return {
+			'notification_count' => 0,
+		};
+	}
+	
+=cut
+	# build and return a hashref that loks like this:
+	return {
+		'notification_count' => 3, # integer, number of entries in 'notifications' below
+		'notifications' => [
+			# one hash entry per notification, with these four elements
+			{
+				'uri' => '#/tools/some/tool/uri', # external is OK too
+				'style' => 'pink', # any valid button style
+				'glyph' => 'fa-black-tie', # any FontAwesome 4.7 icon
+				'title' => 'Ginger is Awesome!',
+			},
+		]
+	};
+=cut
+	
+}
+
+
+1;

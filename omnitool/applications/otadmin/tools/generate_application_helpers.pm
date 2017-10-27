@@ -19,7 +19,7 @@ sub perform_action {
 	my $generate_base_uri = $self->{my_base_uri}.'/generate_helper_module?client_connection_id='.$self->{client_connection_id}.'&uri_base='.$self->{luggage}{params}{uri_base}.'&helper_module=';
 
 	$self->{json_results}{results_keys} = [
-		'auth_helper.pm','custom_session.pm','daily_routines.pm','extra_luggage.pm'
+		'auth_helper.pm','custom_session.pm','daily_routines.pm','extra_luggage.pm','notifications.pm'
 	];
 	$self->{json_results}{results_headings} = ['Application Helper Module','Purpose','Generate'];
 
@@ -32,6 +32,7 @@ sub perform_action {
 		'custom_session.pm' => 'Augment the OT6 session for your Application.  Useful for adding logic for testing Access Roles.',
 		'daily_routines.pm' => 'Provide a daily "cron script" type background task to broadly support your Application.',
 		'extra_luggage.pm' => 'Augment the %$luggage structure for your Application. Useful to add data/methods needed throughout the Application.',
+		'notifications.pm' => 'Generate the hashref to populate the notifications menu in the top navbar.',
 	};
 
 	# include standard modules by default

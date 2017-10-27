@@ -279,6 +279,52 @@ sub build_navigation {
 	return \%tools;
 }
 
+# method to generate notifications for your application
+# depends on having a 'notifications()' method in your notifications.pm
+sub notifications {
+	my $self = shift;
+	
+	my ($app_code_directory, $extra_ui_package, $notifications_subroutine, $notifications_subroutine, $notifications_hash);
+
+	# try to load up the notifications.pm module and run notifications()
+	# there is definitely a better way to do this ;)
+	$app_code_directory = $self->{luggage}{session}->{app_instance_info}{app_code_directory}; # sanity
+	$extra_ui_package = 'omnitool::applications::'.$app_code_directory.'::notifications';
+	# if it loads, run it's &pack_extra_luggage subroutine to extend %$luggage
+	if (eval "require $extra_ui_package") {
+		$notifications_subroutine = $extra_ui_package.'::notifications';
+		$notifications_subroutine = \&$notifications_subroutine;
+		$notifications_hash = &$notifications_subroutine($self->{luggage});
+		return $notifications_hash;
+	} else { # otherwise, return 0
+		return {
+			'notification_count' => 0,
+		};
+	}
+	
+=cut
+	# example of what your custom routine should provide
+	return {
+		'notification_count' => 2, # integer >= 0
+		'notifications' => [
+			{
+				'uri' => 'http://www.google.com', # external URL OK
+				'style' => 'pink', # any valid button style
+				'glyph' => 'fa-black-tie', # any FA 4.7 icon
+				'title' => 'Ginger is Awesome!',
+			},
+			{
+				'uri' => '#/tools/some/tool/uri', # system internal
+				'style' => 'success',
+				'glyph' => 'fa-facebook',
+				'title' => 'Polly is a Good Dog Too',
+			},
+		]
+	};
+=cut
+}
+
+
 # method to send out a system-level template for client-side processing in Jemplate (see utility_belt.pm notes)
 # 'system-level' means it lives in $ENV{OTHOME}/code/omnitool/static_files/templates
 # update: relenting; you can pass 'jemplates/file_name.tt' to use something in your app-level directory
@@ -460,6 +506,7 @@ sub AUTOLOAD {
 		'complex_fields_template' => 'complex_fields.tt',
 		# 'inline_action_buttons_template' => 'inline_action_buttons.tt',
 		'inline_action_menu_template' => 'inline_action_menu.tt',
+		'navbar_notifications_template' => 'navbar_notifications.tt',
 		'system_modals_template' => 'system_modals.tt',
 		'advanced_search_and_sort_template' => 'advanced_search_and_sort.tt',
 		'modal_parts_template' => 'modal_parts.tt',

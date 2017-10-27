@@ -1,0 +1,43 @@
+[%# jemplate for system notifications, displayed in nav bar %]
+[% IF notification_count !='' && notification_count > 0 %]
+	<a data-toggle="dropdown" class="dropdown-toggle" href="#">
+		<i class="ace-icon fa fa-bell"></i>
+		<span class="badge badge-success">[%notification_count%]</span>
+	</a>
+
+	[% IF notification_count > 1 %]
+		[% SET notification_count_text = 'Notifications' %]
+	[% ELSE %]
+		[% SET notification_count_text = 'Notification' %]
+	[% END %]
+
+	<ul class="dropdown-menu-right dropdown-navbar dropdown-menu dropdown-caret dropdown-close">
+		<li class="dropdown-header">
+			<i class="ace-icon fa fa-exclamation-triangle"></i>
+			[%notification_count%] [%notification_count_text%]
+		</li>
+
+		<li class="dropdown-content">
+			<ul class="dropdown-menu dropdown-navbar navbar">
+				[% FOREACH notification IN notifications %]
+				<li>
+					<a href="[%notification.uri%]">
+						<i class="[%notification.style%] fa [% notification.glyph %]"></i>
+						[% notification.title %]
+					</a>
+				</li>
+				[% END %]
+			</ul>
+		</li>
+
+		[% IF more_notifications_uri %]
+			<li class="dropdown-footer">
+				<a href="[%more_notifications_uri%]">
+					More Notifications
+					<i class="ace-icon fa fa-arrow-right"></i>
+				</a>
+			</li>
+		[% END %]
+
+	</ul>
+[% END %]

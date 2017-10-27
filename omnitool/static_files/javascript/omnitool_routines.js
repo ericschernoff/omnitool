@@ -122,8 +122,9 @@ $( document ).ready(function() {
 	// next, let's build the navigation menu
 	// we want to bind the menu bar to our JSON feed and jemplate
 	jemplate_bindings['ot_menubar'] = new jemplate_binding('ot_menubar', '/ui/menubar_template', 'ui_menu.tt', '/ui/build_navigation');
-	// load it in
-	// jemplate_bindings['ot_menubar'].process_json_uri();
+
+	// set up the notifications binding in the navbar - this will get refreshed each time omnitool_controller() runs
+	jemplate_bindings['ot_navbar_notifications'] = new jemplate_binding('navbar_notification_area', '/ui/navbar_notifications_template', 'navbar_notifications.tt', '/ui/notifications');
 
 	// bind event to track latest mouse movement time, to make sure the search-refreshing
 	// does not happen if the mouse has not moved in two minutes
@@ -185,7 +186,7 @@ function jemplate_binding (element_id, jemplate_uri, jemplate_name, json_data_ur
 			var my_element_id = this.element_id;
 
 			// fetch the data and see if we need to authenticate
-			if (this.json_data_uri.match('/ui')) {
+			if (this.json_data_uri.match('/ui') && !(this.json_data_uri.match('notifications'))) {
 				loading_modal_display('Preparing Interface...');
 			} else if (modal_text != undefined) {
 				loading_modal_display(modal_text + '...');
@@ -723,6 +724,9 @@ function omnitool_controller (event,target_tool_uri) {
 		loading_modal_display('hide');
 	});
 	// we will rely on the Tool object from here on
+
+	// also update the notification area in the navbar
+	jemplate_bindings['ot_navbar_notifications'].process_json_uri();
 
 }
 
