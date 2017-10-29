@@ -226,9 +226,11 @@ sub retrieve_task_details {
 	#	'run_status' => 'will_run', 'has_run', 'running', or 'error'
 	# 						# leave blank for all; 'will_run' indicates running or future tasks
 	#						# 'has_run' indicates Completed/Cancelled/Error tasks
-	#	'update_time_age' => $number_of_seconds, # optional, use to find tasks that have be (attempted to)
+	#	'update_time_age' => $number_of_seconds, # optional, use to find tasks that have been (attempted to)
 	#											 # run within a certain number if seconds, i.e. 86400 for the past
 	#											 # 24 hours
+	#	'not_before_time' => unix_epoch_value, # optional, task 'not_berfore_time' value would be less than this epoch
+	#											# makes it easier to look at items set to execute in the past vs. the future
 
 	my ($sql, $bind_values, $tasks, $tasks_keys);
 
@@ -281,6 +283,11 @@ sub retrieve_task_details {
 	# filter by update_time age?
 	if ($args{update_time_age} =~ /\d/) {
 		$sql .= qq{ and update_time >= (unix_timestamp() - $args{update_time_age}) };
+	}
+
+	# filter by not_before_time epoch?
+	if ($args{not_before_time} =~ /\d/) {
+		$sql .= qq{ and not_before_time <= $args{not_before_time} };
 	}
 
 	# the logic above could lead to ugly SQL
@@ -563,9 +570,9 @@ sub do_task {
 		$status_message .= ' (eval message)';
 		$do_auto_retry = 1; # since we had a hard-error, try a retry in an hour
 	} elsif (!length($result)) { # didn't get a result, do auto retry
-		$do_auto_retry = 1; 
+		$do_auto_retry = 1;
 	}
-	
+
 	# if $result starts with "ERROR: No", then the method does not exist and
 	# they got the AUTOLOAD routine in omniclass.pm
 	if ($result =~ /^ERROR: No/) {
