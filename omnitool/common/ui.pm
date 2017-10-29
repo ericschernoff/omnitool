@@ -112,6 +112,7 @@ sub skeleton_html {
 	$self->{luggage}{session}{app_instance_info}{ui_ace_skin} =~ s/ /-/g;
 
 	# it will be a template toolkit file, which should be process and shipped ASAP:
+	$self->{luggage}{params}{javascript_ok} = 1; # tell mr_zebra() to skip cleaning out JavaScript
 	$self->{luggage}{belt}->template_process(
 		'template_file' => $file,
 		'template_vars' => $self->{luggage},
@@ -283,7 +284,7 @@ sub build_navigation {
 # depends on having a 'notifications()' method in your notifications.pm
 sub notifications {
 	my $self = shift;
-	
+
 	my ($app_code_directory, $extra_ui_package, $notifications_subroutine, $notifications_subroutine, $notifications_hash);
 
 	# try to load up the notifications.pm module and run notifications()
@@ -301,7 +302,7 @@ sub notifications {
 			'notification_count' => 0,
 		};
 	}
-	
+
 =cut
 	# example of what your custom routine should provide
 	return {

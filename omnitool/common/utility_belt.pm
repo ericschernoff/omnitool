@@ -797,6 +797,16 @@ sub mr_zebra {
 
 	}
 
+	# if it's going to the browser (and not javascript or the skeleton),
+	# try a feeble attempt to prevent XSS attempls
+	if ($content_type =~ /plain|html|css|json/ && !$self->{javascript_ok}) {
+		$content =~ s/\<script/\<scr ipt/gi;
+		$content =~ s/\<\/script/\<\/scr ipt/gi;
+		$content =~ s/javascript\:/java script\:\:/gi;
+		# this is a one-time ticket
+		$self->{javascript_ok} = 1;
+	}
+
 	# if in Plack, pack the response for delivery
 	if ($self->{response}) {
 		$self->{response}->content_type($content_type);
@@ -1033,8 +1043,11 @@ sub template_process {
 
 	# send it out to the client, save to the filesystem, or return to the caller
 	if ($args{send_out}) { # output to the client
-		$self->mr_zebra($output,2);
+		# tell mr_zebra to let the JavaScript pass
+		$self->{javascript_ok} = $args{template_vars}{params}{javascript_ok};
+
 		# the '2' tells mr_zebra to avoid logging an error
+		$self->mr_zebra($output,2);
 
 	} elsif ($args{save_file}) { # save to the filesystem
 		write_file( $args{save_file}, $output);
