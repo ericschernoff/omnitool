@@ -722,11 +722,12 @@ function omnitool_controller (event,target_tool_uri) {
 
 		// close the loading modal now that we are done
 		loading_modal_display('hide');
+
+		// also update the notification area in the navbar
+		jemplate_bindings['ot_navbar_notifications'].process_json_uri();
+
 	});
 	// we will rely on the Tool object from here on
-
-	// also update the notification area in the navbar
-	jemplate_bindings['ot_navbar_notifications'].process_json_uri();
 
 }
 

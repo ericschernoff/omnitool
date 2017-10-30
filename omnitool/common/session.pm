@@ -57,6 +57,7 @@ sub new {
 			select code,session from otstatedata.omnitool_sessions
 			where username=? and app_instance=? and hostname=?
 			and last_access > (unix_timestamp()-86400)
+			order by code limit 1
 		},[$args{username},$args{app_instance}, $args{hostname}]);
 	}
 
