@@ -320,7 +320,12 @@ sub notifications {
 				'glyph' => 'fa-facebook',
 				'title' => 'Polly is a Good Dog Too',
 			},
-		]
+		],
+		'urgent_notification' => qq{
+			Some HTML here, to be persistently displayed at the top 
+			of the main area in a 'danger' alert well.  Leave blank if there 
+			is nothing urgent to return.
+		}
 	};
 =cut
 }
@@ -693,8 +698,45 @@ custom JavaScript like this:
 
 Nice and easy ;)
 
-=head tools_javascript_classes()
+=head2 tools_javascript_classes()
 
 Also invoked at the bottom of the UI skeleton file.  Combines and ships back all of the static
 Javascript files which are needed to drive the tools.  These are defined in the 'javascript_class'
 of the 'tools' table in the Admin database.
+
+=head2 notifications()
+
+This is automatically called from omnitool_routines.js, and it looks for a 'notifications.pm'
+Perl module at the base of your Application's code directory.  If that exists and has a 
+'notifications' subroutine, it will call that routine and expect a hash of notifications like this:
+
+	return {
+		'notification_count' => 2, # integer >= 0
+		'notifications' => [
+			{
+				'uri' => 'http://www.google.com', # external URL OK
+				'style' => 'pink', # any valid button style
+				'glyph' => 'fa-black-tie', # any FA 4.7 icon
+				'title' => 'Ginger is Awesome!',
+			},
+			{
+				'uri' => '#/tools/some/tool/uri', # system internal
+				'style' => 'success',
+				'glyph' => 'fa-facebook',
+				'title' => 'Polly is a Good Dog Too',
+			},
+		],
+		'urgent_notification' => qq{
+			Some HTML here, to be persistently displayed at the top 
+			of the main area in a 'danger' alert well.  Leave blank if there 
+			is nothing urgent to return.
+		}
+	};
+	
+The 'notifications' and 'notification_count' bits will be used to create a notification
+menu in the top navbar.  The 'urgent_notification' HTML will be displayed at the top of
+the main display area, at the top of the active Screen Tool.  That is for reporting outages
+to your users.
+
+This is called every time the hash changes in the browser, so it is a good way to send
+system or resource status/info to your clients.

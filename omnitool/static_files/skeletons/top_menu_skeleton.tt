@@ -165,6 +165,9 @@
 					<div class="breadcrumbs breadcrumbs-fixed" id="breadcrumbs">
 					</div>
 					<div class="page-content" id="page-content" style="margin-top: 10px">
+						<!--  area for an urgent notification put into json_results->urgent_notice -->
+						<div class="alert alert-danger" id="urgent_notification" style="display: none">
+						</div>
 
 						<!-- omnitool_controller() will place tools content in here -->
 

@@ -35,7 +35,13 @@ sub notifications {
 				'glyph' => 'fa-black-tie', # any FontAwesome 4.7 icon
 				'title' => 'Ginger is Awesome!',
 			},
-		]
+		],
+		# for displaying an urgent outage (or outages)
+		'urgent_notification' => qq{
+			Some HTML here, to be persistently displayed at the top 
+			of the main area in a 'danger' alert well.  Leave blank if there 
+			is nothing urgent to return.
+		}
 	};
 =cut
 	

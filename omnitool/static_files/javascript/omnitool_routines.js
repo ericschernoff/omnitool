@@ -277,6 +277,11 @@ function post_data_fetch_operations (data) {
 		});
 	}
 
+	// NOTIFICATIONS ONLY: urgent/dager notice?
+	if (data.notification_count != undefined) {
+		show_or_hide_element('urgent_notification', data.urgent_notification);
+	}
+
 	// the rest is for Tools' JSON only, so return if no data provided
 	if (data.session_created == undefined) {
 		return;
@@ -328,7 +333,7 @@ function post_data_fetch_operations (data) {
 		}
 		// 3. show if either of those is in use
 		show_or_hide_element('advanced_features_badge', data.advanced_features);
-		// 4. search-limited notice?
+		// 4. search-is-limited notice?
 		show_or_hide_element('top_notice', data.limit_notice);
 
 		if (data.breadcrumbs_notice) { // some filters used, show that number
@@ -381,7 +386,6 @@ function post_data_fetch_operations (data) {
 
 	// empower any tool quick/inline actions drop-down menus
 	enable_chosen_menu('.tool-action-menu');
-
 
 	// if their session was flushed since we last checked
 	// reload the menubar, clear the backgrounded tools,
