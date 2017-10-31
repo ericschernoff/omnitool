@@ -804,7 +804,7 @@ sub mr_zebra {
 		$content =~ s/\<\/script/\<\/scr ipt/gi;
 		$content =~ s/javascript\:/java script\:\:/gi;
 		# this is a one-time ticket
-		$self->{javascript_ok} = 1;
+		$self->{javascript_ok} = 0;
 	}
 
 	# if in Plack, pack the response for delivery

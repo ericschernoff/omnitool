@@ -385,6 +385,7 @@ sub show_login_screen {
 	$tt_vars{login_box} = 1 if !$tt_vars{locked_out} && !$tt_vars{no_access};
 
 	# use the template toolkit via the utility belt to process our login page and send it out
+	$tt_vars{params}{javascript_ok} = 1; # tell mr_zebra() to skip cleaning out JavaScript
 	$self->{luggage}{belt}->template_process(
 		'template_file' => 'login_page.tt',
 		'template_vars' => \%tt_vars,
