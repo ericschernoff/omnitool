@@ -125,6 +125,10 @@
 						[% ELSE %]
 							[% form.fields.$f.title %]
 						[% END %]
+						
+						[% IF (field_type.match('_tags|_autocomplete')) %]
+							<i class="ace-icon fa fa-spin fa-spinner blue" id="form-field-[%f%]-spinner" style="display:none"></i>
+						[% END %]
 
 						[%# default behavior to hide/popover the field instructions %]
 						[% IF form.fields.$f.instructions && !display_field_instructions %]

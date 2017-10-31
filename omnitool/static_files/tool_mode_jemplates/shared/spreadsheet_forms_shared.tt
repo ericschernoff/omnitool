@@ -59,7 +59,9 @@
 					[% ELSE %]
 						[% form.fields.$f.title %]
 					[% END %]
-
+					[% IF (field_type.match('_tags|_autocomplete')) %]
+						<i class="ace-icon fa fa-spin fa-spinner blue" id="form-field-[%f%]-spinner" style="display:none"></i>
+					[% END %]
 					[% IF form.fields.$f.instructions %]
 						<span class="help-button" data-rel="popover" data-trigger="hover" data-placement="right" data-content="[%form.fields.$f.instructions%]">?</span>
 					[% END %]

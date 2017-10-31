@@ -358,10 +358,13 @@ function Tool (tool_attributes) {
 		// set up the autocomplete, point it at the server-side tool method and respond with the data
 		// jquery.ui makes this quite easy
 		var this_tool_url = this['tool_uri'];
+		var spinner_icon_id = field.attr('id') + '-spinner';
 		field.autocomplete({
 			source: function( request, response ) {
+				$('#'+spinner_icon_id).show();
 				$.when( query_tool(this_tool_url + '/autocomplete_suggester', {term: request.term, server_side_method_name: server_side_method_name }) ).done(function(data) {
 					response( data );
+					$('#'+spinner_icon_id).hide();
 				});
 			},
 			minLength: 3,
@@ -373,12 +376,15 @@ function Tool (tool_attributes) {
 		// set up the autocomplete, point it at the server-side tool method and respond with the data
 		// jquery.ui makes this quite easy
 		var this_tool_url = this['tool_uri'];
+		var spinner_icon_id = field.attr('id') + '-spinner';
 		field.tag({
 			placeholder: $(this).attr('placeholder'),
 			source: function(query_term, process) {
 				if (query_term.length > 3) {
+					$('#'+spinner_icon_id).show();
 					$.when( query_tool(this_tool_url + '/autocomplete_suggester', {term: query_term, server_side_method_name: server_side_method_name }) ).done(function(data) {
 						process( data );
+						$('#'+spinner_icon_id).hide();
 					});
 				}
 			},
