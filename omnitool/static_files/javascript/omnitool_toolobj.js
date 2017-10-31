@@ -533,20 +533,9 @@ function Tool (tool_attributes) {
 						// process the results
 						jemplate_bindings[ this_tool_display_div ].process_json_data(json_data);
 						// call in the new tools controls
-						$.when( query_tool(this_tool_uri + '/send_tool_controls',{}) ).done(function(tool_controls_html) {
-							// load them in
-							$('#tool_controls_'+this_tool_id).html(tool_controls_html);
-							// empower the tool search drop-down menus
-							enable_chosen_menu('.tool-search-menu');
-							// empower the quick search keyword
-							tool_objects[this_tool_id].quick_search_enable();
-							// but keep it hidden, since we are in advanced search mode
-							$('#search-controls').hide();
-							$('#quick_keyword_controls').hide();
-							// and now call post_data_fetch_operations()
-							post_data_fetch_operations(json_data);
-							loading_modal_display('hide');
-						});
+						tool_objects[this_tool_id].reload_tool_controls(1);
+						// and now call post_data_fetch_operations()
+						post_data_fetch_operations(json_data);
 						
 						// fix the keywords back to blank
 						$(".advanced_search_keyword_texbox").each(function() {
@@ -558,6 +547,8 @@ function Tool (tool_attributes) {
 						if ($('#form-field-1').val() == 'DO_CLEAR') {
 							$('#form-field-1').val('');
 						}
+
+						loading_modal_display('hide');
 
 					// regular display of results in the screen
 					} else {
@@ -726,6 +717,24 @@ function Tool (tool_attributes) {
 		});
 	}
 
+	// function to reload the tool_controls area if needed
+	this.reload_tool_controls = function (adv_search_mode) {
+		var this_tool_id = this['the_tool_id'];
+		$.when( query_tool(this['tool_uri'] + '/send_tool_controls',{}) ).done(function(tool_controls_html) {
+			// load them in
+			$('#tool_controls_'+this_tool_id).html(tool_controls_html);
+			// empower the tool search drop-down menus
+			enable_chosen_menu('.tool-search-menu');
+			// empower the quick search keyword
+			tool_objects[this_tool_id].quick_search_enable();
+			// but keep it hidden, if we are in advanced search mode
+			if (adv_search_mode != undefined) {
+				$('#search-controls').hide();
+				$('#quick_keyword_controls').hide();
+			}
+		});	
+	}
+	
 	// function to power the quick-search keyword search - screens only
 	this.quick_search_enable = function () {
 		var this_tool_id = this['the_tool_id'];
