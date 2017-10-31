@@ -128,6 +128,11 @@ sub search {
 		} else { # my table, will be the primary key
 			$$so{relationship_column} = qq{concat(code,'_',server_id)};
 		}
+		
+		# get the relationship right
+		if (!$$so{primary_table_column} && $$so{relationship_column} eq 'data_code') {
+			$$so{primary_table_column} = qq{concat(code,'_',server_id)};
+		}
 
 		# no match column? default to 'name'
 		$$so{match_column} ||= 'name';

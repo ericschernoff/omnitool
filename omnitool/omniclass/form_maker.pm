@@ -370,7 +370,7 @@ sub setup_field {
 		} else { # default value for datatype field
 			$$form{fields}{$key}{preset} = $self->{datatype_info}{fields}{$field}{default_value};
 		}
-
+		
 		# if it's a date field with no preset, use today
 		if ($$form{fields}{$key}{field_type} eq 'simple_date' && !$$form{fields}{$key}{preset}) {
 			$$form{fields}{$key}{preset} = $self->{belt}->todays_date();
