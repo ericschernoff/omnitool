@@ -798,14 +798,14 @@ sub mr_zebra {
 	}
 
 	# if it's going to the browser (and not javascript or the skeleton),
-	# try a feeble attempt to prevent XSS attempls
+	# try a feeble attempt to prevent XSS attempts
 	if ($content_type =~ /plain|html|css|json/ && !$self->{javascript_ok}) {
 		$content =~ s/\<script/\<scr ipt/gi;
 		$content =~ s/\<\/script/\<\/scr ipt/gi;
 		$content =~ s/javascript\:/java script\:\:/gi;
-		# this is a one-time ticket
-		$self->{javascript_ok} = 0;
 	}
+	# javascript_ok is a one-time ticket
+	$self->{javascript_ok} = 0;
 
 	# if in Plack, pack the response for delivery
 	if ($self->{response}) {
@@ -1043,8 +1043,10 @@ sub template_process {
 
 	# send it out to the client, save to the filesystem, or return to the caller
 	if ($args{send_out}) { # output to the client
-		# tell mr_zebra to let the JavaScript pass
-		$self->{javascript_ok} = $args{template_vars}{params}{javascript_ok};
+		# if this is a skeleton or primary page, tell mr_zebra it's OK to send out JS
+		if ( $args{include_path}.$args{template_file} =~ /login_page|skeleton/ ) {
+			$self->{javascript_ok} = 1;
+		}
 
 		# the '2' tells mr_zebra to avoid logging an error
 		$self->mr_zebra($output,2);

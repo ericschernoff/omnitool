@@ -112,7 +112,6 @@ sub skeleton_html {
 	$self->{luggage}{session}{app_instance_info}{ui_ace_skin} =~ s/ /-/g;
 
 	# it will be a template toolkit file, which should be process and shipped ASAP:
-	$self->{luggage}{params}{javascript_ok} = 1; # tell mr_zebra() to skip cleaning out JavaScript
 	$self->{luggage}{belt}->template_process(
 		'template_file' => $file,
 		'template_vars' => $self->{luggage},
