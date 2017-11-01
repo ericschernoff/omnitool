@@ -533,15 +533,16 @@ function Tool (tool_attributes) {
 					loading_modal_display('hide');
 
 				} else { // omnitool wants you to see the form again, or maybe this is a multiple part form?
-					if (form_id.match('advanced')) { // reload the tools controls
+					if (form_id.match('advanced_search')) { // reload the tools controls
 						// postpone the post_data_fetch_operations function
 						json_data.skip_post_data_ops = 1;
 						// process the results
 						jemplate_bindings[ this_tool_display_div ].process_json_data(json_data);
 						// call in the new tools controls
-						tool_objects[this_tool_id].reload_tool_controls(1);
-						// and now call post_data_fetch_operations()
-						post_data_fetch_operations(json_data);
+						$.when( tool_objects[this_tool_id].reload_tool_controls(1) ).done(function() {
+							// and then call post_data_fetch_operations()
+							post_data_fetch_operations(json_data);
+						});
 						
 						// fix the keywords back to blank
 						$(".advanced_search_keyword_texbox").each(function() {
@@ -625,6 +626,15 @@ function Tool (tool_attributes) {
 			form_display_div.hide();
 			$('#search-controls').show();
 			$('#quick_keyword_controls').show();
+			
+			// make sure the advanced item badges are shown as needed -- use the class way
+			// because there may be a few in the DOM by now
+			if ($('#advanced_sort_options_badge').html().length > 0) {
+				$('.advanced_sort_options_badge').show();
+			}
+			if ($('#advanced_search_filters_badge').html().length > 0) {
+				$('.advanced_search_filters_badge').show();
+			}
 
 		} else { // otherwise, load and show!
 

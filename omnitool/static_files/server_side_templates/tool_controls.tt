@@ -180,13 +180,13 @@ Expects all of $self for a Tool.pm class/sub-class.
 			<button class="btn btn-white" onclick="tool_objects['[%tool_and_instance%]'].show_advanced_search()">
 			<i class="ace-icon fa fa-search-plus"></i>
 			<span id="advanced_search_text">Adv. Search</span>
-			<span class="badge badge-info" id="advanced_search_filters_badge"></span>
+			<span class="badge badge-info advanced_search_filters_badge" id="advanced_search_filters_badge"></span>
 			</button>
 
 			<button class="btn btn-white" onclick="tool_objects['[%tool_and_instance%]'].show_advanced_sort()">
 			<i class="ace-icon fa fa-sort"></i>
 			<span id="advanced_sort_text">Sort</span>
-			<span class="badge badge-info" id="advanced_sort_options_badge"></span>
+			<span class="badge badge-info advanced_sort_options_badge" id="advanced_sort_options_badge"></span>
 			</button>
 		</ul>
 		</div>

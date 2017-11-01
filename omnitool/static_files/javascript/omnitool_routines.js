@@ -321,7 +321,6 @@ function post_data_fetch_operations (data) {
 		// be sure to always hide the next/previous buttons for these
 		$('.next_link').hide();
 		$('.previous_link').hide();
-
 		// use our little utility function to show and hide some indicator badges / text:
 		// 1. How many advanced search filters we are using
 		show_or_hide_element('advanced_search_filters_badge', data.advanced_search_filters);
