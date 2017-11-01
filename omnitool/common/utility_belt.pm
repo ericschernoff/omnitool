@@ -802,7 +802,8 @@ sub mr_zebra {
 	if ($content_type =~ /plain|html|css|json/ && !$self->{javascript_ok}) {
 		$content =~ s/\<script/\<scr ipt/gi;
 		$content =~ s/\<\/script/\<\/scr ipt/gi;
-		$content =~ s/javascript\:/java script\:\:/gi;
+		# have to disable this for now, because I put in JS links
+		# $content =~ s/javascript\:/java script\:\:/gi;
 	}
 	# javascript_ok is a one-time ticket
 	$self->{javascript_ok} = 0;
