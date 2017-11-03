@@ -1160,6 +1160,8 @@ sub time_to_date {
 		$templ = '%b%y';
 	} elsif ($task eq "to_day_of_week") { # epoch to day of the week, like 'Saturday'
 		$templ = '%A';
+	} elsif ($task eq "to_day_of_week_numeric") { # 0..6 day of the week
+		$templ = '%w';
 	}
 
 	# if they sent a time zone, offset the timestamp epoch appropriately
