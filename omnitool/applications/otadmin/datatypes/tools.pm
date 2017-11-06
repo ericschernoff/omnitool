@@ -113,7 +113,7 @@ sub options_perl_module {
 	($options,$options_keys) = $self->options_from_directory($class_path,'pm');
 
     # add in our core / factory tool modules
-    foreach $core_class ('standard_delete','standard_data_actions','singleton_data_actions','subform_data_actions','basic_data_view','view_details','basic_calendar','setup_diagram') {
+    foreach $core_class ('standard_delete','standard_data_actions','singleton_data_actions','subform_data_actions','basic_data_view','view_details','basic_calendar','setup_diagram','call_named_method') {
 		$$options{$core_class} = $core_class;
 		unshift(@$options_keys,$core_class);
 	}
