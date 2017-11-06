@@ -23,13 +23,23 @@
 			[% form.instructions %]
 		</div>
 	[% END %]
-
+	
 	<form class="form-horizontal" id="[%tool_and_instance%]_advanced_search_form" action="[%form.target_url%]" method="post" role="form">
 	[% FOREACH hf IN form.hidden_fields.keys %]
 		<input type="hidden" name="[%hf%]" value="[%form.hidden_fields.$hf%]" />
 	[% END %]
+	
+	<div class="center">
+		If you need to clear this form and start over, then
+		<button class="btn btn-white" type="button" onclick="reset_form('[%tool_and_instance%]_advanced_search_form')">
+			<i class="ace-icon fa fa-remove bigger-110"></i>
+			Click Here to Reset All Options
+		</button>
+	</div>
+	<div class="space-6"></div>
 
 	<div class="row">
+
 	[% SET n = 0 %]
 	[% FOREACH f IN form.field_keys %]
 
