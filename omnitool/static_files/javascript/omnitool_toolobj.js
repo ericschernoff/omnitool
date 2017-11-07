@@ -500,12 +500,13 @@ function Tool (tool_attributes) {
 
 		// submit the form and send the results data back into our display area's jemplate
 		loading_modal_display('Submitting Form...');
-
 		// jump to the top, in case there are errors - skip if a modal/message where the parent tool is just refreshing the target data
-		if (this['tool_type_short'] == 'screen' || tool_objects[ the_active_tool_ids['screen'] ]['single_record_jemplate_block'] == undefined || tool_objects[ the_active_tool_ids['screen'] ]['single_record_jemplate_block'] == 0) {
-			$("html, body").animate({ scrollTop: 0 }, "slow");
+		if (form_id.match('advanced_search') == undefined) { // only if not advanced search
+			if (this['tool_type_short'] == 'screen' || tool_objects[ the_active_tool_ids['screen'] ]['single_record_jemplate_block'] == undefined || tool_objects[ the_active_tool_ids['screen'] ]['single_record_jemplate_block'] == 0) {
+				$("html, body").animate({ scrollTop: 0 }, "slow");
+			}
 		}
-
+		
 		// if there is a wysiwig editor, transfer its text into the hidden variable (and trim leading/ending whitespace)
 		if ($('#'+this_tool_id+'_wyiswig').length > 0) {
 			$('#' + this_tool_id + '_wyiswig_transporter').val( $.trim( $('#'+this_tool_id+'_wyiswig').html() ) );
@@ -554,6 +555,8 @@ function Tool (tool_attributes) {
 						if ($('#form-field-1').val() == 'DO_CLEAR') {
 							$('#form-field-1').val('');
 						}
+						
+						$('html,body').animate( { scrollTop:($('#tool_display_' + this_tool_id).offset().top - 100) } , 'slow');
 
 						loading_modal_display('hide');
 

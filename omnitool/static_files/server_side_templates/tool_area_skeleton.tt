@@ -50,6 +50,7 @@
 		</div>
 
 		[%# main display area goes here %]
+		<div id="above_tool_display_[%tool_and_instance%]"></div>
 		<div id="tool_display_[%tool_and_instance%]" class="row">
 			<div class="col-xs-12">
 				Loading Display Area...

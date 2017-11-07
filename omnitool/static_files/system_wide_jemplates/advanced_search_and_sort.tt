@@ -117,7 +117,7 @@
 	</div>
 	</div>
 	</div>
-
+		
 [% END %]
 
 [%# templates for the advanced sort form %]
