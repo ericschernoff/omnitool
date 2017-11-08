@@ -61,10 +61,8 @@
 							<div class="center">
 								<h2>
 									<span class="white" id="id-text2">
-									[% IF ui_logo %]
-										<img src="[%ui_logo%]"/>&nbsp;
-									[% END %]
-									[%instance_name%]</span>
+										[%instance_name%]
+									</span>
 								</h2>
 							</div>
 
