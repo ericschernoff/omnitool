@@ -4,6 +4,8 @@
 Email-accepting script to run on MTA / SMTP-in servers for OmniTool.
 Meant to run using a 'plain' system Perl, 5.8+, with just DBI and DBD::MySQL.
 
+MAKE A COPY OF THIS AND CUSTOMIZED IT UNDER YOUR 'APPCODE' DIRECTORY.
+
 Simply drops the incoming MIME message into the 'email_incoming' table with a 'New'
 status.  This 'email_incoming' table is a baseline table created when you use
 'Setup MySQL Tables' for an App Instance.
@@ -46,7 +48,7 @@ my ($resolver, $account, $db_username, $db_password, $dsn, $dbh, $email);
 
 # configuration hash for system users to database servers / DB's
 $resolver = {
-	'DATATYPE_RECEIVING_EMAIL@YOUR-OMNITOOL-DOMONE.COM' => { # make that lower-case
+	'DATATYPE_RECEIVING_EMAIL@YOUR-OMNITOOL-DOMAIN.COM' => { # make that lower-case
 		'hostname' => 'HOSTNAME_OR_IP', # the database server hostname, not the instance
 		'connect_to_database' => 'TARGET_APPLICATION_INSTANCE_HOSTNAME',
 	},
