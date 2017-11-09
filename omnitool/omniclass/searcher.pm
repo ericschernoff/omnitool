@@ -28,7 +28,7 @@ sub search {
 	# need myself and my args
 	my $self = shift;
 	my (%args) = @_;
-	my (@table_keys, $key, $foreign_results, $did, $primary_table, $actual_queries_run, $sql_statement_logic, $table_key, $sql_query_plans, $actual_results, $search_result, $limit_count, @match_values, $question_marks, $args_ref, @bind_values, $math_operator_list, $operator_list, $r, $results, $search_count, $so, %found, $dt,$order_by, $conjunction);
+	my (@table_keys, $querying_primary_table, $key, $foreign_results, $did, $primary_table, $actual_queries_run, $sql_statement_logic, $table_key, $sql_query_plans, $actual_results, $search_result, $limit_count, @match_values, $question_marks, $args_ref, @bind_values, $math_operator_list, $operator_list, $r, $results, $search_count, $so, %found, $dt,$order_by, $conjunction);
 
 	# for this method, we want to save the search_options and other arguments so that search()
 	# could be called again with no arguments and execute the same search
@@ -236,12 +236,16 @@ sub search {
 	$primary_table = $self->{database_name}.'.'.$self->{table_name}; # for testing if a query is on the primary table
 	$actual_queries_run = 0;
 	@table_keys = keys %$sql_query_plans;
+	# need to know if we are querying the primary table, so we can save it for the last
+	$querying_primary_table = $$sql_query_plans{$primary_table}{relationship_column};
+
+	# ok, let's cycle thru ;)
 	foreach $table_key (@table_keys, $primary_table) {
 
 		# only do the primary_table once, so the $$sql_query_plans{$table_key}{primary_table_column} test
 		# can be run below
 		$$did{$table_key}++;
-		next if $table_key eq $primary_table && $$did{$primary_table} < 2;
+		next if $table_key eq $primary_table && $$did{$primary_table} < 2 && $querying_primary_table;
 
 		# if we are on the primary table, allow for a 'match-any' attitude
 		if ($args{match_any} && $table_key eq $primary_table) {
