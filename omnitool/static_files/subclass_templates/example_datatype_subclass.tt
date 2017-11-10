@@ -110,6 +110,7 @@ sub post_search {
 sub pre_delete {
 	my $self = shift;
 	my ($args) = @_; # args passed to delete()
+	# the ID of the record we are about to delete is in $$args{data_code}
 
 	# uncomment to stop the delete
 	# $$args{cancel_delete} = 1;
@@ -119,6 +120,7 @@ sub pre_delete {
 sub post_delete {
 	my $self = shift;
 	my ($args) = @_; # args passed to delete()
+	# the ID of the record we just deleted is in $$args{data_code}
 
 }
 
