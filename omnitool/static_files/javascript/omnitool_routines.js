@@ -257,9 +257,9 @@ function post_data_fetch_operations (data) {
 	if (data['menu'] != undefined && data['menu'][0]['button_name'] != undefined) { // it's the menubar
 		$( ".menubar_tool_link" ).click(function() {
 			if ( $(this).attr("href") != '#' && $(this).attr("href") == location.hash ) {
-				
+
 				omnitool_controller({},$(this).attr("href"));
-				
+
 				// it's going to be a screen if they can see the menubar and the link appears in the menubar
 				// var the_tool_id = the_active_tool_ids['screen'];
 
@@ -638,7 +638,7 @@ function omnitool_controller (event,target_tool_uri) {
 			tool_uri = tool_uri.replace(/\/bkmk[^\/]*/,'');
 			// location.hash = '#' + tool_uri;
 		}
-	
+
 		// now see if it is the active tool
 		var this_active_tool = 'Not Found';
 		for (var tool_type in the_active_tool_ids) {
@@ -647,8 +647,8 @@ function omnitool_controller (event,target_tool_uri) {
 				break; // no need to continue
 			}
 		}
-		
-		
+
+
 		// if they are moving to a new phase/method of the active tool, update that tool's jemplate binding
 		if (this_active_tool != 'Not Found') {
 			// if keep-warm = Never, we need to always start fresh
@@ -1413,22 +1413,22 @@ function enable_chosen_menu (jquery_identifier, custom_width) {
 	if (jquery_identifier == undefined) { // can't do much without this
 		return;
 	}
-	
+
 	// chosen is un-supported on a mobile browser
 	if (mobile_device == 1) {
-		return; 
+		return;
 	}
-	
+
 	// set up our options object
 	var chosen_options = new Array;
 	if (custom_width != undefined) { // make sure to send it with percent sign at the end
 		chosen_options.width = custom_width;
 	}
 
-	// show search if there are 4+ options	
+	// show search if there are 4+ options
 	chosen_options.search_contains = true;
 	chosen_options.disable_search_threshold = 4;
-	
+
 	// alright enable the menu(s)
 	$(jquery_identifier).chosen(chosen_options);
 }

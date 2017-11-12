@@ -201,6 +201,8 @@ sub build_navigation {
 	# local vars
 	my ($n, $sn, %tools, $child_tool_key, $tool_key, %this_action, @navigation, $bookmark_broker, $bm, $tool_id);
 
+	# send their username
+	$tools{username} = $self->{luggage}{username};
 
 	# $n starts at 0
 	$n = 0;
@@ -303,6 +305,9 @@ sub notifications {
 	}
 
 =cut
+	Hey, you can can generate that notifications.pm helper module with all its friends
+	via 'Generate Helpers' in OT Admin, next to the target Application.
+
 	# example of what your custom routine should provide
 	return {
 		'notification_count' => 2, # integer >= 0
@@ -321,8 +326,8 @@ sub notifications {
 			},
 		],
 		'urgent_notification' => qq{
-			Some HTML here, to be persistently displayed at the top 
-			of the main area in a 'danger' alert well.  Leave blank if there 
+			Some HTML here, to be persistently displayed at the top
+			of the main area in a 'danger' alert well.  Leave blank if there
 			is nothing urgent to return.
 		}
 	};
@@ -706,7 +711,7 @@ of the 'tools' table in the Admin database.
 =head2 notifications()
 
 This is automatically called from omnitool_routines.js, and it looks for a 'notifications.pm'
-Perl module at the base of your Application's code directory.  If that exists and has a 
+Perl module at the base of your Application's code directory.  If that exists and has a
 'notifications' subroutine, it will call that routine and expect a hash of notifications like this:
 
 	return {
@@ -726,12 +731,12 @@ Perl module at the base of your Application's code directory.  If that exists an
 			},
 		],
 		'urgent_notification' => qq{
-			Some HTML here, to be persistently displayed at the top 
-			of the main area in a 'danger' alert well.  Leave blank if there 
+			Some HTML here, to be persistently displayed at the top
+			of the main area in a 'danger' alert well.  Leave blank if there
 			is nothing urgent to return.
 		}
 	};
-	
+
 The 'notifications' and 'notification_count' bits will be used to create a notification
 menu in the top navbar.  The 'urgent_notification' HTML will be displayed at the top of
 the main display area, at the top of the active Screen Tool.  That is for reporting outages

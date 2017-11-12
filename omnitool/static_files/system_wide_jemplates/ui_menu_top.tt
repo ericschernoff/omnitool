@@ -1,12 +1,20 @@
 [%#
-	Client-side template for generating tools menu, AKA the sidebar.
+	Client-side template for generating tools menu in the navbar.
+
+	Meant for use with top_menu_skeleton.tt, will get automatically called.
+
 	Use with Jemplate.
 	Depends on https://XYZ.omnitool-domain.com/ui/build_navigation
 	(omnitool::ui::build_navigation)
 %]
 
+
+[%# get the notification area in there %]
+
 [%# Cycle through each of the tools included in the menu object %]
 [% FOREACH tool IN menu %]
+
+	[% NEXT IF tool.button_name == 'Bookmarks' %]
 
 	[%#
 		if there are sub-tools display as a heading with those tools below
@@ -15,15 +23,19 @@
 		and probably the Bookmarks.
 	%]
 	[% IF tool.child_tools.size %]
-
-		<li class="hover">
-			<a href="#[%tool.uri%]" class="menubar_tool_link">
+		<li class="transparent user-min">
+			<a data-toggle="dropdown" class="dropdown-toggle" href="#" class="menubar_tool_link">
 				<i class="menu-icon fa [% tool.icon_fa_glyph %] "></i>
 				<span class="menu-text"> [% tool.button_name %] </span>
 				<b class="arrow fa fa-angle-down"></b>
 			</a>
-			<b class="arrow"></b>
-			<ul class="submenu" id="ot_actions_[%loop.count%]">
+			<ul class="dropdown-menu-left dropdown-navbar dropdown-menu dropdown-caret dropdown-close" id="ot_actions_[%loop.count%]">
+				<li>
+				<a href="#[%tool.uri%]" class="menubar_tool_link">
+					[% tool.button_name %]
+				</a>
+				</li>
+
 				[% FOREACH child_tool IN tool.child_tools %]
 					<li>
 					<a href="#[%child_tool.uri%]" class="menubar_tool_link">
@@ -35,53 +47,46 @@
 		</li>
 
 	[%#
-		the bookmarks menu will have sub-menus
-	%]
-	[% ELSIF tool.sub_menus.size %]
-
-		<li class="hover">
-			<a href="#" class="dropdown-toggle menubar_tool_link">
-				<i class="menu-icon fa [% tool.icon_fa_glyph %] "></i>
-				<span class="menu-text"> [% tool.button_name %] </span>
-				<b class="arrow fa fa-angle-down"></b>
-			</a>
-			<b class="arrow"></b>
-			<ul class="submenu" id="ot_actions_[%loop.count%]">
-
-		[% FOREACH sub_menu IN tool.sub_menus %]
-			<li class="hover">
-				<a href="#" class="dropdown-toggle menubar_tool_link">
-					<i class="menu-icon fa [% sub_menu.icon_fa_glyph %] "></i>
-					<span class="menu-text"> [% sub_menu.button_name %] </span>
-					<b class="arrow fa fa-caret-right"></b>
-				</a>
-				<ul class="submenu" id="ot_actions_[%loop.count%]">
-					[% FOREACH bookmark IN sub_menu.bookmarks %]
-						<li>
-						<a href="#[%bookmark.uri%]" class="menubar_tool_link">
-							[% bookmark.button_name %]
-						</a>
-						</li>
-					[% END %]
-				</ul>
-			</li>
-		[% END %]
-			</ul>
-		</li>
-	[%#
 		No sub-tools or sub-menus: just make the button a link to the tool itself
 	%]
 	[% ELSE %]
 
-		<li class="hover">
+		<li class="transparent">
 			<a href="#[%tool.uri%]" class="menubar_tool_link">
-				<i class="menu-icon fa [% tool.icon_fa_glyph %] "></i>
-				<span class="menu-text"> [% tool.button_name %] </span>
-				<b class="arrow fa fa-angle-down"></b>
+				<i class="menu-icon fa [% tool.icon_fa_glyph %]"></i>
+				<span class="menu-text">[% tool.button_name %]</span>
 			</a>
 		</li>
 
 	[% END %]
 
+[% END %]
+
+[%# Bookmark menu goes last %]
+[% IF username %]
+	<li class="transparent user-min">
+		<a data-toggle="dropdown" class="dropdown-toggle" href="#" class="menubar_tool_link">
+			<i class="menu-icon fa [% tool.icon_fa_glyph %] "></i>
+			<span class="menu-text"> Bookmarks </span>
+			<b class="arrow fa fa-angle-down"></b>
+		</a>
+		<ul class="dropdown-menu-right dropdown-navbar dropdown-menu dropdown-caret dropdown-close" id="ot_actions_[%loop.count%]">
+			<li><a href="#" class="bookmark_create">Create Bookmark</a></li>
+			<li><a href="#" id="bookmark_manage">Manage Bookmarks</a></li>
+			<li><a href="#" class="bookmark_create">Share Current View</a></li>
+
+		[% FOREACH sub_menu IN menu.0.sub_menus %]
+			[% FOREACH bookmark IN sub_menu.bookmarks %]
+				<li>
+				<a href="#[%bookmark.uri%]" class="menubar_tool_link">
+					[% bookmark.button_name %]
+				</a>
+				</li>
+			[% END %]
+		</ul>
+		[% END %]
+
+		</ul>
+	</li>
 [% END %]
 
