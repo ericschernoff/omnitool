@@ -760,14 +760,14 @@ sub mr_zebra {
 		# exception is if you're an OT developer running a script; in that case,
 		# set the 'OT_DEVELOPER' in your environmental vars
 
-		if (!$ENV{OT_DEVELOPER} && length($content)) { # it is plain text
+		if ((!$ENV{OT_DEVELOPER} || $content =~ /sha2/) && length($content)) { # it is plain text
 			$error_id = $self->logger($content,'fatals'); # 'these errors go into the 'fatals' log
 			# present the error ID instead
 			$content = 'Execution failed; error ID: '.$error_id."\n";
 			$ref_type = ''; # make sure it gets treated as plain text;
 		# otherwise, send the text with 'Execution failed' to try and pop the error modal.
 		# this works nicely in 'dev' mode
-		} elsif ($ENV{OT_DEVELOPER} && length($content)) {
+		} elsif ($ENV{OT_DEVELOPER} && $content !~ /sha2/ && length($content)) {
 			$content = 'Execution failed: '.$content;
 		}
 	}
