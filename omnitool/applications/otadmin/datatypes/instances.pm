@@ -294,6 +294,7 @@ sub daily_routines {
 		'method' => 'daily_routines',
 		'data_code' => $$args{data_code},
 		'delay_hours' => 23.9,
+		'duplicates_are_ok' => 1,
 	);
 
 	# get a %$luggage for this instance

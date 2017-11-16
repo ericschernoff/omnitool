@@ -86,8 +86,9 @@ sub add_task {
 		$this_altcode = $self->data_code_to_altcode($args{data_code});
 	}
 
-	# we need to avoid duplicate tasks scheduled in the future for the same record
-	if ($args{data_code}) {
+	# in most cases, we need to avoid duplicate tasks scheduled in the future for the same record
+	# pass a 'duplicates_are_ok' argument to avoid this
+	if ($args{data_code} && !$args{duplicates_are_ok}) {
 		my ($tasks,$tkeys) = $self->retrieve_task_details(
 			'target_datatype' => $self->{dt},
 			'altcode' => $this_altcode,
@@ -299,8 +300,8 @@ sub retrieve_task_details {
 		$sql =~ s/ and / where /;
 	}
 
-	# apply the limit and sort by soonest-to-start first
-	$sql .= qq{order by not_before_time desc limit $args{limit}};
+	# apply the limit and sort in order of creation, newest first
+	$sql .= qq{order by code desc limit $args{limit}};
 
 	# run the SQL
 	($tasks, $tasks_keys) = $self->{db}->sql_hash(

@@ -1445,6 +1445,10 @@ log files.  Successful tasks' status messages will be logged to the 'task_execut
 There is an 'example_background_task' method in the OmniClass Package you can generate with the 'Get Package'
 button under 'Manage Datatypes.'
 
+Important: It is often/usually un-safe to have multiple background tasks run for the same record/method, 
+so the default is to clear out any in-future duplicates.  If you are using a record as a placeholder or
+you know your code is safe to run many times, then pass a 'duplicates_are_ok' argument.
+
 When you need to spawn background tasks, you call 'add_task' like so:
 
 	$new_task_id = $dt_obj->add_task(
@@ -1454,8 +1458,9 @@ When you need to spawn background tasks, you call 'add_task' like so:
 			# script may perform it a bit later than these number of hours due to a backlog, but it will not do so before
 			# these hours have past; for 10 minutes, use .17
 			# optional, and default is 0
-		'not_before_time' => optional; 	# unix epoch for the earliest time this task should run; overrides
-										# 'delay_hours' argument
+		'duplicates_are_ok' => $optional,	# if empty, will prevent future tasks for the same method/data_code combination	
+		'not_before_time' => $optional, 	# unix epoch for the earliest time this task should run; overrides
+											# 'delay_hours' argument
 		'args_hash' => \%args, # optional: a hash reference of arguments to pass to the method we are calling
 	);
 
