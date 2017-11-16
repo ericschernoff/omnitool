@@ -96,6 +96,7 @@ $three_minutes_from_now = time() + 180;
 while ($timestamp < $three_minutes_from_now) {
 	# run the next background task
 	$return_value = $omniclass_object->do_task();
+	# print "here: $return_value\n";
 	# if it succeeded, that return_value will be empty
 	if ($return_value eq 'None found') { # break out, there are no tasks available
 		last;
