@@ -175,9 +175,9 @@ sub new {
 			'simple_query_mode' => $args{simple_query_mode},
 		);
 	# or if they specified a search on load, call that with auto_load=1
-	# can't do both
+	# unless they wanted to short-circuit the auto-load
 	} elsif ($args{search_options}[0]) {
-		$args{auto_load} = 1;
+		$args{auto_load} = 1 if !$args{do_not_auto_load};
 		$self->search(%args); # easier to just pass everything in
 	}
 
@@ -488,7 +488,8 @@ method will have all the methods after new().
 						# much easier for writing scripts; do not use if you are sending data_codes
 		'search_options' => [%$search_options], # optional, if filled, will call $self->search() with these search
 						# criteria.  Sends all of %args, so you can pass all options described under 'search()'
-						# below; does add auto_load=1 to search()
+						# below; does add auto_load=1 to search() UNLESS you specify:
+		'do_not_auto_load' => 1, # optional, will prevent auto_load=1 if you pass search_options
 		# the following options are useful if 'data_codes' or 'search_options' is filled
 		'sort_column' => $column_or_key_name,
 		'sort_direction' => 'up', # up = ascending / down = descending
