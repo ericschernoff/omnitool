@@ -89,6 +89,25 @@ Expects all of $self for a Tool.pm class/sub-class.
 	</div>
 [% END %]
 
+[% IF attributes.tool_type.match('Search') %]
+	[% IF has_advanced_search %]
+		<div class="btn-group" id="advanced_search_features">
+			<button class="btn btn-white" onclick="tool_objects['[%tool_and_instance%]'].show_advanced_search()">
+			<i class="ace-icon fa fa-search-plus"></i>
+			<span id="advanced_search_text" class="hidden-xs">Adv. Search</span>
+			<span class="badge badge-info advanced_search_filters_badge" id="advanced_search_filters_badge"></span>
+			</button>
+
+			<button class="btn btn-white" onclick="tool_objects['[%tool_and_instance%]'].show_advanced_sort()">
+			<i class="ace-icon fa fa-sort"></i>
+			<span id="advanced_sort_text" class="hidden-xs">Sort</span>
+			<span class="badge badge-info advanced_sort_options_badge" id="advanced_sort_options_badge"></span>
+			</button>
+		</ul>
+		</div>
+	[% END %]
+[% END %]
+
 <!-- end first line-break preventer
 </span> -->
 [%# End quick actions and change views. %]
@@ -97,7 +116,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 <div class="btn-group" id="search-controls-toggle">
 	<button type="button" class="btn btn-white visible-xs" onclick="xs_show_search_controls();">Search Controls</button>
 </div>
-<span id="search-controls" class="hidden-xs">
+<span id="search-controls" class="hidden-xs pull-right">
 [%# show up to four search menus - chosen drop-down menus %]
 [% FOREACH search_menu IN quick_search_menus %]
 	<div class="btn-group" id="field_div_quick_menu_[%search_menu%]">
@@ -173,26 +192,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 	</div>
 [% END %]
 
-<span style="white-space: nowrap">
-[% IF attributes.tool_type.match('Search') %]
-	[% IF has_advanced_search %]
-		<div class="btn-group" id="advanced_search_features">
-			<button class="btn btn-white" onclick="tool_objects['[%tool_and_instance%]'].show_advanced_search()">
-			<i class="ace-icon fa fa-search-plus"></i>
-			<span id="advanced_search_text">Adv. Search</span>
-			<span class="badge badge-info advanced_search_filters_badge" id="advanced_search_filters_badge"></span>
-			</button>
 
-			<button class="btn btn-white" onclick="tool_objects['[%tool_and_instance%]'].show_advanced_sort()">
-			<i class="ace-icon fa fa-sort"></i>
-			<span id="advanced_sort_text">Sort</span>
-			<span class="badge badge-info advanced_sort_options_badge" id="advanced_sort_options_badge"></span>
-			</button>
-		</ul>
-		</div>
-	[% END %]
-</span>
-[% END %]
 
 [%# Support lock counter %]
 [% IF attributes.is_locking == 'Yes' %]
