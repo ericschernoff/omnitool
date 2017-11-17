@@ -559,7 +559,7 @@ function Tool (tool_attributes) {
 							}
 						});
 						$(".advanced_search_multiselect").each(function() {
-							if ($(this).val() == undefined) {
+							if ($(this).val()[0] == 'DO_CLEAR') {
 								$(this).val([]);
 							}
 						});
