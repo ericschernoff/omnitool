@@ -62,7 +62,7 @@ sub omniclass_object {
 	my ($parent, $dt, $possible_table_name, $omniclass_object, $app_instance, $just_the_data, $app_code_directory, $class_name, $class_path);
 
 	if (!$args{dt}) {
-		$self->{luggage}{belt}->mr_zebra(qq{Can't create an OmniClass without a datatype ID.},1);
+		$self->{luggage}{belt}->mr_zebra(qq{Can't create an OmniClass without a datatype ID. (DT: $dt)},1);
 	}
 
 	# sanity
@@ -83,7 +83,7 @@ sub omniclass_object {
 
 	# make 100% sure they passed a valid datatype ID
 	if (!$self->{luggage}{datatypes}{$dt}{table_name}) {
-		$self->{luggage}{belt}->mr_zebra(qq{Can't create an OmniClass without a valid datatype ID.},1);
+		$self->{luggage}{belt}->mr_zebra(qq{Can't create an OmniClass without a valid datatype ID. (DT: $dt)},1);
 	}
 
 	# does this datatype have a perl module specified?

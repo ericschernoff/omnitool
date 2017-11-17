@@ -105,6 +105,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 			</button>
 		</ul>
 		</div>
+		<div class="space-100"></div>
 	[% END %]
 [% END %]
 
@@ -116,7 +117,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 <div class="btn-group" id="search-controls-toggle">
 	<button type="button" class="btn btn-white visible-xs" onclick="xs_show_search_controls();">Search Controls</button>
 </div>
-<span id="search-controls" class="hidden-xs pull-right">
+<span id="search-controls" class="hidden-xs">
 [%# show up to four search menus - chosen drop-down menus %]
 [% FOREACH search_menu IN quick_search_menus %]
 	<div class="btn-group" id="field_div_quick_menu_[%search_menu%]">
@@ -184,11 +185,9 @@ Expects all of $self for a Tool.pm class/sub-class.
 		<input type="text" size="12" name='quick_keyword' id="quick_keyword_[%tool_and_instance%]" class="quick_keyword_fields" placeholder="Sticky Search" value="[%display_options.quick_keyword%]"/>
 		<i class="ace-icon fa fa-search quick_keyword_fields_icon"></i>
 	</span>
-	</div>
-	<div class="btn-group" id="clear_quick_search_button_[%tool_and_instance%]">
-		<button class="btn btn-white" onclick="tool_objects['[%tool_and_instance%]'].clear_quick_keyword()">
-			Clear
-		</button>
+	<span class="badge badge-info"onclick="tool_objects['[%tool_and_instance%]'].clear_quick_keyword()" id="clear_quick_search_button_[%tool_and_instance%]">
+		<i class="fa fa-close white"></i>
+	</span>
 	</div>
 [% END %]
 

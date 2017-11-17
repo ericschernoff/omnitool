@@ -94,7 +94,7 @@ sub new {
 
 	# make 100% sure they passed a valid datatype ID
 	if (!$args{luggage}{datatypes}{$args{dt}}{table_name}) {
-		$args{luggage}{belt}->mr_zebra(qq{Can't create an OmniClass without a valid datatype ID.},1);
+		$args{luggage}{belt}->mr_zebra(qq{Can't create an OmniClass without a valid datatype ID.  (DT: $args{dt})},1);
 	}
 
 	# good spot to make the piece of %$datatypes for this datatype easily available
