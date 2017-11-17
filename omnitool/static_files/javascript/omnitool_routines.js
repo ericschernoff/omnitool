@@ -684,6 +684,9 @@ function omnitool_controller (event,target_tool_uri) {
 						jemplate_bindings[ tool_objects[the_tool_id]['tool_display_div'] ].process_json_uri();
 						// also reload the tool_controls, in case the keyword changed
 						tool_objects[the_tool_id].reload_tool_controls();
+						if ($('#advanced_search_' + the_tool_id).is(':visible')) {
+							tool_objects[the_tool_id].show_advanced_search();
+						}
 					}
 
 				// and if it's not a screen with a single_record_jemplate_block, just reload all the displayed results for this tool
