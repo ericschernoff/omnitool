@@ -474,7 +474,7 @@ sub do_task {
 			},
 			[$$, $ENV{WORKER_ID}, $self->{dt}]
 		);
-		
+				
 		# see if that update matched any logic
 		#($task_id) = $self->{db}->quick_select('select @found_task_id');
 		($task_id) = $self->{db}->quick_select(qq{

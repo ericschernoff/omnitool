@@ -483,15 +483,22 @@ function Tool (tool_attributes) {
 		// advanced search/sort forms have a few special requirements
 		} else if (form_id.match('advanced')) {
 			// set any blank keywords to 'DO_CLEAR' so they get cleared
-			$(".advanced_search_keyword_texbox").each(function() {
+			$(".advanced_search_keyword_textbox").each(function() {
 				if ($(this).val() == '') {
 					$(this).val('DO_CLEAR');
+				}
+			});
+			// set any blank multi-selects to 'DO_CLEAR' so they get cleared
+			$(".advanced_search_multiselect").each(function() {
+				if ($(this).val() == undefined) {
+					$(this).val(['DO_CLEAR']);
 				}
 			});
 			// same for the quick keyword
 			if ($('#form-field-1').val() == '') {
 				$('#form-field-1').val('DO_CLEAR');
 			}
+
 		}
 
 		// have this expost for use in the nested function below
@@ -545,12 +552,18 @@ function Tool (tool_attributes) {
 							post_data_fetch_operations(json_data);
 						});
 						
-						// fix the keywords back to blank
-						$(".advanced_search_keyword_texbox").each(function() {
+						// fix the keywords and multi-selects back to blank
+						$(".advanced_search_keyword_textbox").each(function() {
 							if ($(this).val() == 'DO_CLEAR') {
 								$(this).val('');
 							}
 						});
+						$(".advanced_search_multiselect").each(function() {
+							if ($(this).val() == undefined) {
+								$(this).val([]);
+							}
+						});
+
 						// same for the quick keyword
 						if ($('#form-field-1').val() == 'DO_CLEAR') {
 							$('#form-field-1').val('');

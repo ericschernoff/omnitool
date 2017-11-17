@@ -1183,7 +1183,7 @@
 	[% IF form.fields.$f.keyword_preset == 'DO_CLEAR' %]
 		[% SET form.fields.$f.keyword_preset = '' %]
 	[% END %]
-	<input type="text" maxlength="30" id="form-field-[%f%]" placeholder="RegExp OK" name="[%form.fields.$f.keyword_key%]" value="[%form.fields.$f.keyword_preset%]" class="col-xs-4 input-sm advanced_search_keyword_texbox" />
+	<input type="text" maxlength="30" id="form-field-[%f%]" placeholder="RegExp OK" name="[%form.fields.$f.keyword_key%]" value="[%form.fields.$f.keyword_preset%]" class="col-xs-4 input-sm advanced_search_keyword_textbox" />
 [% END %]
 
 [%# boring multi select for advanced search %]
@@ -1193,7 +1193,7 @@
 		[% SET form.fields.$f.onchange = 'onchange="' _ form.fields.$f.onchange _ '"' %]
 	[% END %]
 
-	<select multiple="5" data-placeholder="[%form.fields.$f.placeholder%]" name="[%form.fields.$f.name%]" id="[%form.fields.$f.name%]" class="chosen-select col-xs-10 col-sm-5" [% form.fields.$f.onchange %]>
+	<select multiple="5" data-placeholder="[%form.fields.$f.placeholder%]" name="[%form.fields.$f.name%]" id="[%form.fields.$f.name%]" class="chosen-select col-xs-10 col-sm-5 advanced_search_multiselect" [% form.fields.$f.onchange %]>
 		[% FOREACH opt IN form.fields.$f.options_keys %]
 			[% IF form.fields.$f.presets.$opt == 1 %]
 				[% SET selected = 'selected' %]
