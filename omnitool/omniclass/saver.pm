@@ -532,7 +532,7 @@ sub simple_save {
 	# now that we cleared $args{data_code}, make sure there are some items left in %args
 	@sent_keys = keys %args;
 	if (!$sent_keys[0]) {
-		$self->work_history(0,"ERROR: Can not use simple_save() some params to send to save().");
+		$self->work_history(0,"ERROR: Can not use simple_save() without some params to send to save().");
 		return;
 	}
 

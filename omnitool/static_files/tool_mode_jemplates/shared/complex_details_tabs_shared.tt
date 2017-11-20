@@ -173,9 +173,11 @@
 							</div>
 
 						[% ELSIF tabs.$tab_key.type == 'table' && !tabs.$tab_key.data.1 %]
-							<div class="col-xs-10 col-xs-offset-1 red">
-								No [%tab_info.$tab_key.1%] records found at this time.
-							</div>
+							[% IF !tabs.$tab_key.skip_message %]
+								<div class="col-xs-10 col-xs-offset-1 red">
+									No [%tab_info.$tab_key.1%] records found at this time.
+								</div>
+							[% END %]
 
 						[% ELSIF tabs.$tab_key.type == 'table' %]
 
