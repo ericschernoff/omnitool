@@ -105,13 +105,13 @@ Expects all of $self for a Tool.pm class/sub-class.
 			</button>
 		</ul>
 		</div>
-		<div class="space-100"></div>
 	[% END %]
 [% END %]
 
 <!-- end first line-break preventer
 </span> -->
-[%# End quick actions and change views. %]
+
+<span style="white-space: nowrap">
 
 [%# search-related buttons %]
 <div class="btn-group" id="search-controls-toggle">
@@ -154,6 +154,21 @@ Expects all of $self for a Tool.pm class/sub-class.
 	</div>
 [% END %]
 
+<!-- Quick search box -->
+[% IF has_search_box %]
+	<div class="btn-group" id="quick_keyword_controls">
+	<span class="input-icon">
+		<input type="text" size="12" name='quick_keyword' id="quick_keyword_[%tool_and_instance%]" class="quick_keyword_fields" placeholder="Sticky Search" value="[%display_options.quick_keyword%]"/>
+		<i class="ace-icon fa fa-search quick_keyword_fields_icon"></i>
+	</span>
+	<span class="badge badge-info"onclick="tool_objects['[%tool_and_instance%]'].clear_quick_keyword()" id="clear_quick_search_button_[%tool_and_instance%]">
+		<i class="fa fa-close white"></i>
+	</span>
+	</div>
+[% END %]
+
+</span>
+
 <!-- support the 'return' links in action tools -->
 [% IF attributes.link_type != 'Menubar' %]
 <div class="btn-group">
@@ -177,21 +192,6 @@ Expects all of $self for a Tool.pm class/sub-class.
 	<i class="fa fa-fast_forward blue"></i>
 </button>
 </div>
-
-<!-- Quick search box -->
-[% IF has_search_box %]
-	<div class="btn-group" id="quick_keyword_controls">
-	<span class="input-icon">
-		<input type="text" size="12" name='quick_keyword' id="quick_keyword_[%tool_and_instance%]" class="quick_keyword_fields" placeholder="Sticky Search" value="[%display_options.quick_keyword%]"/>
-		<i class="ace-icon fa fa-search quick_keyword_fields_icon"></i>
-	</span>
-	<span class="badge badge-info"onclick="tool_objects['[%tool_and_instance%]'].clear_quick_keyword()" id="clear_quick_search_button_[%tool_and_instance%]">
-		<i class="fa fa-close white"></i>
-	</span>
-	</div>
-[% END %]
-
-
 
 [%# Support lock counter %]
 [% IF attributes.is_locking == 'Yes' %]
