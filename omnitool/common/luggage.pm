@@ -63,9 +63,9 @@ sub pack_luggage {
 	$$luggage{belt}->{request} = $args{request} if $args{request};
 	$$luggage{belt}->{response} = $args{response} if $args{response};
 
-	# let the db object use our utility_belt for error logger
+	# let that db object use our utility_belt for error logger
 	$$luggage{db}->{belt} = $$luggage{belt};
-
+	
 	# step three: stash the host name & uri...can be passed as arguments or retrieved from the Plack environment
 	# the arguments values take precendence for your convenience
 	# this makes it easier to create sessions in scripts too...just don't change your hostnames
@@ -306,8 +306,13 @@ sub pack_luggage {
 	# instances' datbaase server configured as it's default server, but it may not be, so check:
 	if ($$luggage{db}->{server_id} ne $$luggage{database_server}) {
 		$$luggage{db} = omnitool::common::db->new($$luggage{database_hostname});
+		
 		# and make sure it's on the right database
 		$$luggage{db}->change_database($$luggage{omnitool_admin_database});
+
+		# again, let that db object use our utility_belt for error logger
+		$$luggage{db}->{belt} = $$luggage{belt};
+
 	}
 	# because of this, every OT database server must also have the omnitool_* and otstatedata DB's
 

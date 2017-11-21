@@ -60,8 +60,6 @@ sub post_validate_form {
 	$book_finder = omnitool::applications::sample_apps::common::book_finder->new();
 	$results = $book_finder->lookup_book_by_isbn_number($self->{luggage}{params}{isbn_number});
 
-	$self->{belt}->logger($results,'eric');
-
 	# was there an error?
 	if ($$results{error} || !$$results{title} ) {
 		$$form{fields}{1}{field_error} = 1;
