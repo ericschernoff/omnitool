@@ -100,7 +100,7 @@ sub search {
 
 	# finally, run the search
 	$self->{omniclass_object}->search(
-		# 'log_search' => 1,
+		'log_search' => $self->{log_search}, # set this in your tool's init() to log the search
 		'search_options' => $self->{searches},
 		'auto_load' => 1,
 		'sort_column' => $self->{display_options}{sort_column},
