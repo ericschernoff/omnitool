@@ -195,7 +195,7 @@ function jemplate_binding (element_id, jemplate_uri, jemplate_name, json_data_ur
 			}
 
 			$.when( query_tool(this.json_data_uri,{}) ).done(function(data) {
-				if (my_element_id != '#breadcrumbs') {
+				if (my_element_id != '#breadcrumbs' && my_element_id != '#ot_navbar_notifications') {
 					loading_modal_display('Processing Data...');
 				}
 
@@ -209,7 +209,7 @@ function jemplate_binding (element_id, jemplate_uri, jemplate_name, json_data_ur
 				if (data.one_record_mode == undefined) { // but not in one-data mode, as that's just very minimal JSON
 					post_data_fetch_operations(data);
 				}
-				if (my_element_id != '#breadcrumbs') {
+				if (my_element_id != '#breadcrumbs' && my_element_id != '#navbar_notification_area') {
 					loading_modal_display('hide');
 				} else {
 					if (upper_right_search_autocomplete != 0) {
@@ -648,7 +648,6 @@ function omnitool_controller (event,target_tool_uri) {
 			}
 		}
 
-
 		// if they are moving to a new phase/method of the active tool, update that tool's jemplate binding
 		if (this_active_tool != 'Not Found') {
 			// if keep-warm = Never, we need to always start fresh
@@ -729,9 +728,11 @@ function omnitool_controller (event,target_tool_uri) {
 			}
 		}
 
-		// close the loading modal now that we are done
-		loading_modal_display('hide');
-
+		// close the loading modal now that we are done - commented out, as we need to
+		// let jemplate_bindings['xx'].process_json_uri() handle this part, since it is
+		// probably still running
+		//loading_modal_display('hide');
+		
 		// also update the notification area in the navbar
 		jemplate_bindings['ot_navbar_notifications'].process_json_uri();
 
