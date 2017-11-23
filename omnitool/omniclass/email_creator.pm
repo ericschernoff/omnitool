@@ -100,7 +100,7 @@ sub add_outbound_email {
 
 		}
 	}
-	
+
 	# if this is development, redirect all emails to the the actual user
 	if ($ENV{OT_DEVELOPER}) {
 		$args{to_addresses} = $self->{luggage}{username};
@@ -167,9 +167,6 @@ sub add_outbound_email {
 			$message_body,  $args{attached_files}
 		]
 	);
-
-	# log success in the status hash
-	$self->work_history(1,"add_outbound_email() succeeded.",qq{Email subject '$args{subject}' going to $args{to_addresses}.});
 
 	# return the new email's ID
 	return  $self->{db}->{last_insert_id}.'_'.$self->{server_id};
@@ -357,7 +354,7 @@ sub send_outbound_email {
 					$self->{file_manager} = omnitool::common::file_manager->new(
 						'luggage' => $self->{luggage},
 						'db' => $self->{db},
-					);				
+					);
 				}
 
 				# load file and its info; would prefer to do this just once above,

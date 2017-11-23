@@ -27,17 +27,12 @@ sub change_parent {
 	# and the datatype ID of the new parent
 	# quit if those are not valid
 	if ($args{data_code} !~ /\d\_\d/ || $args{new_parent_id} !~ /\d\_\d/ || $args{new_parent_type} !~ /\d\_\d/) {
-		# how about a useful message?
-		$self->work_history(0,qq{Could not assign new parent.},
-			qq{Re-assignment requires a valid target 'data_code,' a valid 'new_parent_id' and a valid 'new_parent_type'.}
-		);
 		return;
 	}
 
 	# check to see if this data is locked
 	($lock_user,$lock_remaining_minutes) = $self->check_data_lock($args{data_code});
 	if ($lock_user) { # locked, can't proceed
-		$self->work_history(0,"ERROR: Can not move data.","Can not move $args{data_code}, as it is locked by $lock_user for another $lock_remaining_minutes minutes.",$args{data_code});
 		return;
 	}
 
@@ -55,10 +50,6 @@ sub change_parent {
 
 	# good chance to die, if that name is blank, they either didn't send 'top' or sent an invalid parent id/type combo
 	if (!$new_parent_name) {
-		# how about a useful message?
-		$self->work_history(0,qq{Could not assign new parent.},
-			qq{A valid new parent record was not identified (need 'new_parent' and 'new_parent_tye').}
-		);
 		return;
 	}
 
@@ -74,9 +65,6 @@ sub change_parent {
 
 	# target doesn't exist? fail again
 	if (!$target_name) {
-		$self->work_history(0,qq{Could not find record to move.},
-			qq{No record found for 'data_code:' }.$args{data_code}
-		);
 		return;
 	}
 
@@ -155,11 +143,6 @@ sub change_parent {
 		$self->update_history($update_detail,$args{data_code});
 	}
 
-	# useful status message
-	$self->work_history(1,qq{"$target_name" parent changed.},
-		qq{Record moved to "$new_parent_name".},$args{data_code}
-	);
-
 	# okay, that's enough about this
 }
 
@@ -192,11 +175,11 @@ sub children_update {
 		# make sure we only touch the regular metainfo table once
 		$did_plain_metainfo = 1 if $metainfo_table eq 'metainfo';
 
-		# make sure this metainfo table exists; may not be there if the 
+		# make sure this metainfo table exists; may not be there if the
 		# otadmin DB was just deployed and any new item's omniclass is not
 		# yet instantiated for the first time to call out database_is_ready()
 		($table_is_there) = $self->{db}->quick_select(qq{
-			select count(*) from information_schema.tables 
+			select count(*) from information_schema.tables
 			where table_name=? and table_schema=?
 		}, [$metainfo_table, $self->{database_name}]);
 

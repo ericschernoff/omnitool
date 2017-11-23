@@ -95,7 +95,7 @@ sub load {
 
 	# build a nice sql query for grabbing the records from our main table
 	# pull our main data
-	
+
 	# if they want to limit the number of records to load, so so in the SQL
 	if ($args{load_records_limit}) {
 		$search_logic .= ' order by code desc limit '.$args{load_records_limit};
@@ -235,13 +235,6 @@ sub load {
 		$self->post_load($args_ref);
 	}
 
-	# say it happened
-	$count = @{$r_keys};
-	$self->work_history(1,qq{$count Records Loaded.},
-		"For Datatype: ".$self->{datatype_info}{name}.
-		"\nUser: ".$self->{luggage}{username}
-	);
-
 	# all done!
 }
 
@@ -348,12 +341,6 @@ sub clear_records {
 	$self->{data} = {};
 	$self->{data_code} = '';
 
-	# say it happened
-	$self->work_history(1,qq{$count Loaded Records Cleared.},
-		"For Datatype: ".$self->{datatype_info}{name}.
-		"\nUser: ".$self->{luggage}{username}
-	);
-
 	# all done
 
 }
@@ -374,9 +361,6 @@ sub create_resolver_hash {
 
 	# if no data_codes sent and nothing in $self->{search_results}, then fail
 	if (!$args{data_codes}[0] && !$self->{search_results}[0] && !$self->{records_keys}[0]) {
-		$self->work_history(0,qq{Could not set up resolution hash.},
-			qq{You must specify either a list of data_codes or have some records loaded or fill the \$self->{search_results} arrayref.}
-		);
 		return;
 	}
 

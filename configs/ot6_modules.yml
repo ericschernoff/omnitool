@@ -721,7 +721,6 @@ classes:
       - pack_extra_luggage
       - pack_luggage
       - update_history
-      - work_history
     name: omnitool::omniclass
     properties: []
 

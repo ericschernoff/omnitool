@@ -108,9 +108,6 @@ sub add_task {
 			$args{method}, $args{data_code}, $this_altcode, $serialized_hash ]
 	);
 
-	# log success in the status hash
-	$self->work_history(1,"add_task() succeeded.","New task created for ".$args{method});
-
 	# return the new task ID
 	return  $self->{db}->{last_insert_id}.'_'.$self->{server_id};
 }
@@ -134,9 +131,6 @@ sub cancel_task {
 		qq{ set status='Cancelled' where concat(code,'_',server_id)=?},
 		[$cancel_task_id]
 	);
-
-	# log success in the status hash
-	$self->work_history(1,"Task marked Cancelled.","Task ID $cancel_task_id");
 
 	# success!
 	return 1;
@@ -367,9 +361,6 @@ sub task_status {
 				[$ENV{WORKER_ID}, $$, $task_id]
 			);
 		}
-
-		# log success in the status hash
-		$self->work_history(1,"Task marked $new_status.","Task ID: $task_id; Former Status: $current_task_status");
 
 		# success!
 		return 1;

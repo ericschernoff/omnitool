@@ -40,10 +40,6 @@ sub search {
 
 	# fail if no search params sent
 	if (!$args{search_options}[0]) {
-		# how about a useful message?
-		$self->work_history(0,qq{Could not search.},
-			qq{No search criteria/options sent.  Please define at least one search option.}
-		);
 		return;
 	}
 
@@ -59,11 +55,7 @@ sub search {
 
 		# we might choose to cancel the search in the pre_search hook; if you want to do that, fill '$$args{cancel_search}'
 		if ($args{cancel_search}) {
-			# how about a useful message?
-			$self->work_history(0,qq{Search was canceled.},
-				qq{Canceled within 'pre_search' hook.}
-			);
-			return;		
+			return;
 		}
 
 	}
@@ -128,7 +120,7 @@ sub search {
 		} else { # my table, will be the primary key
 			$$so{relationship_column} = qq{concat(code,'_',server_id)};
 		}
-		
+
 		# get the relationship right
 		if (!$$so{primary_table_column} && $$so{relationship_column} eq 'data_code') {
 			$$so{primary_table_column} = qq{concat(code,'_',server_id)};
@@ -136,7 +128,7 @@ sub search {
 
 		# no match column? default to 'name'
 		$$so{match_column} ||= 'name';
-		
+
 		# if they set match_column to 'data_code', translate that to what it means
 		$$so{match_column} = qq{concat(code,'_',server_id)} if $$so{match_column} eq 'data_code';
 
@@ -220,10 +212,6 @@ sub search {
 
 	# fail if no searches were done because no 'match_value' bits were set
 	if ($search_count == 0) {
-		# how about a useful message?
-		$self->work_history(0,qq{Could not search.},
-			qq{None of the search criteria/options had values for 'match_value'.}
-		);
 		# reset any previous search results
 		$self->{search_results} = [];
 		$self->{search_found_count} = 0;
@@ -278,7 +266,7 @@ sub search {
 			);
 		}
 
-		# if we are using a second/foreign table then the 'primary_table_column' tells us how to relate 
+		# if we are using a second/foreign table then the 'primary_table_column' tells us how to relate
 		# the results we just found to our datatype's table.
 		if ($table_key ne $primary_table && $$sql_query_plans{$table_key}{primary_table_column}) {
 			# fail the query if nothing was matched
@@ -346,7 +334,7 @@ sub search {
 			$self->{search_results}
 		);
 
-		# if they limited the results below what was actually found, then 
+		# if they limited the results below what was actually found, then
 		# be sure to adjust search_found_count
 		$self->{search_found_count} = scalar @{$self->{search_results}};
 
@@ -401,11 +389,6 @@ sub search {
 		);
 	}
 
-	# note that we were successful
-	$self->work_history(1,qq{Successfully executed search.},
-		"$search_count search criteria matched.\n".$self->{search_found_count}." records matched."
-	);
-
 	# all done
 }
 
@@ -458,19 +441,19 @@ sub find_duplicates {
 # need anything fancier
 sub simple_search {
 	my $self = shift;
-	
+
 	my (%args) = @_;
-	
+
 	# fail of they did not send a hash
 	if (ref(\%args) ne 'HASH') {
 		$self->{search_found_count} = 0;
 		$self->{search_results} = [];
 		return;
 	}
-	
+
 	# otherwise, continue
 	my ($search_options, $match_column);
-	
+
 	# build out our 'search_options' arrays
 	foreach $match_column (keys %args) {
 		next if $match_column eq 'auto_load' || !$args{$match_column};
@@ -478,25 +461,25 @@ sub simple_search {
 			$match_column => $args{$match_column}
 		});
 	}
-	
+
 	# fail if they did not send at least one good search
 	if (!$$search_options[0]) {
 		$self->{search_found_count} = 0;
 		$self->{search_results} = [];
-		return;	
+		return;
 	}
-	
+
 	# if they want to auto-load, then clear the previously-loaded records
 	if ($args{auto_load}) {
 		$self->clear_records();
 	}
-	
+
 	# now run the search
 	$self->search(
 		'search_options' => $search_options,
 		'auto_load' => $args{auto_load}
 	);
-	
+
 	# phew! what a long bit of code to write.  time for a break.
 
 }

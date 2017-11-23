@@ -51,14 +51,10 @@ sub save {
 	if ($we_shall eq 'update') {
 		($lock_user,$lock_remaining_minutes) = $self->check_data_lock($args{data_code});
 		if ($lock_user) { # locked, can't proceed
-			$self->work_history(0,"ERROR: Can not update data.","Can not update $args{data_code}, as it is locked by $lock_user for another $lock_remaining_minutes minutes.",$args{data_code});
 			return;
 		}
 	# if creating, make sure we have a valid parent set
 	} elsif ($we_shall eq 'create' && $args{parent} !~ /top|\d\_\d\:\d/) {
-		$self->work_history(0,qq{Could not $we_shall record.},
-			qq{You must specify a new parent via the 'new_parent_id'/'new_parent_type' combo args or 'parent' arg (DT_ID:DC_ID).}
-		);
 		return;
 	}
 
@@ -71,9 +67,6 @@ sub save {
 		# we might choose to cancel the create/update in the pre_save hook; if you want to do that, fill '$$args{cancel_save}'
 		if ($args{cancel_save}) {
 			# how about a useful message?
-			$self->work_history(0,ucfirst($we_shall).' action was canceled.',
-				qq{Canceled within 'pre_save' hook.}
-			);
 			return;
 		}
 	}
@@ -139,11 +132,6 @@ sub save {
 	if ($self->{luggage}{stash_params} && $restore_params) {
 		$self->{luggage}{params} = $self->{luggage}{stash_params};
 	}
-
-	# in the words of my sweet Lorelei, "Did it!"
-	$self->work_history(1,ucfirst($we_shall).'d '.$args{new_name},
-		"Record's primary key is ".$data_code, $data_code
-	);
 
 	# let's log out all changes
 	$log_message = $self->{luggage}{username}.' '.$we_shall.'d '.$data_code;
@@ -524,14 +512,12 @@ sub simple_save {
 
 	# if there is no data_code, we cannot proceed
 	if (!$data_code) {
-		$self->work_history(0,"ERROR: Can not use simple_save() without a data_code either passed in the args or a pre-loaded record.");
 		return;
 	}
 
 	# now that we cleared $args{data_code}, make sure there are some items left in %args
 	@sent_keys = keys %args;
 	if (!$sent_keys[0]) {
-		$self->work_history(0,"ERROR: Can not use simple_save() some params to send to save().");
 		return;
 	}
 
@@ -541,9 +527,6 @@ sub simple_save {
 		'skip_blanks' => 1,
 		'params' => \%args,
 	);
-
-	# update our meaningless log
-	$self->work_history(1,"Successfully called simple_save() to update $data_code via save().");
 
 }
 

@@ -25,17 +25,12 @@ sub delete {
 
 	# needs one arg: the data_code being deleted; die if that is not valid
 	if ($args{data_code} !~ /\d\_\d/) {
-		# how about a useful message?
-		$self->work_history(0,qq{Could not delete record.},
-			qq{Deletion requires a valid target 'data_code'.}
-		);
 		return;
 	}
 
 	# check to see if this data is locked
 	($lock_user,$lock_remaining_minutes) = $self->check_data_lock($args{data_code});
 	if ($lock_user) { # locked, can't proceed
-		$self->work_history(0,"ERROR: Can not delete data.","Can not delete $args{data_code}, as it is locked by $lock_user for another $lock_remaining_minutes minutes.",$args{data_code});
 		return;
 	}
 
@@ -51,9 +46,6 @@ sub delete {
 
 	# target doesn't exist? fail again
 	if (!$target_name) {
-		$self->work_history(0,qq{Could not find record to delete.},
-			qq{No record found for 'data_code:' }.$args{data_code}
-		);
 		return;
 	}
 
@@ -66,10 +58,6 @@ sub delete {
 
 		# we might choose to cancel the delete in the pre_delete hook; if you want to do that, fill '$$args{cancel_delete}'
 		if ($args{cancel_delete}) {
-			# how about a useful message?
-			$self->work_history(0,'Deletion was canceled.',
-				qq{Canceled within 'pre_delete' hook.}
-			);
 			return;
 		}
 	}
@@ -162,9 +150,6 @@ sub delete {
 		splice(@{$self->{records_keys}}, $index, 1);
 	}
 
-	# finally, update the status log & permanent log
-	$self->work_history(1,$delete_detail,'',$args{data_code});
-
 	# let's log out all changes / deletes
 	$log_message = $self->{luggage}{username}.' deleted '.$target_name;
 	$log_file = 'deletes_'.$self->{database_name}.'_'.$self->{table_name};
@@ -185,10 +170,6 @@ sub restore {
 
 	# needs one arg: the data_code being restored; die if that is not valid
 	if ($args{data_code} !~ /\d\_\d/) {
-		# how about a useful message?
-		$self->work_history(0,qq{Could not restore record.},
-			qq{Restore requires a valid target 'data_code'.}
-		);
 		return;
 	}
 
@@ -203,10 +184,6 @@ sub restore {
 
 	# need at least the record's data, as metainfo could be skipped
 	if (!$stored_record) {
-		# how about a useful message?
-		$self->work_history(0,qq{Could not restore record.},
-			qq{Former data not found in 'deleted_data' table.}
-		);
 		return;
 	}
 
@@ -297,9 +274,6 @@ sub restore {
 		$restore_detail = qq{$$the_record{name} was restored under $$the_record{parent}}."\n".$detail;
 		$self->update_history($restore_detail,$args{data_code});
 	}
-
-	# finally, update the status log
-	$self->work_history(1,qq{Restored '$$the_record{name}' record.},$detail,$args{data_code});
 
 	# all done
 }

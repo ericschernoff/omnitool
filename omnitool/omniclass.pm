@@ -139,14 +139,6 @@ sub new {
 		$self->database_is_ready();
 	}
 
-	# initiate our work history / status log
-	$self->work_history(1,$self->{datatype_info}{name}.qq{ OmniClass object initiated.},
-		"Server ID: ".$self->{server_id}.
-		"\nDB Host: ".$self->{db}->{hostname}.
-		"\nDB Name / Table: ".$self->{database_name}.' / '.$self->{table_name}.
-		"\nUser: ".$args{luggage}{username}
-	);
-
 	# if this datatype accepts file uploads, instantiate the file_manager object
 	if ($self->{datatype_info}{has_file_upload}) {
 		$self->{file_manager} = omnitool::common::file_manager->new(
@@ -219,16 +211,6 @@ sub change_options {
 		}
 
 	}
-
-	# log these changes
-	$self->work_history(1,qq{OmniClass object options updated.},
-		"New Options: ".$status_message.
-		"\n-----".
-		"\nServer ID: ".$self->{server_id}.
-		"\nDB Host / DB Name / Table: ".$self->{db}->{hostname}.' / '.$self->{database_name}.' / '.$self->{table_name}.
-		"\nUser: ".$self->{luggage}{username}
-	);
-
 
 	# all done
 }
@@ -318,21 +300,6 @@ sub database_is_ready {
 
 }
 
-
-# little sub for saving our status messages
-sub work_history {
-	my $self = shift;
-	my ($success,$message,$detail,$data_code) = @_;
-	# initiate our status/history log
-	push(@{$self->{status}},{
-		'success' => $success,
-		'message' => $message,
-		'detail' => $detail,
-		'data_code' => $data_code,
-	});
-
-}
-
 # another little method/sub to save entries to the update_history table; used when the datatype
 # has 'extended_change_history' set to 'Yes'
 # just pass the detail text as the argument
@@ -411,9 +378,6 @@ sub AUTOLOAD {
 	my $called =  $AUTOLOAD =~ s/.*:://r;
 	# prepare a nice message
 	my $message = "ERROR: No '$called' method defined for ".$self->{datatype_info}{name}.' objects.';
-
-	# log this mixup
-	$self->work_history(0,$message,'No Details');
 
 	# return that message
 	return $message;
@@ -1331,7 +1295,7 @@ Usage:
 
 	($options, $options_keys) = $dt_object->prep_menu_options('field_name',1);
 	# Uses 'field_name' for the values in %$options
-	# and adds a 'None' option on the front...so if you want 'none', you have to 
+	# and adds a 'None' option on the front...so if you want 'none', you have to
 	# specify a field name.
 
 =head2 find_duplicates()

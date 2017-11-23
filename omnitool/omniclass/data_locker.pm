@@ -33,7 +33,6 @@ sub lock_data {
 
 	# return if they failed to send a record arg
 	if (!$args{data_code}) { # log error for possible use
-		$self->work_history(0,"ERROR: Cannot set lock without 'data_code' argument.");
 		return 0;
 	}
 
@@ -44,7 +43,6 @@ sub lock_data {
 	if ($args{data_code} =~ /[a-z]/i) {
 		($data_code) = $self->altcode_to_data_code($args{data_code});
 		if (!$data_code) {
-			$self->work_history(0,"ERROR: lock_data() failed.","Can not set lock for $args{data_code}, as it is not found in ".$self->{luggage}{database_name},$data_code);
 			return 0;
 		}
 	}
@@ -54,7 +52,6 @@ sub lock_data {
 		($lock_user,$lock_remaining_minutes) = $self->check_data_lock($data_code);
 		# both of those will be empty if the $lock_user is $self->{luggage}{username}
 		if ($lock_user) {
-			$self->work_history(0,"ERROR: lock_data() failed.","Can not set lock for $args{data_code}, as it is locked by $lock_user for another $lock_remaining_minutes minutes.",$data_code);
 			return 0;
 		}
 	}
@@ -76,9 +73,6 @@ sub lock_data {
 		[$self->{luggage}{username}, $args{lifetime}, $self->{dt}, $data_code]
 	);
 
-	# log success in the status hash
-	$self->work_history(1,"lock_data() succeeded.","Set lock for $data_code for $self->{luggage}{username} for $args{lifetime} minutes.",$data_code);
-
 	# success!
 	return 1;
 }
@@ -94,8 +88,7 @@ sub unlock_data {
 	my ($data_code, $lock_user, $lock_remaining_minutes);
 
 	# return if they failed to send a record arg
-	if (!$args{data_code}) { # log error for possible use
-		$self->work_history(0,"ERROR: unlock_data() failed.","Can not use unlock_data() without 'data_code' argument.");
+	if (!$args{data_code}) {
 		return 0;
 	}
 
@@ -107,7 +100,6 @@ sub unlock_data {
 	if ($args{data_code} =~ /[a-z]/i) {
 		($data_code) = $self->altcode_to_data_code($args{data_code});
 		if (!$data_code) {
-			$self->work_history(0,"ERROR: unlock_data() failed.","Can not remove lock for $args{data_code}, as it is not found in ".$self->{luggage}{database_name},$data_code);
 			return 0;
 		}
 	}
@@ -117,7 +109,6 @@ sub unlock_data {
 		($lock_user,$lock_remaining_minutes) = $self->check_data_lock($data_code);
 		# both of those will be empty if the $lock_user is $self->{luggage}{username}
 		if ($lock_user) {
-			$self->work_history(0,"ERROR: unlock_data() failed.","Cannot remove lock for $args{data_code}, as it is for $lock_user, expiring in $lock_remaining_minutes minutes.",$data_code);
 			return 0;
 		}
 	}
@@ -128,9 +119,6 @@ sub unlock_data {
 		" set lock_user='None', lock_expire=0 where the_type=? and data_code=?",
 		[$self->{dt}, $data_code]
 	);
-
-	# log success in the status hash
-	$self->work_history(1,"unlock_data() succeeded.","Removed lock for $data_code.",$data_code);
 
 	# success!
 	return 1;
@@ -151,7 +139,6 @@ sub check_data_lock {
 
 	# return if they failed to send a record arg
 	if (!$data_code) { # log error for possible use
-		$self->work_history(0,"ERROR: check_data_lock() failed.","Can not use check_data_lock() without 'data_code' argument.");
 		return 0;
 	}
 
@@ -160,7 +147,6 @@ sub check_data_lock {
 	if ($data_code =~ /[a-z]/i) {
 		($data_code) = $self->altcode_to_data_code($data_code);
 		if (!$data_code) {
-			$self->work_history(0,"ERROR: check_data_lock failed.","Can not check lock for $data_code, as it is not found in ".$self->{luggage}{database_name},$data_code);
 			return 0;
 		}
 	}

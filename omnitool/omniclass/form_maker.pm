@@ -228,10 +228,6 @@ sub form {
 	}
 
 
-	# last step is to update the status log
-	$data_code_info = ' / Record = '.$data_code if $data_code;
-	$self->work_history(1,qq{Generated a form hashref.  Action = '$args{action}'}.$data_code_info);
-
 	# return our form and we are done
 	return $form;
 
@@ -370,7 +366,7 @@ sub setup_field {
 		} else { # default value for datatype field
 			$$form{fields}{$key}{preset} = $self->{datatype_info}{fields}{$field}{default_value};
 		}
-		
+
 		# if it's a date field with no preset, use today
 		if ($$form{fields}{$key}{field_type} eq 'simple_date' && !$$form{fields}{$key}{preset}) {
 			$$form{fields}{$key}{preset} = $self->{belt}->todays_date();
