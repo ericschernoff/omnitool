@@ -192,6 +192,7 @@ sub do_create {
 		\@values
 	);
 
+
 	# determine the new 'data_code' primary key
 	$data_code = $self->{db}->{last_insert_id}.'_'.$self->{server_id};
 

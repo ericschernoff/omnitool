@@ -48,7 +48,7 @@ my $app = sub {
 		$belt->{request} = $request; # need these for mr_zebra to work
 		$belt->{response} = $response;
 		# send to client
-		if ($ENV{OT_DEVELOPER}) { # show them the error
+		if ($ENV{OT_DEVELOPER} && $@ !~ /sha2/) { # show them the error - so long as it's not a password query
 			$belt->mr_zebra('Execution failed; '.$@."\n");
 		} else { # hide from the regular users
 			$belt->mr_zebra('Execution failed; error ID: '.$error_id."\n");

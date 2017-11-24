@@ -86,19 +86,21 @@ sub add_task {
 		$this_altcode = $self->data_code_to_altcode($args{data_code});
 	}
 
-	# we need to avoid duplicate tasks scheduled in the future for the same record
-	if ($args{data_code}) {
+	# in most cases, we need to avoid duplicate tasks scheduled in the future for the same record
+	# pass a 'duplicates_are_ok' argument to avoid this
+	if ($args{data_code} && !$args{duplicates_are_ok}) {
 		my ($tasks,$tkeys) = $self->retrieve_task_details(
 			'target_datatype' => $self->{dt},
 			'altcode' => $this_altcode,
 			'method' => $args{method},
-			'run_status' => 'will_run',
+			'run_status' => 'will_be_run',
 		);
 		foreach my $task (@$tkeys) {
 			$self->cancel_task($task);
 		}
 	}
 
+		
 	# now add it in to our background_tasks table
 	$self->{db}->do_sql(
 		'insert into '.$self->{database_name}.'.background_tasks'.
@@ -217,8 +219,9 @@ sub retrieve_task_details {
 	#	'limit' => $number_of_records_to_return, # default = 20
 	#	'altcode' => $record_altcode, # optional: use to limit to tasks for one record
 	#	'method' => $method_name, # optional: use to limit to tasks by name of method to run
-	#	'run_status' => 'will_run', 'has_run', 'running', or 'error'
-	# 						# leave blank for all; 'will_run' indicates running or future tasks
+	#	'run_status' => 'will_run', 'will_be_run', 'has_run', 'running', or 'error'
+	# 						# leave blank for all; 'will_run' indicates running or future tasks, 
+	#						# 'will_be_run' for only future tasks
 	#						# 'has_run' indicates Completed/Cancelled/Error tasks
 	#	'update_time_age' => $number_of_seconds, # optional, use to find tasks that have been (attempted to)
 	#											 # run within a certain number if seconds, i.e. 86400 for the past
@@ -258,6 +261,8 @@ sub retrieve_task_details {
 	# filter by run-status?
 	if ($args{run_status} eq 'will_run') {
 		$sql .= qq{ and status in ('Pending','Retry','Running') };
+	} elsif ($args{run_status} eq 'will_be_run') {
+		$sql .= qq{ and status in ('Pending','Retry') };
 	} elsif ($args{run_status} eq 'has_run') {
 		$sql .= qq{ and status in ('Completed','Error','Cancelled','Warn') };
 	} elsif ($args{run_status} eq 'running') {
@@ -289,8 +294,8 @@ sub retrieve_task_details {
 		$sql =~ s/ and / where /;
 	}
 
-	# apply the limit and sort by soonest-to-start first
-	$sql .= qq{order by not_before_time desc limit $args{limit}};
+	# apply the limit and sort in order of creation, newest first
+	$sql .= qq{order by code desc limit $args{limit}};
 
 	# run the SQL
 	($tasks, $tasks_keys) = $self->{db}->sql_hash(
@@ -460,7 +465,7 @@ sub do_task {
 			},
 			[$$, $ENV{WORKER_ID}, $self->{dt}]
 		);
-
+				
 		# see if that update matched any logic
 		#($task_id) = $self->{db}->quick_select('select @found_task_id');
 		($task_id) = $self->{db}->quick_select(qq{

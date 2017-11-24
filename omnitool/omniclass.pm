@@ -94,7 +94,7 @@ sub new {
 
 	# make 100% sure they passed a valid datatype ID
 	if (!$args{luggage}{datatypes}{$args{dt}}{table_name}) {
-		$args{luggage}{belt}->mr_zebra(qq{Can't create an OmniClass without a valid datatype ID.},1);
+		$args{luggage}{belt}->mr_zebra(qq{Can't create an OmniClass without a valid datatype ID.  (DT: $args{dt})},1);
 	}
 
 	# good spot to make the piece of %$datatypes for this datatype easily available
@@ -167,9 +167,9 @@ sub new {
 			'simple_query_mode' => $args{simple_query_mode},
 		);
 	# or if they specified a search on load, call that with auto_load=1
-	# can't do both
+	# unless they wanted to short-circuit the auto-load
 	} elsif ($args{search_options}[0]) {
-		$args{auto_load} = 1;
+		$args{auto_load} = 1 if !$args{do_not_auto_load};
 		$self->search(%args); # easier to just pass everything in
 	}
 
@@ -452,7 +452,8 @@ method will have all the methods after new().
 						# much easier for writing scripts; do not use if you are sending data_codes
 		'search_options' => [%$search_options], # optional, if filled, will call $self->search() with these search
 						# criteria.  Sends all of %args, so you can pass all options described under 'search()'
-						# below; does add auto_load=1 to search()
+						# below; does add auto_load=1 to search() UNLESS you specify:
+		'do_not_auto_load' => 1, # optional, will prevent auto_load=1 if you pass search_options
 		# the following options are useful if 'data_codes' or 'search_options' is filled
 		'sort_column' => $column_or_key_name,
 		'sort_direction' => 'up', # up = ascending / down = descending
@@ -1408,6 +1409,10 @@ log files.  Successful tasks' status messages will be logged to the 'task_execut
 There is an 'example_background_task' method in the OmniClass Package you can generate with the 'Get Package'
 button under 'Manage Datatypes.'
 
+Important: It is often/usually un-safe to have multiple background tasks run for the same record/method, 
+so the default is to clear out any in-future duplicates.  If you are using a record as a placeholder or
+you know your code is safe to run many times, then pass a 'duplicates_are_ok' argument.
+
 When you need to spawn background tasks, you call 'add_task' like so:
 
 	$new_task_id = $dt_obj->add_task(
@@ -1417,8 +1422,9 @@ When you need to spawn background tasks, you call 'add_task' like so:
 			# script may perform it a bit later than these number of hours due to a backlog, but it will not do so before
 			# these hours have past; for 10 minutes, use .17
 			# optional, and default is 0
-		'not_before_time' => optional; 	# unix epoch for the earliest time this task should run; overrides
-										# 'delay_hours' argument
+		'duplicates_are_ok' => $optional,	# if empty, will prevent future tasks for the same method/data_code combination	
+		'not_before_time' => $optional, 	# unix epoch for the earliest time this task should run; overrides
+											# 'delay_hours' argument
 		'args_hash' => \%args, # optional: a hash reference of arguments to pass to the method we are calling
 	);
 

@@ -129,6 +129,7 @@ sub send_json_data {
 
 	# every tool should have a target datatype, not just Searching Tools
 	$self->{target_datatype} = $self->{attributes}{target_datatype};
+	
 	if ($self->{target_datatype} =~ /\d\_\d/) {
 		# we grab an omniclass object for this datatype from the object_factory
 		# use a method which allows for a override / hook

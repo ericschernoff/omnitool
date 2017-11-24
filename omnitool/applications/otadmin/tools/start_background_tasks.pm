@@ -34,7 +34,7 @@ sub perform_action {
 	);
 
 	# send out a nice message
-	$self->{json_results}{title} = 'Started Daily Background Tasks for '.$self->{omniclass_object}->{data}{name};
+	$self->{json_results}{title} = 'Started the Daily Background Tasks for '.$self->{omniclass_object}->{data}{name};
 	$self->{json_results}{message} = 'Daily task routines will begin immediately and occur every 24 hours.';
 }
 
