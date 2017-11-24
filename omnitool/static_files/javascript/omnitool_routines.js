@@ -195,7 +195,7 @@ function jemplate_binding (element_id, jemplate_uri, jemplate_name, json_data_ur
 			}
 
 			$.when( query_tool(this.json_data_uri,{}) ).done(function(data) {
-				if (my_element_id != '#breadcrumbs' && my_element_id != '#ot_navbar_notifications') {
+				if (my_element_id != '#breadcrumbs' && my_element_id != '#navbar_notification_area') {
 					loading_modal_display('Processing Data...');
 				}
 
@@ -732,7 +732,7 @@ function omnitool_controller (event,target_tool_uri) {
 		// let jemplate_bindings['xx'].process_json_uri() handle this part, since it is
 		// probably still running
 		//loading_modal_display('hide');
-		
+
 		// also update the notification area in the navbar
 		jemplate_bindings['ot_navbar_notifications'].process_json_uri();
 
