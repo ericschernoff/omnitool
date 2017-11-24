@@ -340,6 +340,12 @@ function post_data_fetch_operations (data) {
 			$('#breadcrumbs_area').addClass( 'center bigger-125 bolder' );
 		}
 
+		// show the results and time took to load
+		if (data.records_found_info) {
+			$('#above_tool_display_'+ data.the_tool_id).html('<i>' + data.records_found_info + '</i>');
+			$('#above_tool_display_'+ data.the_tool_id).addClass('pull-right');
+		}
+
 	// if it is an action screen, we shall show previous & next buttons plus any inline actions
 	} else if (tool_objects[data.the_tool_id]['tool_type'] == 'Action - Screen') {
 		if (localStorage.getItem("altcodes_keys_" + data.parent_tool_id)) {

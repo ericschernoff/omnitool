@@ -14,11 +14,14 @@ use Data::Dumper;
 # for wide-search warning errors
 use Lingua::EN::Numbers qw(num2en num2en_ordinal);
 
+# for preparing 'Found X records in Y secs.' message
+use Benchmark ':hireswallclock';
+
 sub search {
 	my $self = shift;
 
 	# declare vars
-	my ($dt_obj, $search_opts_key, $target_datatype, $tool_datacode, $tool_mode_id, $include_fields, $advanced_sort_options, $display_option, $load_records_limit);
+	my ($records_found_count, $right_now, $benchmark, $dt_obj, $search_opts_key, $target_datatype, $tool_datacode, $tool_mode_id, $include_fields, $advanced_sort_options, $display_option, $load_records_limit);
 
 	# target our target datatype
 	$self->{target_datatype} = $self->{attributes}{target_datatype};
@@ -197,6 +200,16 @@ sub search {
 	if ($self->can('json_results_modify')) {
 		$self->json_results_modify();
 	}
+
+	# how many were ultimately found and in how long?
+	$records_found_count = scalar(@{$self->{json_results}{records_keys}}); # search_found_count can get polluted by all these actions
+	$self->{json_results}{records_found_info} = 'Found '.$self->{belt}->commaify_number($records_found_count).' records in ';
+		$right_now = Benchmark->new;
+		$benchmark = timediff($right_now, $self->{belt}->{start_benchmark});
+	$self->{json_results}{records_found_info} .= sprintf("%.3f",$$benchmark[0]).' seconds.';
+
+	# and how long did it take?
+	$self->{belt}->benchmarker('search ran');
 
 	# debug code
 	# $self->{belt}->benchmarker('Search all done and ready.');
@@ -553,7 +566,7 @@ sub build_search {
 		} elsif ($self->{display_options}{$value_key} && $$this_tool_filter_menu{menu_type} eq 'Month Chooser') {
 
 			if ($$this_tool_filter_menu{applies_to_table_column} =~ /time/) {  # going to be a unix epoch
-				$$searches[$n]{match_column} = 'from_unixtime('.$$this_tool_filter_menu{applies_to_table_column}.qq{,'%M %Y')};			
+				$$searches[$n]{match_column} = 'from_unixtime('.$$this_tool_filter_menu{applies_to_table_column}.qq{,'%M %Y')};
 			} else { # YYYY-MM-DD date
 				$$searches[$n]{match_column} = 'date_format('.$$this_tool_filter_menu{applies_to_table_column}.qq{,'%M %Y')};
 			}
@@ -661,7 +674,7 @@ sub build_search {
 		$$searches[$n]{match_column} = 'code';
 		$$searches[$n]{operator} = '>';
 		$$searches[$n]{match_value} = '0';
-		
+
 		# let's try no limits for now
 		# $self->{limit_results} = 500; # will pass to omniclass->search()
 	}

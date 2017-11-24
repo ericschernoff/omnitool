@@ -56,6 +56,13 @@
 				Loading Display Area...
 			</div>
 		</div>
+
+		[%# where we show results found and time info for searching tools %]
+		<div class="row">
+			<div class="col-xs-12" id="records_found_info_[%tool_and_instance%]">
+			</div>
+		</div>
+
 	</div>
 
 [%# modal mode div structure %]
