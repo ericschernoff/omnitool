@@ -52,7 +52,7 @@ sub generate_form {
 		$new_parent_string = $self->figure_new_parent($action_arg);
 
 	}
-	
+
 	# if a post_form routine kicks us back, we may need to fix these two params
 	$self->{luggage}{params}{name} =~ s/,.*//g;
 	$self->{luggage}{params}{new_parent} =~ s/,.*//g;
@@ -97,7 +97,7 @@ sub generate_form {
 		if ($subdata_object->{datatype_info}{fields}{$field}{field_type} eq 'single_select') {
 			$subdata_object->{datatype_info}{fields}{$field}{field_type} = 'single_select_plain';
 		}
-		
+
 		# hide the hiddens and the virtual fields
 		next if $subdata_object->{datatype_info}{fields}{$field}{field_type} eq 'hidden_field';
 		next if $subdata_object->{datatype_info}{fields}{$field}{virtual_field} eq 'Yes';
@@ -193,7 +193,7 @@ sub perform_form_action {
 		$self->{omniclass_object}->save(
 			'data_code' => $self->{luggage}{params}{main_record},
 		);
-		
+
 		# instruct action_tool to release the lock
 		$self->{unlock} = 1;
 	}
@@ -274,25 +274,18 @@ sub perform_form_action {
 	}
 
 	# back to standard procedures: prepare a return message
-	# was it successful?
-	if ($self->{omniclass_object}->{status}[-1]{success}) { # yes, show message
-		$self->{json_results}{title} = 'Success!';
+	# if we got this far without an error message, then we have...
+	$self->{json_results}{title} = 'Success!';
 
-		if ($self->{luggage}{params}{name} eq 'Not Named') { # does not use name, so substitute datatype name
-			$self->{json_results}{message} = $self->{omniclass_object}{datatype_info}{name}.' was saved';
-		} else { # use proper name
-			$self->{json_results}{message} = $self->{luggage}{params}{name}.' was saved';
-		}
-
-		# send back the ID's, in case we are in API mode
-		$self->{json_results}{new_data_code} = $self->{omniclass_object}{last_saved_data_code};
-		$self->{json_results}{new_altcode} = $self->{omniclass_object}->data_code_to_altcode( $self->{json_results}{new_data_code} );
-
-	# otherwise, show error
-	} else {
-		$self->{json_results}{error_title} = $self->{omniclass_object}->{status}[-1]{message};
-		$self->{json_results}{error_message} = $self->{omniclass_object}->{status}[-1]{detail};
+	if ($self->{luggage}{params}{name} eq 'Not Named') { # does not use name, so substitute datatype name
+		$self->{json_results}{message} = $self->{omniclass_object}{datatype_info}{name}.' was saved';
+	} else { # use proper name
+		$self->{json_results}{message} = $self->{luggage}{params}{name}.' was saved';
 	}
+
+	# send back the ID's, in case we are in API mode
+	$self->{json_results}{new_data_code} = $self->{omniclass_object}{last_saved_data_code};
+	$self->{json_results}{new_altcode} = $self->{omniclass_object}->data_code_to_altcode( $self->{json_results}{new_data_code} );
 
 	# tell omnitool_routines->Tool->submit_form() to use gritter for the notice
 	$self->{json_results}{show_gritter_notice} = 1;

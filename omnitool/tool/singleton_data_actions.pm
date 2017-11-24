@@ -106,21 +106,15 @@ sub perform_form_action {
 		$self->{unlock} = 1;
 	}
 
-	# was it successful?
-	if ($self->{omniclass_object}->{status}[-1]{success}) { # yes, show message
-		$self->{json_results}{title} = 'Success!';
+	# if we got this far without an error message, then we have...
+	$self->{json_results}{title} = 'Success!';
 
-		if ($self->{luggage}{params}{name} eq 'Not Named') { # does not use name, so substitute datatype name
-			$self->{json_results}{message} = $self->{omniclass_object}{datatype_info}{name}.' was '.ucfirst($self->{luggage}{params}{action}).'d.';
-		} else { # use proper name
-			$self->{json_results}{message} = $self->{luggage}{params}{name}.' was '.ucfirst($self->{luggage}{params}{action}).'d.';
-		}
-
-	# otherwise, show error
-	} else {
-		$self->{json_results}{error_title} = $self->{omniclass_object}->{status}[-1]{message};
-		$self->{json_results}{error_message} = $self->{omniclass_object}->{status}[-1]{detail};
+	if ($self->{luggage}{params}{name} eq 'Not Named') { # does not use name, so substitute datatype name
+		$self->{json_results}{message} = $self->{omniclass_object}{datatype_info}{name}.' was '.ucfirst($self->{luggage}{params}{action}).'d.';
+	} else { # use proper name
+		$self->{json_results}{message} = $self->{luggage}{params}{name}.' was '.ucfirst($self->{luggage}{params}{action}).'d.';
 	}
+
 
 	# tell omnitool_routines->Tool->submit_form() to use gritter for the notice
 	$self->{json_results}{show_gritter_notice} = 1;

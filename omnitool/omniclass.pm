@@ -1084,7 +1084,7 @@ I have found that I do not interact with these locks very often, as action_tool.
 		'force' => '1', 	# optional/discouraged; if filled, will overwrite active locks for other people
 	);
 
-	Returns 0 on failure, and you can check the last entry in $self->{status} for reason.
+	Returns 0 on failure.
 	Returns 1 on success.
 
 	$result = $dt_obj->unlock_data(
@@ -1092,7 +1092,7 @@ I have found that I do not interact with these locks very often, as action_tool.
 		'force' => '1', 		# optional/discouraged; if filled, will remove active locks for other people
 	);
 
-	Returns 0 on failure, and you can check the last entry in $self->{status} for reason.
+	Returns 0 on failure.
 	Returns 1 on success.
 
 	($lock_user,$lock_remaining_minutes) = $dt_obj->check_data_lock($data_code);
@@ -1105,17 +1105,7 @@ Lock information is kept in the 'lock_user' and 'lock_expire_time' columns of th
 expire automatically upon that lock_expire_time, and the front-end JS takes care to end any locks as soon as you
 navigate off of the locking Tool.  There is a countdown with an auto-redirect in these locking Tools as well.
 
-=head2 Work logging & extended change history
-
-This method, as well as change_parent(), delete() and restore() will add entries to the $dt_obj->{status} associative array
-in order of earliest to latest changes, like so:
-
-	$dt_obj->{status}->[0]->{success} = 1; #  1 or 0; 1=success
-	$dt_obj->{status}->[0]->{message} = qq{'Beach Trip' Calendar Event Has Been Updated};  # one liner, no HTML
-	$dt_obj->{status}->[0]->{detail} = ""; # longer text goes here; good place for error text
-	$dt_obj->{status}->[0]->{data_code} = '1_10'; # primary key of record created/updated
-
-This is very useful for debugging, but this 'status' feature has not been fully utilized as of yet.
+=head2 Extended change history
 
 If the datatype has 'extended_change_history' set to 'Yes,' then actions will be saved to a to an 'update_history'
 table within the target database (which should be auto-created for any new OmniTool application/database).  This
@@ -1148,8 +1138,7 @@ To move data from under parent record to another:
 		'new_parent_type' => $parent_datatype_id, # required; the datatype ID of the proud new paremt
 	);
 
-Will update $dt_obj->{status} as well as the 'update_history' table if the 'extended_change_history' option
-is 'Yes' for that datatype.
+Will update the 'update_history' table if the 'extended_change_history' option is 'Yes' for that datatype.
 
 =head2 form()
 
@@ -1328,8 +1317,8 @@ To delete a record:
 		'skip_hooks' => 0 or 1, # optional; if '1', skip pre_delete and post_delete
 	);
 
-Will update $dt_obj->{status} as well as the 'update_history' table if the 'extended_change_history' option
-is 'Yes' for that datatype.
+Will update the 'update_history' table if the 'extended_change_history' option is 'Yes' for
+that datatype.
 
 Also, logs out to today's 'deletes_DBNAME_TABLENAME' log file under the $OTHOME/log directory.
 
@@ -1371,8 +1360,8 @@ REALLY NOT WELL TESTED (BUT A LITTLE TESTED): To restore a record from deleted_d
 	);
 
 This will attempt to restore the record to the tables (primary table and metainfo) in the current
-database, and will remove the saved record from archive.deleted_data.  Will update $dt_obj->{status} as well
-as the 'update_history' table if the 'extended_change_history' option is 'Yes' for that datatype.
+database, and will remove the saved record from archive.deleted_data.  Will update the 'update_history' table
+if the 'extended_change_history' option is 'Yes' for that datatype.
 
 =head2 update_history()
 
@@ -1409,7 +1398,7 @@ log files.  Successful tasks' status messages will be logged to the 'task_execut
 There is an 'example_background_task' method in the OmniClass Package you can generate with the 'Get Package'
 button under 'Manage Datatypes.'
 
-Important: It is often/usually un-safe to have multiple background tasks run for the same record/method, 
+Important: It is often/usually un-safe to have multiple background tasks run for the same record/method,
 so the default is to clear out any in-future duplicates.  If you are using a record as a placeholder or
 you know your code is safe to run many times, then pass a 'duplicates_are_ok' argument.
 
@@ -1422,7 +1411,7 @@ When you need to spawn background tasks, you call 'add_task' like so:
 			# script may perform it a bit later than these number of hours due to a backlog, but it will not do so before
 			# these hours have past; for 10 minutes, use .17
 			# optional, and default is 0
-		'duplicates_are_ok' => $optional,	# if empty, will prevent future tasks for the same method/data_code combination	
+		'duplicates_are_ok' => $optional,	# if empty, will prevent future tasks for the same method/data_code combination
 		'not_before_time' => $optional, 	# unix epoch for the earliest time this task should run; overrides
 											# 'delay_hours' argument
 		'args_hash' => \%args, # optional: a hash reference of arguments to pass to the method we are calling
