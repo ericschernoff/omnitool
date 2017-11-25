@@ -45,7 +45,7 @@
 				<div class="navbar-header pull-left">
 					<span class="navbar-brand">
 						<small>
-							<img style="border-right: white 1px solid" class="hidden-480 padding-right-2" src="[%session.app_instance_info.ui_logo%]"/>
+							<img style="padding-right: 10px; border-right: white 1px solid" class="hidden-480" src="[%session.app_instance_info.ui_logo%]"/>
 							<span class="h3 align-middle" id="ot_tool_title" ></span>
 						</small>
 					</span>
@@ -55,8 +55,8 @@
 					[% IF username != 'public' %]
 						<!-- #section:basics/navbar.nav -->
 						<ul class="nav ace-nav">
-							
-							<!-- notification area; powered by 
+
+							<!-- notification area; powered by
 								omnitool/static_files/system_wide_jemplates/navbar_notifications.tt
 								and omnitool::common::ui::notifications()
 							-->
@@ -166,7 +166,7 @@
 					try{ace.settings.check('sidebar' , 'fixed')}catch(e){}
 				</script>
 				-->
-				
+
 				<div class="space-10"></div>
 				<!-- nav-list: loading via ui_menu.tt -->
 				<ul class="nav nav-list" id="ot_menubar">
