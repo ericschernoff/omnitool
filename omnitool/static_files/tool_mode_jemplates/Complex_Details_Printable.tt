@@ -10,7 +10,7 @@
 
 [% SET dont_do_tabs = 1 %]
 
-[* INSERT Complex_Details.tt *]
+[* INCLUDE Complex_Details.tt *]
 
 [*# using a shared template for easier portability between templates / jemplates *]
 [* INCLUDE shared/complex_details_tabs_shared.tt *]
