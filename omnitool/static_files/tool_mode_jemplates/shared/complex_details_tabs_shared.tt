@@ -68,6 +68,8 @@
 							<div id="[%tab_info.$tab_key.0%]" class="tab-pane fade in active">
 						[% ELSIF !tabs.$tab_key.combine_with_previous %]
 							<div id="[%tab_info.$tab_key.0%]" class="tab-pane">
+						[% ELSIF tabs.$tab_key.combine_with_previous %]
+							<h2>[%tab_info.$tab_key.1%]</h2>
 						[% END %]
 
 						[% IF n == 0 && tags_keys.0 %]
@@ -160,7 +162,10 @@
 
 								[% FOREACH data_pair IN tabs.$tab_key.data %]
 									[% IF data_pair.1 %]
-									<h3>[% data_pair.0 %]</h3>
+									[% IF tab_info.$tab_key.1 != data_pair.0 %]
+										<h3>[% data_pair.0 %]</h3>
+									[% END %]
+
 									<span class="bigger-120">
 									[% IF !(matches = data_pair.1.match('<br/>')) %]
 										[% data_pair.1.replace("\n", '<br/>') %]
