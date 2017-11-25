@@ -55,6 +55,14 @@
 
 [% ELSE %]
 
+	[%# if they want no-tabs / printer-friendly, so kill all the tab separations %]
+	[% IF dont_do_tabs %]
+		[% FOREACH tab_key IN tab_info.sort %]
+			[% SET tabs.$tab_key.combine_with_previous = 1 %]
+			[% SET tabs.$tab_key.combine_with_previous = 1 %]
+		[% END %]
+	[% END %]
+
 	[% PROCESS complex_details_tabs_shared_[*tool_and_instance*] %]
 
 [% END %]

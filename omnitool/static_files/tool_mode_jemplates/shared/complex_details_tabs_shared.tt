@@ -34,7 +34,7 @@
 					[% SET n = 0 %]
 					[% FOREACH tab_key IN tab_info.sort %]
 
-						[% NEXT IF !tabs.$tab_key.data.0 %]
+						[% NEXT IF !tabs.$tab_key.data.0 && !tabs.$tab_key.form_type %]
 
 						[% IF n == 0 || !tabs.$tab_key.combine_with_previous %]
 
@@ -43,17 +43,20 @@
 							[% ELSE %]
 								<li>
 							[% END %]
-							
+
 							<a data-toggle="tab" href="#[%tab_info.$tab_key.0%]">
 								[%tab_info.$tab_key.1%]
 							</a>
 							</li>
-						
+
 						[% END %]
 
 						[% SET n = n + 1 %]
 					[% END %]
 				</ul>
+
+				[%# for limiting combine-with-next below %]
+				[% SET tabs_sent_count = n %]
 
 				<div class="tab-content">
 
@@ -81,7 +84,7 @@
 						[%# set the large/medium col-size based on the number of columns
 								which will either be 2 or 3, so the value will be 4 or 6 %]
 						[% SET mdlg_column_size = 12 / tabs.$tab_key.data.size %]
-					
+
 						<div class="row">
 						[% IF tabs.$tab_key.type == 'info_groups' %]
 							[% FOREACH data_set IN tabs.$tab_key.data %]
@@ -196,7 +199,6 @@
 								<table class="table table-bordered" style="width: 100%">
 							[% END %]
 
-
 							[% SET num = 0 %]
 							[% FOREACH data_row IN tabs.$tab_key.data %]
 								<!-- first row is headings -->
@@ -296,8 +298,6 @@
 												<b>EVALUATION:</b> <u>Did You Have a Good Experience? [% data_row.eval_was_good_experience %]</u>
 											</div>
 										[% END %]
-										
-										
 
 										<div style="margin-left: 20px">
 											[% data_row.notes %]
@@ -324,16 +324,32 @@
 						[%# if they set 'has_subrecords' in pre_prep_jemplate(), include WidgetsV3.tt to support those records %]
 						[% ELSIF tabs.$tab_key.type == 'sub_records' %]
 							[% PROCESS results_wide_widgets_[*tool_and_instance*] %]
+
+						[%# allow them to embed forms into these tabs %]
+						[% ELSIF tabs.$tab_key.type == 'form' %]
+
+							[%# show the appropriate form %]
+							[% IF tabs.$tab_key.form_type == 'full_screen_form' %]
+
+								[% PROCESS full_screen_form %]
+
+							[% ELSIF tabs.$tab_key.form_type == 'spreadsheet_form_entries' %]
+
+								[% PROCESS spreadsheet_form_entries %]
+
+							[% END %]
+
 						[% END %]
 
 						[% SET n = n + 1 %]
 
 						</div><!-- /.row -->
-						
-						[% IF n == 1 || !tabs.$tab_key.combine_with_next %]
+
+						[%# end the tab, unless it is combined with the next one %]
+						[% IF n == tabs_sent_count || !tabs.$tab_key.combine_with_next %]
 							</div><!-- /.tab -->
 						[% END %]
-						
+
 					[% END %]
 
 				</div><!-- /.tab-content -->

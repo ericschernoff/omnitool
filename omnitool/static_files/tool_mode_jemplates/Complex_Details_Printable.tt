@@ -2,22 +2,18 @@
 
 	Jemplate Template for viewing complex data's details in print-friendly mode.
 
-	See complex_details.tt for info on how incoming JSON should look.
+	See Complex_Details.tt for info on how incoming JSON should look.
 
 *]
 
-[% IF data_not_found %]
+[*# tell our Complex_Details.tt to not have the tab. *]
 
-	[% PROCESS data_not_found %]
+[% SET dont_do_tabs = 1 %]
 
-[% ELSE %]
-
-	[% PROCESS complex_details_printable_shared %]
-
-[% END %]
+[* INSERT Complex_Details.tt *]
 
 [*# using a shared template for easier portability between templates / jemplates *]
-[* INSERT shared/complex_details_printable_shared.tt *]
+[* INCLUDE shared/complex_details_tabs_shared.tt *]
 
 [*# safety jemplate in case they try to load a bad record *]
 [* INSERT shared/data_not_found.tt *]

@@ -1,3 +1,12 @@
+[*#
+
+	Jemplate Template for combining the complex details with a full-screen form, and
+	this time with just two tabs: one for the form and one for everything else.
+
+	The form will appear under the first tab.
+
+*]
+
 <div class="space-4 clearfix"></div>
 
 [% IF status_message %]
@@ -33,20 +42,25 @@
 	</div>
 [% END %]
 
-
 <div class="row">
 <div class="col-xs-12">
 
-[*% If we can use the forms, prepare it as the first tab. %]
+[%# combine all the details tabs into one %]
+[% FOREACH tab_key IN tab_info.sort %]
+	[% SET tabs.$tab_key.combine_with_previous = 1 %]
+	[% SET tabs.$tab_key.combine_with_previous = 1 %]
+[% END %]
+
+[*% If we can use the form, prepare it as the first tab. %]
 [% IF !hide_form %]
 
-	[% SET tab_info.0 = ['forms','Forms'] %]
-	[% SET tabs.0.form_type = 'spreadsheet_form_entries' %]
-	[% SET tabs.0.type = 'forms' %]
+	[% SET tab_info.0 = ['form','Update Form'] %]
+	[% SET tabs.0.form_type = 'full_screen_form' %]
+	[% SET tabs.0.type = 'form' %]
 
 [% END %]
 
-[%# Finally, show the complex details tabs, with or without the form. %]
+[*# Finally, show the complex details tabs, with or without the form. %]
 [% PROCESS complex_details_tabs_shared_[*tool_and_instance*] %]
 
 </div>
@@ -54,6 +68,3 @@
 
 [*# using a shared template for easier portability between templates / jemplates *]
 [* INCLUDE shared/complex_details_tabs_shared.tt *]
-
-[*# using a shared template for easier portability between templates / jemplates *]
-[* INCLUDE shared/spreadsheet_forms_shared.tt *]
