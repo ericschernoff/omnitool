@@ -137,6 +137,9 @@ sub send_json_data {
 		# was placed into $self->{omniclass_object} by get_omniclass_object()
 	}
 
+	# get the current tool view mode config; needed below and maybe in the action tool hooks
+	$self->get_mode_config(); # populates $self->{this_mode_config}
+
 	# both the search() and run_action() methods will place the JSON hashref into $self->{json_results},
 	# and we will add the 'session_created' key so the web client can check for a new session
 
@@ -151,7 +154,6 @@ sub send_json_data {
 
 		# if we are in Calendar mode, we need to send out the 'fields to include'
 		# and the first one should be the value for 'Name', the second one is the calendar date
-		$self->get_mode_config();
 		if ($self->{this_mode_config}{mode_type} eq 'Calendar') {
 			$self->prep_fields_to_include();
 			$self->{json_results}{included_records_fields} = $self->{included_records_fields};
@@ -174,8 +176,6 @@ sub send_json_data {
 	$self->{json_results}{session_created} = $self->{luggage}{session}->{created};
 	# suppress 'session refreshed' message if in serious developer mode
 	$self->{json_results}{session_dev_mode} = $ENV{FORCE_FRESH_SESSIONS} if $ENV{FORCE_FRESH_SESSIONS};
-
-	$self->get_mode_config(); # populates  $self->{this_mode_config}
 
 	# if we want to execute a JS function when the data loads, add that to our JSON response
 	# this will happen in post_data_fetch_operations() in omnitool_routines.js

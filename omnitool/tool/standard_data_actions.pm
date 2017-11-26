@@ -22,7 +22,7 @@ use strict;
 sub generate_form {
 	my $self = shift;
 
-	my ($action_arg, $send_data_code, $need_new_parent, $parent_tool_datacode, $parent_tool_datatype, $new_parent_string, $tool_datacode);
+	my ($action_arg, $send_data_code, $need_new_parent, $parent_tool_datacode, $parent_tool_datatype, $new_parent_string, $tool_datacode, $details_hash, $parent_data_code, $parent_object, $parent_type, $part);
 
 	# we need to set some variables based on our uri / argument
 
@@ -64,6 +64,29 @@ sub generate_form {
 
 	# override the title we are outputting to the jemplate with the form title
 	$self->{json_results}{title} = $self->{json_results}{form}{title};
+
+	# So if the view mode is the Complex Detatils + Form, then we will pull in the details
+	# for the parent record -- assumes that parent record's OmniClass Package has view_details()
+	if ($self->{this_mode_config}{mode_type} eq 'Complex_Details_Plus_Form') {
+		# if in update/create-from mode, fetch the pre-existing parent string
+		$new_parent_string ||= $self->{omniclass_object}{data}{metainfo}{parent};
+		# now load up that parent record
+		($parent_type,$parent_data_code) = split /:/, $new_parent_string;
+		$parent_object = $self->{omniclass_object}->get_omniclass_object(
+			'dt' => $parent_type,
+			'data_codes' => [$parent_data_code]
+		);
+		# now load in those details
+		$details_hash = $parent_object->view_details();
+		# and load them into $self->{json_results}
+		foreach $part (keys %$details_hash) {
+			$self->{json_results}{$part} = $$details_hash{$part};
+		}
+
+		# for the title (altcode is automatically there)
+		$self->{json_results}{data_title} = $self->{attributes}{name}.' for '.$parent_object->{data}{name};
+
+	}
 
 	# all done ;)
 }

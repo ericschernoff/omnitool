@@ -37,7 +37,7 @@
 <div class="row">
 <div class="col-xs-12">
 
-[*% If we can use the forms, prepare it as the first tab. %]
+[%# If we can use the forms, prepare it as the first tab. %]
 [% IF !hide_form %]
 
 	[% SET tab_info.0 = ['forms','Forms'] %]

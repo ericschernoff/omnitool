@@ -195,7 +195,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 
 [%# Support lock counter %]
 [% IF attributes.is_locking == 'Yes' %]
-<div class="btn-group align-center pull-right">
+<div class="btn-group align-center">
 	<div id="[%tool_and_instance%]_countdown_area">
 		Screen Expires: <span id="[%tool_and_instance%]_countdown" class="bigger-120"></span>
 	</div>

@@ -44,7 +44,7 @@
 <div class="row">
 <div class="col-xs-12">
 
-[*% If we can use the form, prepare it as the first tab. %]
+[%# If we can use the form, prepare it as the first tab. %]
 [% IF !hide_form %]
 
 	[% SET tab_info.0 = ['form','Update Form'] %]
@@ -53,7 +53,7 @@
 
 [% END %]
 
-[*# Finally, show the complex details tabs, with or without the form. %]
+[%# Finally, show the complex details tabs, with or without the form. %]
 [% PROCESS complex_details_tabs_shared_[*tool_and_instance*] %]
 
 </div>
