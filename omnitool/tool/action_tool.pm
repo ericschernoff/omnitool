@@ -26,7 +26,7 @@ sub run_action {
 	my $self = shift;
 
 	# declare vars
-	my ($data_code, $lock_result, $lock_user,$lock_remaining_minutes,$record_name, $parent_altcode, $parent_tool_datacode, $parent_tool_datatype, $match_col, $match_col_name, $no_access, $this_match);
+	my ($data_code, $lock_result, $parent_type, $lock_user,$lock_remaining_minutes,$record_name, $parent_altcode, $parent_tool_datacode, $parent_tool_datatype, $match_col, $match_col_name, $no_access, $this_match);
 
 	# we need provide the title and uri for jemplate to show a return link, and we should do that first
 
@@ -46,6 +46,7 @@ sub run_action {
 	if ($self->{luggage}{session}{tools}{$parent_tool_datacode}{uri_path_base}) {
 		$self->{json_results}{return_link_uri} = '#/tools/'.$self->{luggage}{session}{tools}{$parent_tool_datacode}{uri_path_base};
 		$self->{json_results}{return_link_title} = $self->{luggage}{session}{tools}{$parent_tool_datacode}{name};
+
 	} else { # in which case, the current tool is the return; think a top-level singleton
 		$self->{json_results}{return_link_uri} = '#/tools/'.$self->{attributes}{uri_path_base};
 		$self->{json_results}{return_link_title} = $self->{attributes}{name};
@@ -72,11 +73,11 @@ sub run_action {
 
 		# dig out the target datatype of that parent tool from the session; i am sorry for how complex this is
 		$parent_tool_datatype = $self->{luggage}{session}{tools}{$parent_tool_datacode}{target_datatype};
-		($record_name, $parent_altcode) = $self->{altcode_decoder}->name_and_parent_from_altcode($self->{display_options}{altcode},$parent_tool_datatype);
+		($record_name, $parent_altcode, $parent_type) = $self->{altcode_decoder}->name_and_parent_from_altcode($self->{display_options}{altcode},$parent_tool_datatype);
 		# include this altcode with this uri, since we are not in create
 
 		# add that $parent_altcode if it was found
-		$self->{json_results}{return_link_uri} .= '/'.$parent_altcode if $parent_altcode && $record_name;
+		$self->{json_results}{return_link_uri} .= '/'.$parent_altcode if $parent_altcode && $record_name && $parent_tool_datatype eq $parent_type;
 	}
 
 	# if there is a valid altcode (current working data), we need to turn that into a data_code

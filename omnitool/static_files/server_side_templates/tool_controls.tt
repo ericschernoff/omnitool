@@ -169,6 +169,15 @@ Expects all of $self for a Tool.pm class/sub-class.
 
 </span>
 
+[%# Support lock counter %]
+[% IF attributes.is_locking == 'Yes' %]
+<div class="btn-group align-center">
+	<div id="[%tool_and_instance%]_countdown_area">
+		Screen Expires: <span id="[%tool_and_instance%]_countdown" class="bigger-120"></span>
+	</div>
+</div>
+[% END %]
+
 <!-- support the 'return' links in action tools -->
 [% IF attributes.link_type != 'Menubar' %]
 <div class="btn-group">
@@ -193,14 +202,6 @@ Expects all of $self for a Tool.pm class/sub-class.
 </button>
 </div>
 
-[%# Support lock counter %]
-[% IF attributes.is_locking == 'Yes' %]
-<div class="btn-group align-center">
-	<div id="[%tool_and_instance%]_countdown_area">
-		Screen Expires: <span id="[%tool_and_instance%]_countdown" class="bigger-120"></span>
-	</div>
-</div>
-[% END %]
 
 </span>
 
