@@ -7,7 +7,7 @@ package omnitool;
 # for the record, this module, and luggage.pm are the only non-OO packages in the system.
 
 # The first five were so bad, they are classified.
-$omnitool::VERSION = '6.2';
+$omnitool::VERSION = '6.4';
 
 use strict; # this is for my perl, but not my lorelei
 
