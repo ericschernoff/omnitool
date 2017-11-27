@@ -513,7 +513,7 @@ function Tool (tool_attributes) {
 				$("html, body").animate({ scrollTop: 0 }, "slow");
 			}
 		}
-		
+
 		// if there is a wysiwig editor, transfer its text into the hidden variable (and trim leading/ending whitespace)
 		if ($('#'+this_tool_id+'_wyiswig').length > 0) {
 			$('#' + this_tool_id + '_wyiswig_transporter').val( $.trim( $('#'+this_tool_id+'_wyiswig').html() ) );
@@ -551,7 +551,7 @@ function Tool (tool_attributes) {
 							// and then call post_data_fetch_operations()
 							post_data_fetch_operations(json_data);
 						});
-						
+
 						// fix the keywords and multi-selects back to blank
 						$(".advanced_search_keyword_textbox").each(function() {
 							if ($(this).val() == 'DO_CLEAR') {
@@ -568,7 +568,7 @@ function Tool (tool_attributes) {
 						if ($('#form-field-1').val() == 'DO_CLEAR') {
 							$('#form-field-1').val('');
 						}
-						
+
 						$('html,body').animate( { scrollTop:($('#tool_display_' + this_tool_id).offset().top - 100) } , 'slow');
 
 						loading_modal_display('hide');
@@ -633,6 +633,7 @@ function Tool (tool_attributes) {
 		var adv_search_url = this['tool_uri'] + '/advanced_search_form';
 		var tool_id = this['the_tool_id'];
 		var form_display_div = $('#advanced_search_' + tool_id);
+		var main_display_div = $('#tool_display_' + tool_id);
 
 		// jump to the top
 		goToTop();
@@ -640,9 +641,13 @@ function Tool (tool_attributes) {
 		if (form_display_div.is(':visible')) { // already visible, disappear it
 			form_display_div.html('');
 			form_display_div.hide();
+
+			// re-expand the tool main display area to full size on large screens
+			main_display_div.addClass('col-lg-12').removeClass('col-lg-6');
+
 			$('#search-controls').show();
 			$('#quick_keyword_controls').show();
-			
+
 			// make sure the advanced item badges are shown as needed -- use the class way
 			// because there may be a few in the DOM by now
 			if ($('#advanced_sort_options_badge').html().length > 0) {
@@ -660,6 +665,7 @@ function Tool (tool_attributes) {
 			}
 
 			// query for the advanced search form and send into the modal
+			loading_modal_display('Opening Advanced Search...');
 			$.when( query_tool(adv_search_url,{}) ).done(function(json_data) {
 				json_data.modal_title_icon = 'fa-binoculars';
 				json_data.modal_title = adv_search_name;
@@ -671,6 +677,9 @@ function Tool (tool_attributes) {
 				jemplate_bindings['process_any_div'].element_id = '#advanced_search_' + tool_id;
 				jemplate_bindings['process_any_div'].process_json_data(json_data); // advanced_search_form
 
+				// shrink the tool main display area to half size on large screens
+				main_display_div.addClass('col-lg-6').removeClass('col-lg-12');
+
 				// now toggle it
 				form_display_div.show();
 				$('#search-controls').hide();
@@ -678,6 +687,7 @@ function Tool (tool_attributes) {
 
 				// enliven the form
 				interactive_form_elements(tool_id,'advanced_search_form');
+				loading_modal_display('hide');
 			});
 
 		}
@@ -695,10 +705,14 @@ function Tool (tool_attributes) {
 
 		// sanity
 		var form_display_div = $('#advanced_sort_' + tool_id);
+		var main_display_div = $('#tool_display_' + tool_id);
 
 		if (form_display_div.is(':visible')) { // already visible, disappear it
 			form_display_div.html('');
 			form_display_div.hide();
+
+			// re-expand the tool main display area to full size on large screens
+			main_display_div.addClass('col-lg-12').removeClass('col-lg-6');
 
 		} else {
 
@@ -708,6 +722,7 @@ function Tool (tool_attributes) {
 			}
 
 			// query for the advanced search form and send into the modal
+			loading_modal_display('Opening Advanced Sort...');
 			$.when( query_tool(adv_sort_url,{}) ).done(function(json_data) {
 				json_data.modal_title_icon = 'fa-arrows';
 				json_data.modal_title = adv_sort_name;
@@ -720,11 +735,15 @@ function Tool (tool_attributes) {
 				jemplate_bindings['process_any_div'].element_id = '#advanced_sort_' + tool_id;
 				jemplate_bindings['process_any_div'].process_json_data(json_data); // advanced_search_form
 
+				// shrink the tool main display area to half size on large screens
+				main_display_div.addClass('col-lg-6').removeClass('col-lg-12');
+
 				// now toggle it
 				form_display_div.show();
 
 				// enliven the form
 				interactive_form_elements(tool_id,'advanced_sort_form');
+				loading_modal_display('hide');
 			});
 		}
 	}
@@ -764,9 +783,9 @@ function Tool (tool_attributes) {
 				$('#search-controls').hide();
 				$('#quick_keyword_controls').hide();
 			}
-		});	
+		});
 	}
-	
+
 	// function to power the quick-search keyword search - screens only
 	this.quick_search_enable = function () {
 		var this_tool_id = this['the_tool_id'];

@@ -43,19 +43,22 @@
 		<div id="chartarea_[%tool_and_instance%]" style="display:none;">
 		</div>
 
-		[%# area for advanced search form -- see show_advanced_search() in omnitool_toolojs.js %]
-		<div id="advanced_search_[%tool_and_instance%]" style="display:none;">
-		</div>
-		[%# area for advanced sort form -- see show_advanced_sort() in omnitool_toolojs.js %]
-		<div id="advanced_sort_[%tool_and_instance%]" style="display:none;">
-		</div>
+		<div class="row">
 
-		[%# main display area goes here %]
-		[%# where we show results found and time info for searching tools %]
-		<div id="tool_display_[%tool_and_instance%]" class="row">
-			<div class="col-xs-12">
+			[%# area for advanced sort form -- see show_advanced_sort() in omnitool_toolojs.js %]
+			<div id="advanced_sort_[%tool_and_instance%]" class="pull-right col-xs-12 col-sm-12 col-md-12 col-lg-6" style="display:none;">
+			</div>
+
+			[%# area for advanced search form -- see show_advanced_search() in omnitool_toolojs.js %]
+			<div id="advanced_search_[%tool_and_instance%]" class="pull-right col-xs-12 col-sm-12 col-md-12 col-lg-6" style="display:none;">
+			</div>
+
+			[%# main display area goes here %]
+			[%# where we show results found and time info for searching tools %]
+			<div id="tool_display_[%tool_and_instance%]" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 				Loading Display Area...
 			</div>
+
 		</div>
 
 	</div>
