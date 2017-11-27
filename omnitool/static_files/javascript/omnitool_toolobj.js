@@ -633,7 +633,6 @@ function Tool (tool_attributes) {
 		var adv_search_url = this['tool_uri'] + '/advanced_search_form';
 		var tool_id = this['the_tool_id'];
 		var form_display_div = $('#advanced_search_' + tool_id);
-		var main_display_div = $('#tool_display_' + tool_id);
 
 		// jump to the top
 		goToTop();
@@ -643,7 +642,7 @@ function Tool (tool_attributes) {
 			form_display_div.hide();
 
 			// re-expand the tool main display area to full size on large screens
-			main_display_div.addClass('col-lg-12').removeClass('col-lg-6');
+			tool_objects[tool_id].shrink_or_grow_tool_display('grow');
 
 			$('#search-controls').show();
 			$('#quick_keyword_controls').show();
@@ -678,8 +677,8 @@ function Tool (tool_attributes) {
 				jemplate_bindings['process_any_div'].process_json_data(json_data); // advanced_search_form
 
 				// shrink the tool main display area to half size on large screens
-				main_display_div.addClass('col-lg-6').removeClass('col-lg-12');
-
+				tool_objects[tool_id].shrink_or_grow_tool_display('shrink');
+				
 				// now toggle it
 				form_display_div.show();
 				$('#search-controls').hide();
@@ -705,14 +704,13 @@ function Tool (tool_attributes) {
 
 		// sanity
 		var form_display_div = $('#advanced_sort_' + tool_id);
-		var main_display_div = $('#tool_display_' + tool_id);
 
 		if (form_display_div.is(':visible')) { // already visible, disappear it
 			form_display_div.html('');
 			form_display_div.hide();
 
 			// re-expand the tool main display area to full size on large screens
-			main_display_div.addClass('col-lg-12').removeClass('col-lg-6');
+			tool_objects[tool_id].shrink_or_grow_tool_display('grow');
 
 		} else {
 
@@ -736,7 +734,7 @@ function Tool (tool_attributes) {
 				jemplate_bindings['process_any_div'].process_json_data(json_data); // advanced_search_form
 
 				// shrink the tool main display area to half size on large screens
-				main_display_div.addClass('col-lg-6').removeClass('col-lg-12');
+				tool_objects[tool_id].shrink_or_grow_tool_display('shrink');
 
 				// now toggle it
 				form_display_div.show();
@@ -747,7 +745,32 @@ function Tool (tool_attributes) {
 			});
 		}
 	}
+	
+	// support method to shrink/expand the main tool area for displaying the forms next-door
+	this.shrink_or_grow_tool_display = function(action) {
+		// gather up the main area
+		var tool_id = this['the_tool_id'];
+		var main_display_div = $('#tool_display_' + tool_id);
 
+		if (action == 'shrink') { // squash it down
+			// change the main area
+			main_display_div.addClass('col-lg-6').removeClass('col-lg-12');
+			// if it is in Table.tt mode, hide all but the first two columns
+			$( '.hidden-advanced-search').each(function() {
+				$(this).hide();
+			});
+
+		} else { // grow it back
+			// change the main area
+			main_display_div.addClass('col-lg-12').removeClass('col-lg-6');
+			// if it is in Table.tt mode, reveal all columns
+			$( '.hidden-advanced-search').each(function() {
+				$(this).show();
+			});
+		
+		}
+	}
+	
 	// validation routine for that advanced sort form
 	this.advanced_sort_validate = function() {
 		$('#advanced_sort_warning').hide();

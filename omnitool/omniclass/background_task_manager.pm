@@ -88,7 +88,7 @@ sub add_task {
 
 	# in most cases, we need to avoid duplicate tasks scheduled in the future for the same record
 	# pass a 'duplicates_are_ok' argument to avoid this
-	if ($args{data_code} && !$args{duplicates_are_ok}) {
+	if ($args{data_code} && !$args{duplicates_are_ok}) {	
 		my ($tasks,$tkeys) = $self->retrieve_task_details(
 			'target_datatype' => $self->{dt},
 			'altcode' => $this_altcode,
@@ -476,8 +476,6 @@ sub do_task {
 
 		# if no task to run right now, then no need to continue
 		return 'None found' if !$task_id;
-
-		# $self->{belt}->logger('trying to run '.$task_id,'eric');
 
 		# now we should be safe to get the details for that task
 		($method,$data_code,$username,$args_hash,$auto_retried) = $self->{db}->quick_select(

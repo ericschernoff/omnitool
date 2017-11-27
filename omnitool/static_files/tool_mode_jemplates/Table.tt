@@ -48,9 +48,9 @@
 		[* SET num = 0 *]
 		[* FOREACH field_name IN included_field_names *]
 			[* IF field_count > 4 *]
-				<th class="hidden-1025 omnitool-data omnitool-heading text-nowrap" data-otsortcol="[*included_records_fields.$num*]"><i class="fa fa-arrow-up"></i>[*field_name*]</th>
+				<th class="hidden-1025 hidden-advanced-search omnitool-data omnitool-heading text-nowrap" data-otsortcol="[*included_records_fields.$num*]"><i class="fa fa-arrow-up"></i>[*field_name*]</th>
 			[* ELSIF field_count > 2 *]
-				<th class="hidden-480 omnitool-data omnitool-heading text-nowrap" data-otsortcol="[*included_records_fields.$num*]"><i class="fa fa-arrow-up"></i>[*field_name*]</th>
+				<th class="hidden-480 hidden-advanced-search omnitool-data omnitool-heading text-nowrap" data-otsortcol="[*included_records_fields.$num*]"><i class="fa fa-arrow-up"></i>[*field_name*]</th>
 			[* ELSE *]
 				<th class="omnitool-data omnitool-heading text-nowrap" data-otsortcol="[*included_records_fields.$num*]"><i class="fa fa-arrow-up"></i>[*field_name*]</th>
 			[* END *]
@@ -69,14 +69,12 @@
 	[*# cycle through the records key on the client side *]
 	[% FOREACH record_key IN records_keys %]
 
-
 		[*# background color from record-coloring rules *]
 		[% IF metainfo.$record_key.record_color %]
 			[% SET row_bgcolor = metainfo.$record_key.record_color %]
 		[% ELSE %]
 			[% SET row_bgcolor = 'ffffff' %]
 		[% END %]
-
 
 		[%#
 			Let's try to have each result row handled separately, in hopes that we could process just
@@ -105,9 +103,9 @@
 	[* SET field_count = 1 *]
 	[* FOREACH field IN included_records_fields *]
 		[* IF field_count > 4 *]
-			<td class="hidden-1025 omnitool-data">
+			<td class="hidden-1025 hidden-advanced-search omnitool-data">
 		[* ELSIF field_count > 2 *]
-			<td class="hidden-480 omnitool-data">
+			<td class="hidden-480 hidden-advanced-search omnitool-data">
 		[* ELSE *]
 			<td class="omnitool-data">
 
