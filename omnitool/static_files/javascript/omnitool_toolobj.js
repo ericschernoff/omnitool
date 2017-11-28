@@ -316,6 +316,7 @@ function Tool (tool_attributes) {
 			// preform the query
 			$.when( query_tool(jemplate_bindings[ this_tool_display_div ].json_data_uri, post_object) ).done(function(json_data) {
 				jemplate_bindings[ this_tool_display_div ].process_json_data(json_data);
+				
 				// reveal the page
 				loading_modal_display('hide');
 			});
@@ -550,6 +551,8 @@ function Tool (tool_attributes) {
 						$.when( tool_objects[this_tool_id].reload_tool_controls(1) ).done(function() {
 							// and then call post_data_fetch_operations()
 							post_data_fetch_operations(json_data);
+							// keep the display sized correctly
+							tool_objects[this_tool_id].shrink_or_grow_tool_display('shrink');
 						});
 
 						// fix the keywords and multi-selects back to blank
@@ -569,13 +572,19 @@ function Tool (tool_attributes) {
 							$('#form-field-1').val('');
 						}
 
-						$('html,body').animate( { scrollTop:($('#tool_display_' + this_tool_id).offset().top - 100) } , 'slow');
+						$('html,body').animate( { scrollTop:0 } , 'slow');
 
 						loading_modal_display('hide');
 
 					// regular display of results in the screen
 					} else {
 						jemplate_bindings[ this_tool_display_div ].process_json_data(json_data);
+						
+						// if adv. sort, keep the display sized correctly
+						if (form_id.match('advanced_sort')) {
+							tool_objects[this_tool_id].shrink_or_grow_tool_display('shrink');
+						}
+							
 						loading_modal_display('hide');
 					}
 				}
@@ -781,7 +790,7 @@ function Tool (tool_attributes) {
 			} else {
 				chosen_choices[ this.value ] = 1;
 			}
-		});
+		});		
 	}
 
 	// routine to facilitate easy modal-opening for special subroutines
@@ -794,7 +803,12 @@ function Tool (tool_attributes) {
 	// function to reload the tool_controls area if needed
 	this.reload_tool_controls = function (adv_search_mode) {
 		var this_tool_id = this['the_tool_id'];
-		$.when( query_tool(this['tool_uri'] + '/send_tool_controls',{}) ).done(function(tool_controls_html) {
+	
+		// use a promise so that we can make sure to return a waiting task
+		// NOTE: this is how I should handle nested promises!
+		var post_promise = query_tool(
+			this['tool_uri'] + '/send_tool_controls',{}
+		).done(function (tool_controls_html) {
 			// load them in
 			$('#tool_controls_'+this_tool_id).html(tool_controls_html);
 			// empower the tool search drop-down menus
@@ -807,6 +821,10 @@ function Tool (tool_attributes) {
 				$('#quick_keyword_controls').hide();
 			}
 		});
+
+		// return to caller
+		return post_promise;	
+	
 	}
 
 	// function to power the quick-search keyword search - screens only

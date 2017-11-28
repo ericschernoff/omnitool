@@ -307,7 +307,6 @@ function post_data_fetch_operations (data) {
 	if (data.the_tool_id == the_active_tool_ids['screen'] && data.return_link_uri && data.return_link_title) {
 		$('.return_link').html('<i class="fa fa-arrow-left blue"></i> Return to ' + data.return_link_title);
 		$('.return_link').attr("href", data.return_link_uri);
-		// console.log('i should show it');
 		$('.return_link').show();
 	} else if (data.the_tool_id == the_active_tool_ids['screen']) {
 		$('.return_link').hide();
@@ -330,11 +329,9 @@ function post_data_fetch_operations (data) {
 		} else {
 			show_or_hide_element('advanced_sort_options_badge', 0);
 		}
-		// 3. show if either of those is in use
-		show_or_hide_element('advanced_features_badge', data.advanced_features);
-		// 4. search-is-limited notice?
+		// 3. search-is-limited notice?
 		show_or_hide_element('top_notice', data.limit_notice);
-
+		
 		if (data.breadcrumbs_notice) { // some filters used, show that number
 			$('#breadcrumbs_area').html( data.breadcrumbs_notice );
 			$('#breadcrumbs_area').addClass( 'center bigger-125 bolder' );
@@ -559,9 +556,9 @@ function post_data_fetch_operations (data) {
 
 // utility function to either show an element with html or hide it
 function show_or_hide_element (element_id, some_content) {
-	if (some_content != undefined && some_content != '' ) { // something to show, then show it
+	if (some_content != undefined && some_content > 0) { // something to show, then show it
 		$('#' + element_id).html( some_content );
-		$('#' + element_id).show();
+		$('#' + element_id).show();	
 	} else { // no filters, hide it out
 		$('#' + element_id).html('');
 		$('#' + element_id).hide();
