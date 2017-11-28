@@ -209,7 +209,7 @@ sub search {
 	$self->{json_results}{records_found_info} .= sprintf("%.3f",$$benchmark[0]).' seconds.';
 
 	# and how long did it take?
-	$self->{belt}->benchmarker('search ran');
+	# $self->{belt}->benchmarker('search ran');
 
 	# debug code
 	# $self->{belt}->benchmarker('Search all done and ready.');

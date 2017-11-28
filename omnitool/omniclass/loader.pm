@@ -407,8 +407,8 @@ sub create_resolver_hash {
 			$field_value =~ s/\_//; # no leader
 
 		} else { # single field
-			if ($field_name eq 'parent') {
-				$field_value = $self->{metainfo}{$data_code}{parent};
+			if ($field_name eq 'parent' || $field_name eq 'altcode') {
+				$field_value = $self->{metainfo}{$data_code}{$field_name};
 			} else {
 				$field_value = $self->{records}{$data_code}{$field_name};
 			}
