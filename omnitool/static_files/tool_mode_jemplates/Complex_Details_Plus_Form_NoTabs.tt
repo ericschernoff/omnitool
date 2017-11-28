@@ -1,9 +1,8 @@
 [*#
 
-	Jemplate Template for combining the complex details with a full-screen form, and
-	this time with just two tabs: one for the form and one for everything else.
+	Jemplate Template for combining the complex details with a full-screen form.
 
-	The form will appear under the first tab.
+	No-tabs version.
 
 *]
 
@@ -45,14 +44,6 @@
 <div class="row">
 <div class="col-xs-12">
 
-[%# combine all the details tabs into one %]
-[% SET tab_keys = tab_info.sort %]
-[% FOREACH tab_key IN tab_keys %]
-	[% NEXT IF tab_key == tab_keys.0 %]
-	[% SET tabs.$tab_key.combine_with_previous = 1 %]
-	[% SET tabs.$tab_key.combine_with_previous = 1 %]
-[% END %]
-
 [%# If we can use the form, prepare it as the first tab. %]
 [% IF !hide_form %]
 
@@ -60,6 +51,12 @@
 	[% SET tabs.0.form_type = 'full_screen_form' %]
 	[% SET tabs.0.type = 'form' %]
 
+[% END %]
+
+[*# tell our Complex_Details.tt to not have the tab. *]
+[% FOREACH tab_key IN tab_info.sort %]
+	[% SET tabs.$tab_key.combine_with_previous = 1 %]
+	[% SET tabs.$tab_key.combine_with_previous = 1 %]
 [% END %]
 
 [% SET tab_info.1.1 = 'Full Details' %]
