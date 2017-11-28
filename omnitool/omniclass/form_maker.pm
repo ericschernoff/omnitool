@@ -553,6 +553,9 @@ Note: You do NOT have to use numbers for your field keys.
 				'field_type' => 'single_select', # use 'single_select_plain' for non-chosen / regular menu's
 				'onchange' => qq{SOME_JAVASCRIPT_CODE}, # optional: JS to execute for 'onchange' event
 														# better to use jquery to add via selectors
+				# or, if you want to have this menu trigger the loading of another menu:
+				'trigger_menu_target' => 'ID of menu that will get triggered/built',
+				'trigger_menu_server_method' => 'subroutine_name_on_sever_to_generation_options',
 			},
 			10 => {
 				'title' => "What Powers Does Ginger Have?",
