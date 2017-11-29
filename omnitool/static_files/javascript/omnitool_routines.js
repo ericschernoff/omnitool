@@ -15,6 +15,10 @@ var jemplate_bindings = new Array();
 // We will also keep our Tool objects in a global assoc. array for easy access
 var tool_objects = new Array();
 
+// And we will need to keep track of calls in query_tool()
+var query_tool_calls = new Array(); // used so that we always use the latest one
+var active_queries = new Array(); // used to track active queries to the server, by uri
+
 // keep track of the active screen and modal tools so we can close when appropriate
 var the_active_tool_ids = new Array();
 	the_active_tool_ids['modal'] = 'none';
@@ -781,14 +785,44 @@ function query_tool (tool_uri,post_data_object) {
 		post_data_object.uri_base = uri_base;
 	}
 
+	// note that this is now the latest call
+	if (query_tool_calls[tool_uri] == undefined) {
+		query_tool_calls[tool_uri] = 0;
+	}
+	query_tool_calls[tool_uri] = ++query_tool_calls[tool_uri];
+	
+	// and for testing below (the above would have been updated in the later call)
+	var this_calls_counter = query_tool_calls[tool_uri];
+
+	// we need to make sure the tool.refresh_json_data knows this send_json uri is already active
+	if (tool_uri.match('send_json_data')) { // will raise and lower the number in this array accordingly
+		if (active_queries[tool_uri] == undefined) { // this is the first one
+			active_queries[tool_uri] = 1;
+		} else {
+			active_queries[tool_uri] += 1;
+		}
+	}
+
 	// use a promise so that we can make sure to return the value
 	var post_promise = $.post(
 		tool_uri, post_data_object
 	).done(function (response) {
 		// check response for errors using function below
 		var is_error = check_for_errors(response);
+		
+		// we are tracking the number of active send_json_data calls to prevent 
+		// automatic refreshes from overriding user-initiated queries
+		if (tool_uri.match('send_json_data')) {
+			active_queries[tool_uri] -= 1;	
+		}
+		
 		if (is_error == 1) { // failed, return false
 			return false;
+			
+		// if it is not the latest call for this uri, return an empty object
+		} else if (tool_uri.match('send_json_data') && query_tool_calls[tool_uri] > this_calls_counter) {
+			return {};		
+		
 		} else { // success, send the response out to our parent scope
 			return response;
 		}

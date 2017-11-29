@@ -25,7 +25,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 	[% SET refresh_button_title = 'title="Search auto-runs every ' _ attributes.query_interval _ ' seconds."' %]
 [% END %]
 
-<button class="btn btn-white" [%refresh_button_title%] onclick="tool_objects['[%tool_and_instance%]'].refresh_json_data()">
+<button class="btn btn-white" [%refresh_button_title%] onclick="tool_objects['[%tool_and_instance%]'].refresh_json_data(1)">
 	<i class="fa fa-refresh green"></i>
 </button>
 </div>

@@ -237,18 +237,31 @@ function Tool (tool_attributes) {
 	}
 
 	// function to refresh the json data in the binding easily, since we already have this['tool_display_div']
-	this.refresh_json_data = function () {
+	this.refresh_json_data = function (from_button_click) {
 		var this_tool_display_div = this['tool_display_div']; // sanity
-
+		var my_json_uri = this['tool_uri'] + '/send_json_data';
+		
+		// if the counter for active queries in blank, just make it 0
+		if (active_queries[my_json_uri] == undefined) {
+			active_queries[my_json_uri] = 0;
+		}
+		
 		// return if it's not bound yet
 		if (jemplate_bindings[ this_tool_display_div ] == undefined) {
 			return;
 		}
 
-		// skip if the search is paused or the mouse has not moved in >120 seconds
-		var last_mouse_move = ( Math.floor(Date.now() / 1000) ) - mouse_move_time;
-		if (this['search_paused'] == 'No' && last_mouse_move <= 120) {
+		// if this is from a button click, we do this no matter what
+		if (from_button_click != undefined) {
 			jemplate_bindings[ this_tool_display_div ].process_json_uri('Refreshing Data');
+		} else { // otherwise, doing an automation refresh, and we have to pass some tests
+			// skip if the search is paused or the mouse has not moved in >120 seconds
+			var last_mouse_move = ( Math.floor(Date.now() / 1000) ) - mouse_move_time;
+			// we will also skip if the search is paused or if there is 1 or more active queries
+			// for this tool's json uri in query_tool()
+			if (this['search_paused'] == 'No' && last_mouse_move <= 120 && active_queries[my_json_uri] < 1) {
+				jemplate_bindings[ this_tool_display_div ].process_json_uri('Refreshing Data');
+			}
 		}
 	}
 
