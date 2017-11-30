@@ -194,7 +194,8 @@ function jemplate_binding (element_id, jemplate_uri, jemplate_name, json_data_ur
 				loading_modal_display('Preparing Interface...');
 			} else if (modal_text != undefined) {
 				loading_modal_display(modal_text + '...');
-			} else {
+			// do not show a modal for breadcrumbs / navbar_notification_area
+			} else if (my_element_id != '#breadcrumbs' && my_element_id != '#navbar_notification_area') {
 				loading_modal_display('Retrieving Data...');
 			}
 
@@ -230,7 +231,8 @@ function jemplate_binding (element_id, jemplate_uri, jemplate_name, json_data_ur
 			Jemplate.process(this.jemplate_name, json_data, this.element_id);
 			// we also need to call 'post_data_fetch_operations()' with this JSON
 			// data, as it may contain post-jemplate behavior instructions
-			if (json_data.one_record_mode == undefined && json_data.skip_post_data_ops == undefined) { // but not in one-data mode, as that's just very minimal JSON
+			// but not in one-data mode, as that's just very minimal JSON
+			if (json_data.one_record_mode == undefined && json_data.skip_post_data_ops == undefined) { 
 				post_data_fetch_operations(json_data);
 			}
 		}
@@ -864,6 +866,7 @@ function check_for_errors (response) {
 			fatal_error_message: response.error_message,
 			fatal_error_message_encoded: encodeURIComponent(response.error_message),
 			is_maintenance: true, // this works the opposite of how you'd expect
+			simple_error: response.simple_error, // will suppress the 'please report' bit if true
 		};
 		open_system_modal(data);
 		return 1; // indicate error is found

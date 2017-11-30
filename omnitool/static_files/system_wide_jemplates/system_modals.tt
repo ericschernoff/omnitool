@@ -9,7 +9,7 @@
 	<div id="fatal_error_message" class="h5 red">
 		[% fatal_error_message %]
 	</div>
-	[% IF is_maintenance %]
+	[% IF is_maintenance && !simple_error %]
 		<a href="mailto:[%instance_contact_email%]?subject=OmniTool%20Fatal%20Error%20Report&body=[%fatal_error_message_encoded%]" id="fatal_error_report_link">Please report this error,</a>
 		especially if it persists.  You can close this notice and attempt another action,
 		though we do recommend reloading the page prior to proceeding.

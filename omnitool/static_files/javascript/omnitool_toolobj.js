@@ -166,7 +166,9 @@ function Tool (tool_attributes) {
 			// params were set when we loaded up the tool initially
 			$.when( query_tool(this['tool_uri'] + '/send_json_data',{}) ).done(function(data) {
 				// use our handy create_gritter_notice() method
-				create_gritter_notice(data);
+				if (data.simple_error == undefined) { // let them short-circuit with an error modal
+					create_gritter_notice(data);
+				}
 
 				// set the current altcode for this message tool, in case we are reloading that specific result in the search screen
 				if (data.altcode) {
@@ -294,6 +296,7 @@ function Tool (tool_attributes) {
 				json_data.record_key = json_data.records_keys[0];
 				jemplate_bindings['process_any_div'].element_id = '#' + json_data.records_keys[0] + '_result';
 				jemplate_bindings['process_any_div'].process_json_data(json_data);
+				loading_modal_display('hide');
 			}
 		});
 	}
