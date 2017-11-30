@@ -697,6 +697,8 @@ function omnitool_controller (event,target_tool_uri) {
 				// and if it's not a screen with a single_record_jemplate_block, just reload all the displayed results for this tool
 				} else {
 					jemplate_bindings[ tool_objects[the_tool_id]['tool_display_div'] ].process_json_uri();
+					// also reload the tool_controls, in case the keyword changed
+					tool_objects[the_tool_id].reload_tool_controls();
 					// and un-pause the search
 					tool_objects[the_tool_id]['search_paused'] = 'No';
 				}
