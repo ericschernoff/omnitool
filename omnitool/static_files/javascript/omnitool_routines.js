@@ -597,6 +597,7 @@ function loading_modal_display (display_text) {
 	} else if (display_text != undefined && display_text != 'hide') {
 		$('#modal-loading').modal();
 		$('#modal-loading-text').text(display_text + '...');
+		$('.modal-backdrop').removeClass("modal-backdrop");  
 	// otherwise, hide it
 	} else if ($("#modal-loading").hasClass('in')) {
 		$("#modal-loading").modal('hide');
