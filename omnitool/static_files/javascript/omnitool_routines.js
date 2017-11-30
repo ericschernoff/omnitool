@@ -625,6 +625,9 @@ function omnitool_controller (event,target_tool_uri) {
 	// no double slashes
 	var tool_uri = tool_uri.replace( /\/\//, '/' );
 
+	// always reset to top
+	goToTop();
+
 	// tell the user we are loading
 	loading_modal_display('Loading the Tool...');
 

@@ -527,7 +527,7 @@ function Tool (tool_attributes) {
 		// jump to the top, in case there are errors - skip if a modal/message where the parent tool is just refreshing the target data
 		if (form_id.match('advanced_search') == undefined) { // only if not advanced search
 			if (this['tool_type_short'] == 'screen' || tool_objects[ the_active_tool_ids['screen'] ]['single_record_jemplate_block'] == undefined || tool_objects[ the_active_tool_ids['screen'] ]['single_record_jemplate_block'] == 0) {
-				$("html, body").animate({ scrollTop: 0 }, "slow");
+				goToTop();
 			}
 		}
 
@@ -588,7 +588,7 @@ function Tool (tool_attributes) {
 							$('#form-field-1').val('');
 						}
 
-						$('html,body').animate( { scrollTop:0 } , 'slow');
+						goToTop();
 
 						loading_modal_display('hide');
 
