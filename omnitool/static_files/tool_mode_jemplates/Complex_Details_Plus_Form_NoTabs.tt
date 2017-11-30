@@ -44,6 +44,12 @@
 <div class="row">
 <div class="col-xs-12">
 
+[*# tell our Complex_Details.tt to not have the tab. *]
+[% FOREACH tab_key IN tab_info.sort %]
+	[% SET tabs.$tab_key.combine_with_previous = 1 %]
+	[% SET tabs.$tab_key.combine_with_next = 1 %]
+[% END %]
+
 [%# If we can use the form, prepare it as the first tab. %]
 [% IF !hide_form %]
 
@@ -53,11 +59,6 @@
 
 [% END %]
 
-[*# tell our Complex_Details.tt to not have the tab. *]
-[% FOREACH tab_key IN tab_info.sort %]
-	[% SET tabs.$tab_key.combine_with_previous = 1 %]
-	[% SET tabs.$tab_key.combine_with_previous = 1 %]
-[% END %]
 
 [% SET tab_info.1.1 = 'Full Details' %]
 

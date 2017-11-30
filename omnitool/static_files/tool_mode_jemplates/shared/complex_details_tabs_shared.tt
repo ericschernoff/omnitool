@@ -312,6 +312,7 @@
 									</div>
 								[% END %]
 								</div>
+
 							</div>
 
 						[% ELSIF tabs.$tab_key.type == 'network_diagram'%]

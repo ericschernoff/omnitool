@@ -48,9 +48,13 @@
 [%# combine all the details tabs into one %]
 [% SET tab_keys = tab_info.sort %]
 [% FOREACH tab_key IN tab_keys %]
-	[% NEXT IF tab_key == tab_keys.0 %]
-	[% SET tabs.$tab_key.combine_with_previous = 1 %]
-	[% SET tabs.$tab_key.combine_with_previous = 1 %]
+	[% IF tab_key != tab_keys.0 %]
+		[% SET tabs.$tab_key.combine_with_previous = 1 %]
+	[% END %]	
+	
+	[% IF tab_key != tab_keys.-1 %]
+		[% SET tabs.$tab_key.combine_with_next = 1 %]
+	[% END %]
 [% END %]
 
 [%# If we can use the form, prepare it as the first tab. %]
