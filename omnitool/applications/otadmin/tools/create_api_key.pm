@@ -38,6 +38,21 @@ sub generate_form {
 
 }
 
+# IP has to be valid (contain a number)
+sub post_validate_form {
+	my $self = shift;
+
+	if ($self->{luggage}{params}{tied_to_ip_address} !~ /\d/) {
+		# stop the form submission in its tracks
+		$self->{stop_form_action} = 1;
+
+		# specify a field error
+		$self->{json_results}{form}{fields}{1}{field_error} = 1;
+		$self->{json_results}{form}{fields}{1}{error_instructions} = 'Please provide a valid IP address';
+	}
+
+}
+
 # pull in the field and update the priorities.  somewwhat easy
 sub perform_form_action {
 	my $self = shift;
