@@ -307,6 +307,9 @@ function Tool (tool_attributes) {
 				json_data.record_key = json_data.records_keys[0];
 				jemplate_bindings['process_any_div'].element_id = '#' + json_data.records_keys[0] + '_result';
 				jemplate_bindings['process_any_div'].process_json_data(json_data);
+				// re-enable any pop-overs
+				enable_popovers();
+				// hide the loading modal
 				loading_modal_display('hide');
 			}
 		});

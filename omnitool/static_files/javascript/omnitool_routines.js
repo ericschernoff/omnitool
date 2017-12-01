@@ -293,13 +293,8 @@ function post_data_fetch_operations (data) {
 		return;
 	}
 
-	// hide any open popovers
-	$('.popover').remove();
-		// then re-enable any which have just loaded
-	$('[data-rel=popover]').popover({
-		'container': 'body',
-		'html': true,
-	});
+	// enable any pop-overs that were just loaded up
+	enable_popovers();
 
 	// attach the sent altcode to the tool, for possible un-locking purposes -- and maybe refreshing that targeted record
 	if (data.altcode) {
@@ -589,6 +584,18 @@ function show_sort_arrow(sort_column, sort_direction) {
 	$(".omnitool-heading[data-otsortcol='" + sort_column +"']").find('.fa').show();
 }
 
+// function enable popovers on page change; called from post_data_fetch_operations()
+// and when reloading a single result (and maybe more spots later ;>)
+function enable_popovers () {
+	// first, hide any open popovers
+	$('.popover').remove();
+	// then re-enable any which have just loaded
+	$('[data-rel=popover]').popover({
+		'container': 'body',
+		'html': true,
+	});
+}
+
 // function to show/hide the 'content loading' modal
 function loading_modal_display (display_text) {
 	// if the loading modal is already open and they want to change the display text, do that
@@ -656,9 +663,6 @@ function omnitool_controller (event,target_tool_uri) {
 				break; // no need to continue
 			}
 		}
-		
-		// for determining scroll-to-top requirement below (changes if doing a single record reload)
-		var single_result_refresh = 0;
 
 		// if they are moving to a new phase/method of the active tool, update that tool's jemplate binding
 		if (this_active_tool != 'Not Found') {
@@ -689,9 +693,7 @@ function omnitool_controller (event,target_tool_uri) {
 						// and make sure it is the active tool
 						the_active_tool_ids['screen'] = the_tool_id;
 						tool_objects[the_tool_id]['search_paused'] = 'No';
-						// note the type of query this is
-						single_result_refresh = 1;
-
+						
 					// otherwise, refresh all the records
 					} else {
 						jemplate_bindings[ tool_objects[the_tool_id]['tool_display_div'] ].process_json_uri();
