@@ -232,7 +232,7 @@ function jemplate_binding (element_id, jemplate_uri, jemplate_name, json_data_ur
 			// we also need to call 'post_data_fetch_operations()' with this JSON
 			// data, as it may contain post-jemplate behavior instructions
 			// but not in one-data mode, as that's just very minimal JSON
-			if (json_data.one_record_mode == undefined && json_data.skip_post_data_ops == undefined) { 
+			if (json_data.one_record_mode == undefined && json_data.skip_post_data_ops == undefined) {
 				post_data_fetch_operations(json_data);
 			}
 		}
@@ -337,15 +337,15 @@ function post_data_fetch_operations (data) {
 		}
 		// 3. search-is-limited notice?
 		show_or_hide_element('top_notice', data.limit_notice);
-		
+
 		if (data.breadcrumbs_notice) { // some filters used, show that number
 			$('#breadcrumbs_area').html( data.breadcrumbs_notice );
 			$('#breadcrumbs_area').addClass( 'center bigger-125 bolder' );
 		}
 
-		// show the results and time took to load
-		if (data.records_found_info) {
-			$('#above_tool_display_'+ data.the_tool_id).html('<i>' + data.records_found_info + '</i>');
+		// show the results and time took to load -- including transfer, as this was calcuated in query_tool
+		if (data.records_found_count) {
+			$('#above_tool_display_'+ data.the_tool_id).html('<i>Found ' + data.records_found_count + ' records in ' + data.response_time + ' seconds.</i>');
 		}
 
 	// if it is an action screen, we shall show previous & next buttons plus any inline actions
@@ -564,7 +564,7 @@ function post_data_fetch_operations (data) {
 function show_or_hide_element (element_id, some_content) {
 	if (some_content != undefined && some_content > 0) { // something to show, then show it
 		$('#' + element_id).html( some_content );
-		$('#' + element_id).show();	
+		$('#' + element_id).show();
 	} else { // no filters, hide it out
 		$('#' + element_id).html('');
 		$('#' + element_id).hide();
@@ -599,7 +599,7 @@ function loading_modal_display (display_text) {
 	} else if (display_text != undefined && display_text != 'hide') {
 		$('#modal-loading').modal();
 		$('#modal-loading-text').text(display_text + '...');
-		$('.modal-backdrop').removeClass("modal-backdrop");  
+		$('.modal-backdrop').removeClass("modal-backdrop");
 	// otherwise, hide it
 	} else if ($("#modal-loading").hasClass('in')) {
 		$("#modal-loading").modal('hide');
@@ -798,7 +798,7 @@ function query_tool (tool_uri,post_data_object) {
 		query_tool_calls[tool_uri] = 0;
 	}
 	query_tool_calls[tool_uri] = ++query_tool_calls[tool_uri];
-	
+
 	// and for testing below (the above would have been updated in the later call)
 	var this_calls_counter = query_tool_calls[tool_uri];
 
@@ -811,27 +811,36 @@ function query_tool (tool_uri,post_data_object) {
 		}
 	}
 
+	// let's time this transfer
+	var start = new Date();
+
 	// use a promise so that we can make sure to return the value
 	var post_promise = $.post(
 		tool_uri, post_data_object
 	).done(function (response) {
 		// check response for errors using function below
 		var is_error = check_for_errors(response);
-		
-		// we are tracking the number of active send_json_data calls to prevent 
+
+		// we are tracking the number of active send_json_data calls to prevent
 		// automatic refreshes from overriding user-initiated queries
 		if (tool_uri.match('send_json_data')) {
-			active_queries[tool_uri] -= 1;	
+			active_queries[tool_uri] -= 1;
 		}
-		
+
 		if (is_error == 1) { // failed, return false
 			return false;
-			
+
 		// if it is not the latest call for this uri, return an empty object
 		} else if (tool_uri.match('send_json_data') && query_tool_calls[tool_uri] > this_calls_counter) {
-			return {};		
-		
+			return {};
+
 		} else { // success, send the response out to our parent scope
+			// for our response-time tracking
+			var end  = new Date();
+			// pack that up as seconds
+			response.response_time = (end.getTime() - start.getTime()) / 1000;
+
+			// now return it
 			return response;
 		}
 	});

@@ -202,11 +202,7 @@ sub search {
 	}
 
 	# how many were ultimately found and in how long?
-	$records_found_count = scalar(@{$self->{json_results}{records_keys}}); # search_found_count can get polluted by all these actions
-	$self->{json_results}{records_found_info} = 'Found '.$self->{belt}->commaify_number($records_found_count).' records in ';
-		$right_now = Benchmark->new;
-		$benchmark = timediff($right_now, $self->{belt}->{start_benchmark});
-	$self->{json_results}{records_found_info} .= sprintf("%.3f",$$benchmark[0]).' seconds.';
+	$self->{json_results}{records_found_count} = scalar(@{$self->{json_results}{records_keys}}); # search_found_count can get polluted by all these actions
 
 	# and how long did it take?
 	# $self->{belt}->benchmarker('search ran');
