@@ -66,7 +66,6 @@
 [% IF username %]
 	<li class="transparent user-min">
 		<a data-toggle="dropdown" class="dropdown-toggle" href="#" class="menubar_tool_link">
-			<i class="menu-icon fa [% tool.icon_fa_glyph %] "></i>
 			<span class="menu-text"> Bookmarks </span>
 			<b class="arrow fa fa-angle-down"></b>
 		</a>
