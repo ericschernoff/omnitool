@@ -131,9 +131,20 @@ function Tool (tool_attributes) {
 						this_tool_display_div+'.tt',
 						this_tool_uri + '/send_json_data' // ?client_connection_id='+client_connection_id
 					);
-
+					
+					// if it's a screen, scroll to top
+					if (this['tool_type_short'] == 'screen') {
+						goToTop();
+					}
+					
 				} else if (reload_jemplate == 1 || jemplate_bindings[ this_tool_display_div ].jemplate_loaded == 0) {
 					jemplate_bindings[ this_tool_display_div ].load_jemplate();
+
+					// if it's a screen, scroll to top
+					if (this['tool_type_short'] == 'screen') {
+						goToTop();
+					}
+
 
 				} else { // no, just load in the json feed to the display area
 					//jemplate_bindings[ this['tool_display_div'] ].load_jemplate();

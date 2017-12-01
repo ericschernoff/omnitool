@@ -625,9 +625,6 @@ function omnitool_controller (event,target_tool_uri) {
 	// no double slashes
 	var tool_uri = tool_uri.replace( /\/\//, '/' );
 
-	// always reset to top
-	goToTop();
-
 	// tell the user we are loading
 	loading_modal_display('Loading the Tool...');
 
@@ -659,6 +656,9 @@ function omnitool_controller (event,target_tool_uri) {
 				break; // no need to continue
 			}
 		}
+		
+		// for determining scroll-to-top requirement below (changes if doing a single record reload)
+		var single_result_refresh = 0;
 
 		// if they are moving to a new phase/method of the active tool, update that tool's jemplate binding
 		if (this_active_tool != 'Not Found') {
@@ -689,6 +689,8 @@ function omnitool_controller (event,target_tool_uri) {
 						// and make sure it is the active tool
 						the_active_tool_ids['screen'] = the_tool_id;
 						tool_objects[the_tool_id]['search_paused'] = 'No';
+						// note the type of query this is
+						single_result_refresh = 1;
 
 					// otherwise, refresh all the records
 					} else {
