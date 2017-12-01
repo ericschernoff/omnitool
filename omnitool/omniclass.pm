@@ -317,7 +317,7 @@ sub update_history {
 sub get_access_roles {
 	my $self = shift;
 
-	my ($access_roles_array, $key, $name, $access_roles,$roles_keys, $table);
+	my ($target_application, $access_roles_array, $key, $name, $access_roles,$roles_keys, $table);
 
 	# where are we pulling this from?
 	# if we are currently editing an omnitool instance, use the target database for that instance,
@@ -329,12 +329,19 @@ sub get_access_roles {
 		$table = 'access_roles ';
 	}
 
+	# for which application are we pulling roles?
+	if ($self->{parent_application_id}) { # specified via a prepare_for_form_fields() method
+		$target_application = $self->{parent_application_id};
+	} else { # just use the current app
+		$target_application = $self->{luggage}{session}{application_id};
+	}
+
 	# quite easy - read into simple hash
 	$access_roles_array = $self->{db}->do_sql(qq{
 		select concat(code,'_',server_id),name from $table
 		where used_in_applications regexp ? and status='Active'
 		order by name
-	},[ '(^|,)'.$self->{luggage}{session}{application_id}.'(,|$)' ]);
+	},[ '(^|,)'.$target_application.'(,|$)' ]);
 
 	# convert into a key-value hash
 	while (($key,$name) = @{shift(@$access_roles_array)}) {
@@ -1378,7 +1385,7 @@ Returns a key-value hash of this Application's Access Roles, along with arrayref
 the names of the Roles.  Mainly used for the access_roles_select menus, but can have other uses, so
 shared as a main method.
 
-	Usage:  ($access_roles,$role_keys) = get_access_roles();
+	Usage:  ($access_roles,$role_keys) = $dt_obj->get_access_roles();
 
 =head2 Running Background Tasks
 

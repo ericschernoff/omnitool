@@ -16,6 +16,17 @@ sub init {
 
 }
 
+# figure out my new parent application for omniclass->get_access_roles()
+sub prepare_for_form_fields {
+	my $self = shift;
+	my ($form) = @_; # what we have so far
+
+	if ($$form{hidden_fields}{new_parent}) {
+		my ($new_parent_type,$new_parent_data_code) = split /:/, $$form{hidden_fields}{new_parent};
+		$self->{parent_application_id} = $new_parent_data_code;
+	}
+}
+
 # nice field for a link to load the instance in Manage Instances
 sub field_instance_link {
 	my $self = shift;
