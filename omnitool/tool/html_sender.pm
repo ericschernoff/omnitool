@@ -27,6 +27,35 @@ sub send_html {
 	# use the method below to get ready for the tools_controls area
 	$self->tool_controls();
 
+	# there is a rare instance where someone might be given a URL for a Tool to which
+	# they do not have access but they do have access to the parent.  In that case, they will
+	# be shown the parent Tool, as it is in their session, and the uri_base_path for the no-access
+	# Tool will be interpreted as the 'altcode'.  In that case, we need to show a message above
+	# the Tool display.  This might be a little sticky if they go back to the parent Tool, but
+	# this is so rare, it's OK for now.
+	if ($self->{display_options}{altcode}) { # all altcodes are suspect at this point in execution
+		# pull from DB as the Tool won't be in their session
+		my ($other_tool, $other_tool_name) = $self->{db}->quick_select(qq{
+			select code,name from tools where uri_path_base=? and parent=?
+		},[ $self->{display_options}{altcode}, '8_1:'.$self->{tool_datacode} ]);
+		
+		if ($other_tool) { # another Tool found == they don't have access to this Tool.
+			# try to clear the altcode for this parent Tool's config, so they won't see the
+			# message if they go to the have-access tool in another window.
+			$self->{display_options}{altcode} = '';
+			# sanity
+			my $inst_contact = $self->{luggage}{session}{app_instance_info}{inst_contact};
+			# message for tools_area_skeleton.tt
+			$self->{access_error_message} .= qq{
+				NOTICE: You do not have access to the $other_tool_name Tool.  
+				We can display $self->{attributes}{name} instead.  
+				Please contact <a href="mailto:$inst_contact">$inst_contact</a> for additional access.				
+			};
+		}
+	}
+
+	# now we can generate the tool area skeleton
+
 	# we will rely on $OTHOME/code/omnitool/static_files/tool_area_skeleton.tt
 	my $tool_html = $self->{belt}->template_process(
 		'template_file' => $template,

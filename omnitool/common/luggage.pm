@@ -284,7 +284,7 @@ sub pack_luggage {
 		# log it first, as we may need to send the 'force' argument for secondary pack_luggage calls
 		$$luggage{belt}->logger("ERROR: Can't set up luggage for $$luggage{session}{app_instance_info}{inst_name} for $$luggage{username}",'luggage_errors');
 		# send to browser
-		$$luggage{belt}->mr_zebra("ERROR: There are no Tools available for $$luggage{session}{app_instance_info}{inst_name}.  Please send email to $$luggage{session}{app_instance_info}{contact_email} with questions.",2);
+		$$luggage{belt}->mr_zebra("ERROR: There are no Tools available for $$luggage{session}{app_instance_info}{inst_name}.  Please send email to $$luggage{session}{app_instance_info}{inst_contact} with questions.",2);
 	}
 
 	# step nine: grab a datatypes hashref for this application; again, this module handles the caching

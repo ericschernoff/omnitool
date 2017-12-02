@@ -772,6 +772,9 @@ function get_tool_id_for_uri (tool_uri) {
 	// can't cache it because you may be changing back and forth between data-id bits,
 	// such as how the tools_mgr does or when opening update forms over and over
 	return $.when( query_tool(tool_uri + '/send_tool_id',{return_tool_id: return_tool_id}) ).done(function(the_tool_id) {
+
+		check_for_errors (the_tool_id);
+
 		return the_tool_id;
 	});
 }
@@ -903,7 +906,7 @@ open_system_modal = function(data) {
 		backdrop: 'static',
 		keyboard: false
 	});
-
+	loading_modal_display('hide');
 }
 
 // class-level method to call for gritter, since both load_tool and submit_form uses it

@@ -25,6 +25,13 @@
 			</div>
 		[% END %]
 
+		[%# used when they don't have access a to a tool but can access its parent %]
+		[% IF access_error_message  %]
+			<div class="alert alert-danger">
+				[% access_error_message %]
+			</div>
+		[% END %]
+
 		[%# area for any notice put into json_results->top_notice %]
 		<div class="well well-sm" id="top_notice" style="display: none">
 		</div>
