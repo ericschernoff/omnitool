@@ -43,13 +43,10 @@
 	[% SET n = 0 %]
 	[% FOREACH f IN form.field_keys %]
 
-		[% IF form.fields.$f.both_columns %]
-			<div class="col-sm-8" id="field_div_[%form.fields.$f.name%]">
-		[% ELSE %]
-			<div class="col-sm-5" id="field_div_[%form.fields.$f.name%]">
-		[% END %]
+		<div class="col-xs 12" id="field_div_[%form.fields.$f.name%]">
+		
 			<div class="form-group">
-				<label for="form-field-[%f%]" class="col-md-5 control-label">
+				<label for="form-field-[%f%]" class="col-md-3 control-label">
 					[% IF form.fields.$f.field_error %]
 						<span class="bold red">
 							[% form.fields.$f.title %]
@@ -65,7 +62,7 @@
 						<span class="help-button" data-rel="popover" data-trigger="hover" data-placement="right" data-content="[%form.fields.$f.instructions%]">?</span>
 					[% END %]
 				</label>
-				<div class="col-md-7">
+				<div class="col-md-9">
 					[% IF form.fields.$f.preset == 'DO_CLEAR' %]
 						[% SET form.fields.$f.preset = '' %]
 					[% END %]
@@ -81,33 +78,16 @@
 					[% END %]
 				</div>
 			</div>
-
-			[% IF !form.fields.$f.both_columns %]
-				[% SET n = n + 1 %]
-				[% IF n == 2 || form.fields.$f.clearfix %]
-					</div>
-					<div class="row">
-					[% SET n = 0 %]
-				[% END %]
-			[% END %]
-
 		</div>
 
 	[% END %]
 	</div>
 
-	<div class="clearfix form-group">
-		<div class="col-xs-12 col-md-12 align-center">
+	<div class="row clearfix form-group">
+		<div class="col-xs-8 col-xs-offset-2 align-center">
 			<button class="btn btn-info" type="submit">
 				<i class="ace-icon fa fa-check bigger-110"></i>
 				[%form.submit_button_text%]
-			</button>
-
-			or
-
-			<button class="btn btn-white" type="button" onclick="reset_form('[%tool_and_instance%]_advanced_search_form')">
-				<i class="ace-icon fa fa-remove bigger-110"></i>
-				Reset All Options
 			</button>
 		</div>
 	</div>
@@ -154,12 +134,12 @@
 	<div class="row">
 	[% SET directions = ['Up','Down'] %]
 	[% FOREACH f IN form.field_keys %]
-		<div class="col-md-5">
+		<div class="col-xs-3">
 		<div class="form-group">
-			<label for="form-field-[%form.fields.$f.order_number%]" class="col-md-5 control-label">
+			<label for="form-field-[%form.fields.$f.order_number%]" class="col-md-2 control-label">
 				Sort Field [%form.fields.$f.order_number%]:
 			</label>
-			<div class="col-md-7">
+			<div class="col-xs-9">
 				<!-- 'preset' => $self->{display_options}{'advanced_sort_'.$num} -->
 				<select name="advanced_sort_[%form.fields.$f.order_number%]" onchange="tool_objects['[%tool_and_instance%]'].advanced_sort_validate();" id="form-field-[%form.fields.$f.order_number%]" class="form-control">
 					<option value="-">-</option>
