@@ -36,6 +36,8 @@ function Tool (tool_attributes) {
 
 	// figure the proper base uri for this tool
 	this['tool_uri'] = '/tools/' + this['uri_path_base'];
+	// and the json data uri
+	this['tool_json_uri'] = '/tools/' + this['uri_path_base'] + '/send_json_data';
 
 	// match the tool_type to get the short-hand just once for use in the functions
 	if (this['tool_type'].match(/Screen/)) {
@@ -175,7 +177,7 @@ function Tool (tool_attributes) {
 			// fetch the data and see if we need to authenticate
 			// notice that these tools simply work on GET params, no POST, and those
 			// params were set when we loaded up the tool initially
-			$.when( query_tool(this['tool_uri'] + '/send_json_data',{}) ).done(function(data) {
+			$.when( query_tool(this['tool_json_uri'],{}) ).done(function(data) {
 				// use our handy create_gritter_notice() method
 				if (data.simple_error == undefined) { // let them short-circuit with an error modal
 					create_gritter_notice(data);
@@ -252,7 +254,7 @@ function Tool (tool_attributes) {
 	// function to refresh the json data in the binding easily, since we already have this['tool_display_div']
 	this.refresh_json_data = function (from_button_click) {
 		var this_tool_display_div = this['tool_display_div']; // sanity
-		var my_json_uri = this['tool_uri'] + '/send_json_data';
+		var my_json_uri = this['tool_json_uri'];
 		
 		// if the counter for active queries in blank, just make it 0
 		if (active_queries[my_json_uri] == undefined) {
@@ -276,6 +278,14 @@ function Tool (tool_attributes) {
 				jemplate_bindings[ this_tool_display_div ].process_json_uri('Refreshing Data');
 			}
 		}
+		
+		
+		// if the advanced search or sort is still open, then maintain the shrunken table
+		var tool_id = this['the_tool_id'];
+		if ($('#advanced_search_' + tool_id).is(':visible') || $('#advanced_sort_' + tool_id).is(':visible')) { 
+			this.shrink_or_grow_tool_display('shrink');		
+		}
+		
 	}
 
 	// function to reload one search result in the UI
@@ -532,9 +542,10 @@ function Tool (tool_attributes) {
 
 		}
 
-		// have this expost for use in the nested function below
+		// have these expose for use in the nested function below
 		var this_tool_display_div = this['tool_display_div'];
 		var this_tool_uri = this['tool_uri'];
+		var this_tool_json_uri = this['tool_json_uri'];
 
 		// submit the form and send the results data back into our display area's jemplate
 		loading_modal_display('Submitting Form...');
@@ -550,6 +561,23 @@ function Tool (tool_attributes) {
 			$('#' + this_tool_id + '_wyiswig_transporter').val( $.trim( $('#'+this_tool_id+'_wyiswig').html() ) );
 		}
 
+		// features to stop other calls from overriding this one
+		// note that this is now the latest call
+		if (query_tool_calls[this_tool_json_uri] == undefined) {
+			query_tool_calls[this_tool_json_uri] = 0;
+		}
+		query_tool_calls[this_tool_json_uri] += 1;
+
+		// we need to make sure the tool.refresh_json_data knows this send_json uri is already active
+		if (active_queries[this_tool_json_uri] == undefined) { // this is the first one
+			active_queries[this_tool_json_uri] = 1;
+		} else {
+			active_queries[this_tool_json_uri] += 1;
+		}
+
+		// let's time this transfer
+		var start = new Date();
+
 		// submit the form
 		$('#' + form_id).ajaxSubmit({
 			//dataType: 'json', // interferes with error-checking functions
@@ -558,6 +586,9 @@ function Tool (tool_attributes) {
 				client_connection_id: client_connection_id
 			},
 			success: function(json_data, textStatus, jqXHR) {
+				// make the json uri no longer active
+				active_queries[this_tool_json_uri] -= 1;
+				
 				// use the check_for_errors function to see if the server sent back an error message
 				var is_error = check_for_errors(json_data);
 				if (is_error == 1) { // error found, stop here
@@ -573,6 +604,12 @@ function Tool (tool_attributes) {
 
 				} else { // omnitool wants you to see the form again, or maybe this is a multiple part form?
 					if (form_id.match('advanced_search')) { // reload the tools controls
+						
+						// for our response-time tracking
+						var end  = new Date();
+						// pack that up as seconds
+						json_data.response_time = (end.getTime() - start.getTime()) / 1000;
+												
 						// postpone the post_data_fetch_operations function
 						json_data.skip_post_data_ops = 1;
 						// process the results
@@ -583,6 +620,9 @@ function Tool (tool_attributes) {
 							post_data_fetch_operations(json_data);
 							// keep the display sized correctly
 							tool_objects[this_tool_id].shrink_or_grow_tool_display('shrink');
+							// scroll to top and close the modal
+							goToTop();
+							loading_modal_display('hide');
 						});
 
 						// fix the keywords and multi-selects back to blank
@@ -601,10 +641,6 @@ function Tool (tool_attributes) {
 						if ($('#form-field-1').val() == 'DO_CLEAR') {
 							$('#form-field-1').val('');
 						}
-
-						goToTop();
-
-						loading_modal_display('hide');
 
 					// regular display of results in the screen
 					} else {

@@ -53,11 +53,11 @@
 		<div class="row">
 
 			[%# area for advanced sort form -- see show_advanced_sort() in omnitool_toolojs.js %]
-			<div id="advanced_sort_[%tool_and_instance%]" class="pull-right col-xs-12 col-sm-12 col-md-12 col-lg-6" style="display:none;">
+			<div id="advanced_sort_[%tool_and_instance%]" class="pull-left col-xs-12 col-sm-12 col-md-12 col-lg-6" style="display:none;">
 			</div>
 
 			[%# area for advanced search form -- see show_advanced_search() in omnitool_toolojs.js %]
-			<div id="advanced_search_[%tool_and_instance%]" class="pull-right col-xs-12 col-sm-12 col-md-12 col-lg-6" style="display:none;">
+			<div id="advanced_search_[%tool_and_instance%]" class="pull-left col-xs-12 col-sm-12 col-md-12 col-lg-6" style="display:none;">
 			</div>
 
 			[%# main display area goes here %]

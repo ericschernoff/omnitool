@@ -804,7 +804,7 @@ function query_tool (tool_uri,post_data_object) {
 	if (query_tool_calls[tool_uri] == undefined) {
 		query_tool_calls[tool_uri] = 0;
 	}
-	query_tool_calls[tool_uri] = ++query_tool_calls[tool_uri];
+	query_tool_calls[tool_uri] += 1;
 
 	// and for testing below (the above would have been updated in the later call)
 	var this_calls_counter = query_tool_calls[tool_uri];
