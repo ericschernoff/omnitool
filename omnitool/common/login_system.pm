@@ -459,7 +459,7 @@ sub show_password_change_screen {
 			$tt_vars{change_my_password} = 0;
 			$tt_vars{password_was_changed} = 1;
 
-			$tt_vars{requested_uri} =~ s/\/\?change_my_password\=1//;
+			$tt_vars{requested_uri} =~ s/\?change_my_password\=1//;
 		}
 	}
 
