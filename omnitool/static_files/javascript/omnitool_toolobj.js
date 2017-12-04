@@ -81,6 +81,11 @@ function Tool (tool_attributes) {
 		// make myself the active tool for this category
 		the_active_tool_ids[ this['tool_type_short'] ] = this['the_tool_id'];
 
+		// if it's a "don't keep warm" screen, scroll to top 
+		if (this['tool_type_short'] == 'screen' && this['keep_warm'] != 'Yes') {
+			goToTop();
+		}
+
 		// does it have a div already?  that occurs when keep_warm='Yes'
 		if ($( "#"+this['tool_div'] ).length) {
 
@@ -132,20 +137,10 @@ function Tool (tool_attributes) {
 						this_tool_display_div+'.tt',
 						this_tool_uri + '/send_json_data' // ?client_connection_id='+client_connection_id
 					);
-					
-					// if it's a screen, scroll to top
-					if (this['tool_type_short'] == 'screen') {
-						goToTop();
-					}
+
 					
 				} else if (reload_jemplate == 1 || jemplate_bindings[ this_tool_display_div ].jemplate_loaded == 0) {
 					jemplate_bindings[ this_tool_display_div ].load_jemplate();
-
-					// if it's a screen, scroll to top
-					if (this['tool_type_short'] == 'screen') {
-						goToTop();
-					}
-
 
 				} else { // no, just load in the json feed to the display area
 					//jemplate_bindings[ this['tool_display_div'] ].load_jemplate();
