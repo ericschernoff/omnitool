@@ -88,9 +88,8 @@ function Tool (tool_attributes) {
 			if (this['tool_type'].match(/Modal/)) {
 				$("#"+this['tool_div']).modal({
 					backdrop: 'static',
-					keyboard: false
+					keyboard: false // can't use escape key for these, as URI needs to change
 				});
-
 			// otherwise, show the div
 			} else {
 				$("#"+this['tool_div']).show();
@@ -160,7 +159,7 @@ function Tool (tool_attributes) {
 				if (this_tool_type_short == 'modal') {
 					$("#"+this_tool_div).modal({
 						backdrop: 'static',
-						keyboard: false
+						keyboard: false // can't use escape key for these, as URI needs to change
 					});
 				}
 			});

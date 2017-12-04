@@ -904,7 +904,7 @@ open_system_modal = function(data) {
 	// then show it
 	$('#system_modal').modal({
 		backdrop: 'static',
-		keyboard: false
+		keyboard: true
 	});
 	loading_modal_display('hide');
 }
