@@ -104,7 +104,7 @@ sub view_error_message {
 	my $task = $self->{luggage}{params}{task};
 
 	my $results = {
-		'modal_title' => 'Error Message for Task ID '.$task,
+		'modal_title' => 'Message for Task ID '.$task,
 		'simple_message' => $$tasks{$task}{error_message},
 	};
 

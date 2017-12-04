@@ -355,6 +355,7 @@ sub get_instance_db_object {
 	# send it back
 	return $right_db_obj;
 }
+
 # companion method to get_instance_db_object() to get the database server's hostname from the instance ID
 # this is one spot we do raw SQL since the database_server_id is just the 'code' from the database_servers table
 # separating out in case we need this elsewhere (like omnitool::applications::otadmin::tools::deploy_admin_database)
