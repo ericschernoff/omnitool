@@ -85,6 +85,7 @@
 
 												<form autocomplete="on" id="login-form" name="login-form" action="[%requested_uri%]" method="post">
 												<input type="hidden" name="requested_uri" value="[%requested_uri%]"/>
+												<input type="hidden" name="attempt_login" value="1"/>
 													<fieldset>
 														<div class="block clearfix">
 															<input name="username" id="username_field" type="text" placeholder="Username" class="form-control" autocomplete="on"/>
@@ -179,7 +180,7 @@
 														<div class="clearfix">
 															<button type="submit" class=" pull-right btn btn-sm btn-primary">
 																<i class="ace-icon fa fa-key"></i>
-																<span class="bigger-110">Change Password and Return</span>
+																<span class="bigger-110">Change Password and Proceed</span>
 															</button>
 														</div>
 
@@ -202,7 +203,7 @@
 												</h4>
 												<div class="space-6"></div>
 
-												<a href="[%requested_uri%]">Return to [%instance_name%].</a>
+												<a href="[%requested_uri%]">Proceed to [%instance_name%].</a>
 
 											</div><!-- /.widget-main -->
 

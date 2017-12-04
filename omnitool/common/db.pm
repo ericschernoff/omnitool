@@ -561,6 +561,44 @@ sub quick_select {
 	return (@data);
 }
 
+# password-changer: utility method to change/set/update a user's password in all omnitool admin DB's
+# needed in multiple spots; put here because it's basically SQL
+sub change_a_users_password {
+	my $self = shift;
+
+	# required argument is the username + password
+	my ($username, $new_password) = @_;
+
+	if (!$username || !$new_password) {
+		$self->log_errors('change_a_users_password() requires both a username and a password.');
+		return;
+	}
+
+	my ($omnitool_admin_databases, $otadmin_db);
+
+	# NOTE: I thought about putting some password complexity tests here, but login_system.pm
+	# has that, and our admins can set what they like in Manage Users.
+
+	# update the passowrd - on all omnitool databases
+	$omnitool_admin_databases = $self->list_select(qq{
+		select database_name from omnitool.instances where parent='1_1:1_1' and status='Active'
+	});
+	foreach $otadmin_db (@$omnitool_admin_databases) {
+		$self->do_sql('update '.$otadmin_db.
+			qq{.omnitool_users set password=SHA2(?,224), require_password_change='No',
+				password_set_date=curdate() where username=?
+		},[$new_password, $username]);
+	}
+
+	# avoid endless looping in authentication screen
+	$self->do_sql(qq{
+		update otstatedata.authenticated_users
+		set require_password_change='No' where username=?
+	},[$username]);
+
+	# success, no need to return
+}
+
 # sql_hash: take an sql command and return a hash of results; my absolute personal favorite
 sub sql_hash {
 	my $self = shift;

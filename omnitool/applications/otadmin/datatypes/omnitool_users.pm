@@ -76,6 +76,27 @@ sub post_form_operations {
 
 }
 
+# WE NEED TO KEEP ALL THE PASSWORDS FOR THIS USER IN SYNC ACROSS ALL OMNITOOL ADMIN DATABASES
+
+# so grab the plaintext password before it gets encryped so change_a_users_password() works in post_save()
+sub pre_save {
+	my $self = shift;
+	my ($args) = @_; # args passed to save()
+
+	$self->{luggage}{params}{new_password} = $self->{luggage}{params}{password};
+
+}
+# now use the db->change_a_users_password() to update across the system, provided these values were sent
+sub post_save {
+	my $self = shift;
+	my ($args) = @_; # args passed to save()
+
+	# only if the username/password values were provided
+	if ($self->{luggage}{params}{username} && $self->{luggage}{params}{new_password}) {
+		$self->{luggage}{db}->change_a_users_password( $self->{luggage}{params}{username}, $self->{luggage}{params}{new_password} );
+	}
+
+}
 
 
 1;

@@ -118,7 +118,7 @@ sub pack_luggage {
 
 	(@uri_parts) = split /\//, $$luggage{uri};
 
-	if ($uri_parts[1] && $uri_parts[1] !~ /^(index.html|tool|ui)/) {
+	if ($uri_parts[1] && $uri_parts[1] !~ /^(index.html|tool|ui|change_my_password)/) {
 		$uri_base = $uri_parts[1];
 
 		# we will have this bit in the initial page load, and we need the JS to

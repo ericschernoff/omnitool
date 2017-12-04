@@ -112,7 +112,7 @@ sub get_datatypes_hash {
 					};
 					push(@{ $$datatypes{$dt}{fields_key} },$dtf.'_download');
 				}
-				
+
 				# also track encrypted text filds
 				push(@{$$datatypes{$dt}{encrypted_fields}},$dtf) if $$datatypes{$dt}{fields}{$dtf}{field_type} =~ /encrypt/;
 			}
@@ -190,9 +190,9 @@ sub get_datatype_field_names {
 
 	# very nice query
 	($datatype_fields_names, $datatype_fields_keys) = $db->sql_hash(qq{
-		select concat(code,'_',server_id),name,virtual_field,field_type from $table_name where parent=? order by name
+		select concat(code,'_',server_id),name,virtual_field,field_type from $table_name where parent=? order by name,(virtual_field='Yes')
 	},( 'bind_values' => ['6_1:'.$datatype_id] ) );
-	
+
 	# need to get any 'file_download' virtual fields in there
 	foreach $field (@$datatype_fields_keys) {
 		next if $$datatype_fields_names{$field}{field_type} ne 'file_upload';
@@ -202,7 +202,7 @@ sub get_datatype_field_names {
 			'virtual_field' => 'Yes',
 			'field_type' => 'file_download',
 		};
-		push(@$datatype_fields_keys,$field.'_download');					
+		push(@$datatype_fields_keys,$field.'_download');
 	}
 
 	return ($datatype_fields_names, $datatype_fields_keys);
@@ -224,7 +224,7 @@ We need an Instance's hostname and a omnitool::common::db object as arguments to
 We do depend on the omnitool::common::db object being set to the OmniTool Admin database for the current
 Instance / Hostname, which pack_luggage will do for us.
 
-This will usually be called in the luggage() routine, who also packages up our db object, session data, and 
+This will usually be called in the luggage() routine, who also packages up our db object, session data, and
 this datatype hash into a nice portable hashref.
 
 The basic/main info on the datatypes will be stored in the 'datatypes' table in the OmniTool Admin databases.

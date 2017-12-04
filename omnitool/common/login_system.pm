@@ -111,8 +111,9 @@ sub web_authentication {
 	# being too unwiedly, especially when you have TWCWIFI changing up your IP every 5 min.
 	# Still used for limiting login attempts to 10.
 
-	# if they sent a username and password, test their credentials
-	if ($self->{luggage}{params}{username} && $self->{luggage}{params}{password}) {
+	# if they sent a username and password -- and we are not updating an omnitool user -- test their credentials
+	# $$luggage{uri} !~ /tools\/otusers\/(create|update)\/send_json_data/ &&
+	if ($self->{luggage}{params}{attempt_login} && $self->{luggage}{params}{username} && $self->{luggage}{params}{password}) {
 		$self->test_their_credentials();
 	}
 
@@ -396,7 +397,7 @@ sub show_login_screen {
 
 # subroutine to prepare and show the password-change screen
 sub show_password_change_screen {
-	my ($attempts_count, $belt, $c, $code, $hostname, $login_attempts_so_far, $new_session, $random_string, $remaining_attempts, $requested_uri, $tt, $username, $valid_user, %tt_vars);
+	my ($otadmin_db, $omnitool_admin_databases, $attempts_count, $belt, $c, $code, $hostname, $login_attempts_so_far, $new_session, $random_string, $remaining_attempts, $requested_uri, $tt, $username, $valid_user, %tt_vars);
 
 	# myself has my parameters
 	my $self = shift;
@@ -451,17 +452,8 @@ sub show_password_change_screen {
 		# otherwise, update the password for them
 		} else {
 
-			# make it so they are up to date on pasword changes
-			$self->{luggage}{db}->do_sql(qq{
-				update omnitool_users set password=SHA2(?,224), require_password_change='No',
-				password_set_date=curdate() where username=?
-			},[$self->{luggage}{params}{new_password}, $self->{luggage}{session}{username}]);
-
-			# no endless looping please
-			$self->{luggage}{db}->do_sql(qq{
-				update otstatedata.authenticated_users
-				set require_password_change='No' where username=?
-			},[$self->{luggage}{session}{username}]);
+			# use the utility in our DB object
+			$self->{luggage}{db}->change_a_users_password( $self->{luggage}{session}{username}, $self->{luggage}{params}{new_password} );
 
 			# cancel showing the password box and instead show the success message
 			$tt_vars{change_my_password} = 0;
