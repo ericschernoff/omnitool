@@ -173,6 +173,17 @@ sub new {
 		$self->search(%args); # easier to just pass everything in
 	}
 
+	# if they passed in options for save(), run that method, passing them in as a normal hash
+	if ($args{save} && ref($args{save}) eq 'HASH') {
+		$self->save( %{$args{save}} );
+	}
+
+	# or if they passed in options for simple_save(), run that method, passing them in as a normal hash
+	if ($args{simple_save} && ref($args{simple_save}) eq 'HASH') {
+		$self->simple_save( %{$args{simple_save}} );
+	}
+
+	# send it back to the caller
 	return $self;
 }
 
@@ -476,6 +487,14 @@ method will have all the methods after new().
 		'skip_VIRTUAL_FIELD' => 1, # optional; specify one option per virtual field that you wish to skip on each call
 									# to load(); i.e. 'skip_contact_name' will prevent 'field_contact_name() from running.
 									# you can also pass these to load() for one-time skipping
+		# for saving data during setup
+		'save' => $hashref_of_options', # optional: hashref of options that would be sent to save()
+										# see below for details.  Note that when calling save() directly,
+										# you would use regular hash as options, but in this case, use a hashref {}.
+		'simple_save' => $hashref_of_options', # optional: hashref of options that would be sent to simple_save()
+											 # see below for details.  Again, when calling simple_save() directly,
+											 # you would use regular hash as options, but in this case, use a hashref {}.
+											 # NOTE: You will definitely need a 'data_code' option when calling this way!
 		# optional value if calling from a Tool.pm object:
 		'tool_and_instance' => $tool_and_instance,  # optional, the tool_id value to use to create JS links
 						# passed in when tool->get_omniclass_object() creates the object
