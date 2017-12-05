@@ -11,7 +11,7 @@ package omnitool::tool;
 # $self->{luggage}{belt}->logger('XYZ occurred : '.timestr($td),'eric');
 
 # first time doing it this way, but have allowed this many times before
-$omnitool::tools::VERSION = '6.0';
+$omnitool::tools::VERSION = '6.4.1';
 
 use strict;
 

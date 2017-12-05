@@ -2,7 +2,7 @@ package omnitool::omniclass;
 # There is a whole lot here, so please see pod documentation included below.
 # perldoc omnitool::omniclass
 
-$omnitool::omniclass::VERSION = '6.0';
+$omnitool::omniclass::VERSION = '6.4.1';
 # really first time doing it this way, but replacing original design
 
 # will need this in new() and change_options() if switching database servers
