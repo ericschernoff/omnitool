@@ -673,7 +673,7 @@ This how you search (and load) data.  Meant to take the place of SQL 'select' st
 			'relationship_column' => 'column_name', # used when specifying the 'database' and/or 'table' options; will
 				# be a column on the 'foreign' table specified in 'table_name'; will tie back to 'primary_table_column' below
 				# if 'table_name' =~ /metainfo/, then will default to data_code and in that case, limits to records to $self->{dt}.
-				# the defailt is 'parent,' which will look for parent values with the prefix of this object's datatype ID
+				# the default is 'parent,' which will look for parent values with the prefix of this object's datatype ID
 				# if set to 'data_code' will be translated to 'concat(code,'_',server_id)'
 			'primary_table_column' => 'column_name', # used when specifying the 'database' and/or 'table' options,
 				# and the 'relationship_column' does not match up the primary key of this object's primary table.

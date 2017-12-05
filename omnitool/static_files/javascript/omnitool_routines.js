@@ -696,9 +696,11 @@ function omnitool_controller (event,target_tool_uri) {
 						
 					// otherwise, refresh all the records
 					} else {
-						jemplate_bindings[ tool_objects[the_tool_id]['tool_display_div'] ].process_json_uri();
 						// also reload the tool_controls, in case the keyword changed
 						tool_objects[the_tool_id].reload_tool_controls();
+						// reload the json now
+						jemplate_bindings[ tool_objects[the_tool_id]['tool_display_div'] ].process_json_uri();
+						// show the advanced search
 						if ($('#advanced_search_' + the_tool_id).is(':visible')) {
 							tool_objects[the_tool_id].show_advanced_search();
 						}
@@ -706,11 +708,13 @@ function omnitool_controller (event,target_tool_uri) {
 
 				// and if it's not a screen with a single_record_jemplate_block, just reload all the displayed results for this tool
 				} else {
-					jemplate_bindings[ tool_objects[the_tool_id]['tool_display_div'] ].process_json_uri();
-					// also reload the tool_controls, in case the keyword changed
-					tool_objects[the_tool_id].reload_tool_controls();
-					// and un-pause the search
-					tool_objects[the_tool_id]['search_paused'] = 'No';
+					// first reload the tool_controls, in case the keyword changed
+					$.when( tool_objects[the_tool_id].reload_tool_controls() ).done(function() {
+						// then re-run the process_json_uri
+						jemplate_bindings[ tool_objects[the_tool_id]['tool_display_div'] ].process_json_uri();
+						// and un-pause the search
+						tool_objects[the_tool_id]['search_paused'] = 'No';
+					});
 				}
 			}
 			// your jemplate should be all-inclusive for this tool's needs
