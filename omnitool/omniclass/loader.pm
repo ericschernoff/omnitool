@@ -189,6 +189,11 @@ sub load {
 			# maybe they only want to load certain fields
 			next if $args{load_fields} && !( $self->{belt}->really_in_list($method,$args{load_fields}) );
 
+			# or maybe they want to skip this specific virtual field?
+			next if $args{'skip_'.$table_column} || $self->{'skip_'.$table_column};
+			# notice that you can pass 'skip_virtual_field_name' either to $self->load() for a one-time skip
+			# or you can pass that in to new() for the life of this omniclass object
+
 			# if it's a file-upload, we build out the virtual field right here
 			# see the virtual field shoe-horning in datatype_hash.pm
 			if ($method =~ /_download/ && $self->{datatype_info}{fields}{$field}{field_type} eq 'file_download') {

@@ -473,6 +473,9 @@ method will have all the methods after new().
 		'simple_query_mode' => 'list,of,fields'; # optional; makes this system work more like a plain SQL query
 												 # this will fill in load_fields and auto-set skip_metainfo and
 												 # skip_hooks to 1 (load only)
+		'skip_VIRTUAL_FIELD' => 1, # optional; specify one option per virtual field that you wish to skip on each call
+									# to load(); i.e. 'skip_contact_name' will prevent 'field_contact_name() from running.
+									# you can also pass these to load() for one-time skipping
 		# optional value if calling from a Tool.pm object:
 		'tool_and_instance' => $tool_and_instance,  # optional, the tool_id value to use to create JS links
 						# passed in when tool->get_omniclass_object() creates the object
@@ -542,6 +545,9 @@ To load up data from your MySQL database into the OmniClass object:
 		'simple_query_mode' => 'list,of,fields'; # optional; put your 'load_fields' comma-list here (and not use 'load_fields'), and
 												 # it will auto-set 'do_clear', 'skip_metainfo', and 'skip_hooks' all to 1
 												 # basically, make this into as pure a DB query as possible; great for snatching 1 or 2 fields
+		'skip_VIRTUAL_FIELD' => 1, # optional; specify one option per virtual field that you wish to skip on this load()
+									# action; i.e. 'skip_contact_name' will prevent 'field_contact_name() from running
+									# you can pass these into new() to remember them for each load() call for this object
 		'sort_column' => $column_or_key_name, # optional, sorts the data by that named column/key
 			# default is the order of @$data_codes
 			# if you want to sort by a column in the metainfo table, specify this as 'metainfo.column_name',
