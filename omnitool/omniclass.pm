@@ -683,7 +683,8 @@ This how you search (and load) data.  Meant to take the place of SQL 'select' st
 				# if the operator is 'between', that's for date ranges.  Provide two dates in 'match_value'
 				#	like so:  YYYY-MM-DD---YYYY-MM-DD, i.e. '1976-09-04---1999-08-01'
 
-			'match_column' => 'column_name_to_search', # defaults to 'name'; otherwise provide the DB column name
+			'match_column' => 'column_name_to_search', # defaults to 'name'; otherwise provide the DB column name;
+														# use 'data_code' for the primary key ( concat(code,'_',server_id) )
 			'match_value' => 'abc', # required; use arrayref for 'in' and 'not in' options, or if you use 'additional_logic'
 				# like/not like match_values automatically have % put at start/end
 
