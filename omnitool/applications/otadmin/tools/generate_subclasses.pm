@@ -68,7 +68,7 @@ sub generate_subclass {
 	# otherwise must be a tool.pm sub-class?
 	} else {
 		# need a short tool name, no spaces and lowercase
-		($self->{short_tool_name} = $self->{omniclass_object}->{data}{button_name}) =~ s/\s/_/g;
+		($self->{short_tool_name} = $self->{omniclass_object}->{data}{uri_path_base}) =~ s/\s/_/g;
 		$self->{short_tool_name} =~ s/[^A-Z0-9\_]//gi;
 		$self->{short_tool_name} = lc($self->{short_tool_name});
 
