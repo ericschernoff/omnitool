@@ -163,4 +163,31 @@ sub clear_display_options_hash {
 
 }
 
+# utility method to get my parent tool's last-saved display options; useful when preparing certain
+# form fields based on selections above the current level
+sub get_parent_tools_display_options {
+	my $self = shift;
+	
+	my ($this_tool_data_code, $parent_tool_datacode, $display_options_obj_name, $display_options);
+	
+	# get my data_code
+	($this_tool_data_code = $self->{tool_and_instance}) =~ s/$self->{luggage}{app_instance}_//;
+
+	# get my parent tool's data_code
+	($parent_tool_datacode = $self->{luggage}{session}{tools}{$this_tool_data_code}{parent}) =~ s/8_1://;
+
+	# construct the object name for the parent tool's saved display options
+	$display_options_obj_name = $self->{luggage}{params}{client_connection_id}.'_'.$parent_tool_datacode,
+
+	# retrieve those options
+	$display_options = $self->{db}->hash_cache(
+		'task' => 'retrieve',
+		'object_name' => $display_options_obj_name,
+		'db_table' => $self->{luggage}{database_name}.'.tools_display_options_cached',
+	);
+	
+	# ship them back 
+	return $display_options;
+}
+
 1;
