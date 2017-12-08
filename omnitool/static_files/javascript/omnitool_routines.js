@@ -1153,14 +1153,36 @@ function interactive_form_elements (tool_id,form_type) {
 
 // support form-appending in spreadsheet-forms
 var count_of_new_forms = 1;
-function append_spreadsheet_form (the_tool_id) {
+function append_spreadsheet_form (the_tool_id, source_row_id) {
 	count_of_new_forms = count_of_new_forms + 1;
 	var new_html = $( '#new_item_form_entry_storage' ).html();
 	var new_form_html = new_html.replace(/new_item_form_entry/g,'new_item_form_entry'+count_of_new_forms);
-	$.when( $('#' + the_tool_id + '_form_area').append( new_form_html ) ).done(function() {
-		// re-empower the form once the new bits are added
-		interactive_form_elements(the_tool_id);
-	});
+	
+	// if we cloning an existing row, we will want to insert the new row after the source...
+	if (source_row_id != undefined) {
+		$.when( $('#' + source_row_id).after( new_form_html ) ).done(function() {
+
+			// ..and then get all the valus in there
+			$('#'+source_row_id+' input[type=text]').each(function(i,v) {
+				var target_field = $( '#new_item_form_entry'+count_of_new_forms+' input[type=text]')[i];
+				$(target_field).val( $(this).val() );
+			});
+			$('#'+source_row_id+' select').each(function(i,v) {
+				var target_field = $( '#new_item_form_entry'+count_of_new_forms+' select')[i];
+				$(target_field).val( $(this).val() );
+			});
+
+			// re-empower the form once the new bits are added
+			interactive_form_elements(the_tool_id);
+		});		
+	
+	// or just appending a new form?
+	} else {
+		$.when( $('#' + the_tool_id + '_form_area').append( new_form_html ) ).done(function() {
+			// re-empower the form once the new bits are added
+			interactive_form_elements(the_tool_id);
+		});
+	}
 }
 
 // routine to clear a form, most likely an advanced search or sort form

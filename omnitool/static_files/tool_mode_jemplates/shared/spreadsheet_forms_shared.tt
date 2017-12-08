@@ -103,7 +103,7 @@
 					[%# stash it for keeping a storage version %]
 					[% SET new_form = form %]
 				[% ELSE %]
-					[% form.row_name %]
+					<a href="javascript:append_spreadsheet_form('[%the_tool_id%]','[%form.row_name%]_form_entry')">[%form.row_name%] <i class="ace-icon fa fa-copy"></i></a>
 				[% END %]
 			</td>
 			[% FOREACH f IN form.field_keys %]
