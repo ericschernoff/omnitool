@@ -444,7 +444,7 @@ sub figure_datatype_table_columns {
 		'short_text_encrypted' => 'text',
 		'short_text_autocomplete' => 'varchar(LENGTH)',
 		'short_text_tags' => 'text',
-		'simple_date' => 'varchar(10)',
+		'simple_date' => 'date', # not sure why i had varchar(10) before
 		'single_select' => 'varchar(LENGTH)',
 		'street_address' => 'text',
 		'web_url' => 'varchar(LENGTH)',

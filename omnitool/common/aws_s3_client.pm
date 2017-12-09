@@ -8,7 +8,7 @@ package omnitool::common::aws_s3_client;
 # 	https://s3.console.aws.amazon.com/s3/home
 
 # Really great CPAN from Lee Johnson makes this work:
-use AWS::S3;
+use AWS::S3; # make sure to install that, since it's only recommended by the installer
 
 use strict;
 
@@ -19,9 +19,9 @@ sub new {
 	# required arguments as a hash
 	my (%args) = @_;
 	# looks like (all required):
-	#	'access_key_id' => 'your_aws_access_key_id', 
-	#	'secret_access_key' => 'your_aws_access_key_secret', 
-	#	'luggage' => $luggage, 
+	#	'access_key_id' => 'your_aws_access_key_id',
+	#	'secret_access_key' => 'your_aws_access_key_secret',
+	#	'luggage' => $luggage,
 
 	# fail if no %$luggage provided
 	if (!$args{luggage}{belt}->{all_hail}) {
@@ -69,7 +69,7 @@ sub new {
 # method to get a file from AWS S3
 sub get_file {
 	my $self = shift;
-	
+
 	# required arguments are the directory and the file names
 	my ($directory,$filename) = @_;
 
@@ -79,15 +79,15 @@ sub get_file {
 	if (!$directory || !$filename) {
 		$self->{luggage}{belt}->mr_zebra(qq{Error: aws_s3_client->get_file() requires two arguments: the directory and file name.},1);
 	}
-	
+
 	eval {
 		$the_file = $self->{the_bucket}->file($directory.'/'.$filename);
 	};
-	
+
 	if ($@) { # log out if failed
 		$self->{luggage}{belt}->mr_zebra('Error retrieving '.$directory.'/'.$filename.' from AWS S3: '.$@,1);
 	}
-	
+
 	# if we can get the reference to the file contents
 	if ($the_file) {
 		$file_reference = $the_file->contents;
@@ -101,11 +101,11 @@ sub get_file {
 # method to save a file to the AWS S3 store
 sub put_file {
 	my $self = shift;
-	
-	# required arguments are the directory name, the filename, 
+
+	# required arguments are the directory name, the filename,
 	# and a reference to the object contents
 	my ($directory,$filename,$the_file_contents) = @_;
-	
+
 	# fail without those arguments
 	if (!$directory || !$filename || !$the_file_contents) {
 		$self->{luggage}{belt}->mr_zebra(qq{Error: aws_s3_client->put_file() requires three arguments: the directory, the file, and the contents for the new file.},1);
@@ -115,14 +115,14 @@ sub put_file {
 	eval {
 		my $new_file = $self->{the_bucket}->add_file(
 			'key' => $directory.'/'.$filename,
-			'contents' => $the_file_contents,	
+			'contents' => $the_file_contents,
 		);
 	};
 	if ($@) { # log out if failed
 		$self->{luggage}{belt}->mr_zebra('Error saving '.$directory.'/'.$filename.' from AWS S3: '.$@,1);
 	}
 
-	
+
 	# return success
 	return 1;
 }
@@ -130,10 +130,10 @@ sub put_file {
 # method to delete a file from S3
 sub delete_file {
 	my $self = shift;
-	
-	# required arguments are the directory name and the filename, 
+
+	# required arguments are the directory name and the filename,
 	my ($directory,$filename) = @_;
-	
+
 	# get and squash the file
 	my $the_file = $self->{the_bucket}->file( $directory.'/'.$filename );
 	if ($the_file) {
@@ -151,9 +151,9 @@ __END__
 =head1 omnitool::common::aws_s3_client
 
 This is a basic client to save and retrieve files to and from Amazon Web Services'
-Simple Storage Service (S3). This is meant to work with the the file_manager.pm class 
+Simple Storage Service (S3). This is meant to work with the the file_manager.pm class
 for storing and retrieving (and sometimes deleting) files associated
-with OmniClass records.  
+with OmniClass records.
 
-This should not be used outside of file_manager.pm, so I am not going to document the 
+This should not be used outside of file_manager.pm, so I am not going to document the
 methods in hopes of discouraging any extracurricular activity.
