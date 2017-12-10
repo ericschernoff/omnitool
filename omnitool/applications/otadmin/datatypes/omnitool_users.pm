@@ -6,6 +6,10 @@ use parent 'omnitool::omniclass';
 # primary key of datatype
 $omnitool::applications::otadmin::datatypes::omnitool_users::dt = '9_1';
 
+# for updating the user's password throughout the system
+use omnitool::common::password_sealer;
+
+# for being a better person
 use strict;
 
 # any special new() routines
@@ -93,7 +97,9 @@ sub post_save {
 
 	# only if the username/password values were provided
 	if ($self->{luggage}{params}{username} && $self->{luggage}{params}{new_password}) {
-		$self->{luggage}{db}->change_a_users_password( $self->{luggage}{params}{username}, $self->{luggage}{params}{new_password} );
+		# use our Crypt::PBKDF2 library to strongly encode this password and store it everywhere
+		my $password_sealer = omnitool::common::password_sealer->new( $self->{luggage} );
+		$password_sealer->change_a_users_password( $self->{luggage}{params}{username}, $self->{luggage}{params}{new_password} );
 	}
 
 }

@@ -20,6 +20,9 @@ use omnitool::common::ui;
 # for creating sessions
 use omnitool::common::session;
 
+# for supporting passwords, might come in handy
+use omnitool::common::password_sealer;
+
 # let's be an OO module for re-usability and extensibility
 sub new {
 	my $class = shift;
@@ -38,6 +41,7 @@ sub new {
 		'http_host' => lc($$luggage{belt}->{request}->env->{HTTP_HOST}), # hostnames should always be lower-case
 		'cookie_id' => 'omnitool_ticket_'.$ENV{OT_COOKIE_ID}, # suffix allows for multiple cookies / systems
 														  # that $ENV var set in start_omnitool.bash
+		'password_sealer' => omnitool::common::password_sealer->new($luggage),
 	}, $class;
 
 	return $self;
@@ -233,11 +237,8 @@ sub test_their_credentials {
 	# default: do not require password change
 	$require_password_change = 'No';
 
-	# notice how nicely-encrypted that password is
-	($valid_user) = $self->{luggage}{db}->quick_select(qq{
-		select count(*) from omnitool_users
-		where username=? and password=SHA2(?,224)
-	},[$self->{luggage}{params}{username}, $self->{luggage}{params}{password}]);
+	# use our improved password keeper class to check their password
+	$valid_user = $self->{password_sealer}->check_a_users_password( $self->{luggage}{params}{username}, $self->{luggage}{params}{password} );
 
 	# if they don't exist in the main/basic user database, see if there is an
 	# system-specific authentication plugin/helper installed for this application
@@ -440,10 +441,8 @@ sub show_password_change_screen {
 
 	# make sure the password is not the same as the old one
 	} elsif ($self->{luggage}{params}{new_password}) {
-		($is_current_password) = $self->{luggage}{db}->quick_select(qq{
-			select count(*) from omnitool_users
-			where username=? and password=SHA2(?,224)
-		},[$self->{luggage}{session}{username}, $self->{luggage}{params}{new_password}]);
+		# use our improved password keeper class to see if the old password is the same as the proposed new one
+		$is_current_password = $self->{password_sealer}->check_a_users_password( $self->{luggage}{session}{username}, $self->{luggage}{params}{new_password} );
 
 		# tsk, tsk
 		if ($is_current_password) {
@@ -453,7 +452,7 @@ sub show_password_change_screen {
 		} else {
 
 			# use the utility in our DB object
-			$self->{luggage}{db}->change_a_users_password( $self->{luggage}{session}{username}, $self->{luggage}{params}{new_password} );
+			$self->{password_sealer}->change_a_users_password( $self->{luggage}{session}{username}, $self->{luggage}{params}{new_password} );
 
 			# cancel showing the password box and instead show the success message
 			$tt_vars{change_my_password} = 0;

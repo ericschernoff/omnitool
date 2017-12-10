@@ -19,7 +19,7 @@ sub new {
 	# needs at least 'luggage' for the luggage; can also provide 'db' for an 'database
 	# handle and 'database_name'; those values will be in %$luggage for you
 
-	# Need to stop here if luggagenot provided
+	# Need to stop here if luggage not provided
 	if (!$args{luggage}{belt}->{all_hail}) {
 		die(qq{Can't create an OmniClass without my luggage.'});
 	}

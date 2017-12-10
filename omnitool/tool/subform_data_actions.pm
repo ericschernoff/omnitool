@@ -4,7 +4,7 @@ package omnitool::tool::subform_data_actions;
 # forms for batch-editing the children (of a single type) of that main record.
 #
 # For this to work:
-# 1. ake the 'uri_path_base' one of 'create', 'update', 'create_from'
+# 1. make the 'uri_path_base' one of 'create', 'update', 'create_from'
 # 2. Use Spreadsheet_FormV1.tt as the tool view jemplate.
 # 3. Make sure the datatype of the main record has only one 'Can Contain Datatypes' configured
 

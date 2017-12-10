@@ -37,6 +37,9 @@ package omnitool::omniclass::field_grabber;
 
 =cut
 
+# for password encoding
+use omnitool::common::password_sealer;
+
 # access_roles are really multi-selects, which are just like checkboxes
 sub access_roles_select {
 	my $self = shift;
@@ -133,7 +136,7 @@ sub file_upload {
 		$self->{luggage}{params}{$params_key} = $self->{file_manager}->store_file($params_key,$previous_value);
 
 	} elsif ($self->{luggage}{params}{$params_key}) { # need the value they provided
-		
+
 		$self->{luggage}{params}{$params_key} = $self->{file_manager}->store_file($self->{luggage}{params}{$params_key},$previous_value);
 
 	# if no file provided, but there was a previous value, for an update, go with that
@@ -167,14 +170,17 @@ sub multi_select {
 sub password {
 	my $self = shift;
 	my ($table_column,$args,$field) = @_;
-	my ($code,$server_id,$match_data_code);
+	my ($code,$server_id,$match_data_code, $password_sealer);
 
 	# what is the base %$params keys; this will also be the destination of the data
 	my $params_key = $self->figure_the_key($table_column,$args);
 
 	# if it is filled, encrypt/hash via SHA2
 	if ($self->{luggage}{params}{$params_key}) {
-		($self->{luggage}{params}{$params_key}) = $self->{db}->quick_select('select sha2(?,224)',[$self->{luggage}{params}{$params_key}]);
+
+		# use our Crypt::PBKDF2 library to strongly encode this password
+		$password_sealer = omnitool::common::password_sealer->new( $self->{luggage} );
+		$self->{luggage}{params}{$params_key} = $password_sealer->hash_from_password( $self->{luggage}{params}{$params_key} );
 
 	# if an update and no value, use previous value
 	} elsif ($$args{data_code}) {
