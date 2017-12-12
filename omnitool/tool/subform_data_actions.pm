@@ -90,6 +90,10 @@ sub generate_form {
 	$subdata_object = $self->{omniclass_object}->get_omniclass_object(
 		'dt' => $subdata_type,
 	);
+	
+	$self->{json_results}{sub_forms_title} = 'Manage '.$subdata_object->{datatype_info}{name}.' Records';
+	$self->{json_results}{sub_forms_instructions} = $subdata_object->{datatype_info}{description};
+	$self->{json_results}{sub_forms_instructions} ||= 'Clear the leftmost field to delete an existing record.';
 
 	# some field-related tasks
 	foreach $field (@{$subdata_object->{datatype_info}{fields_key}}) {

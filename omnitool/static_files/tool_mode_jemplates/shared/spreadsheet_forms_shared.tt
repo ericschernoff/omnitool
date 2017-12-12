@@ -82,12 +82,23 @@
 				</div>
 			</div>
 		[% END %]
+		
+		[% IF sub_forms_title %]
+			<div class="align-center center h3">
+				[% sub_forms_title %]
+			</div>
+		[% END %]
+		[% IF sub_forms_instructions %]
+			<div class="align-center center">
+				[% sub_forms_instructions %]
+			</div>
+		[% END %]
 
 		<table class="table table-striped table-bordered table-hover" id="tool_results_[%the_tool_id%]">
 		<thead>
 			<tr>
 			[% FOREACH heading IN headings %]
-				<th center" nowrap>[% heading %]</th>
+				<th nowrap>[% heading %]</th>
 			[% END %]
 			</tr>
 		<thead>
