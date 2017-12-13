@@ -23,12 +23,10 @@ use Devel::Size qw(total_size);
 # for checking the status of the S3/Swift connections
 use Scalar::Util qw(blessed);
 
-# for saving/loading files via swift
+# import our class for saving/loading files via swift
 use omnitool::common::swiftstack_client;
-# that's my hacked cisco version.  in the normal world, one would have:
-# use Net::OpenStack::Swift;
 
-# for saving/loading files via amazon s3
+# import our class for saving/loading files via amazon s3
 use omnitool::common::aws_s3_client;
 # that uses AWS::S3 on CPAN
 
@@ -85,6 +83,7 @@ sub connect_to_store {
 	if ($self->{file_storage_method} eq 'Swift Store') {
 		# exit if we already have it
 		return if blessed($self->{swift_object}) =~ /swiftstack_client/;
+
 		# proceed with connection
 		my ($auth_url, $username, $password) = split /\|/, $self->{file_location};
 		$self->{swift_object} = omnitool::common::swiftstack_client->new(
@@ -96,7 +95,7 @@ sub connect_to_store {
 	# same treatment for the amazon s3 method
 	} elsif ($self->{file_storage_method} eq 'Amazon S3') {
 		# exit if we already have it
-		return if blessed($self->{swift_object}) =~ /aws_s3_client/;
+		return if blessed($self->{s3}) =~ /aws_s3_client/;
 
 		# proceed with connection
 		my ($access_key_id, $secret_access_key) = split /\:/, $self->{file_location};
