@@ -343,6 +343,11 @@ function post_data_fetch_operations (data) {
 			$('#above_tool_display_'+ data.the_tool_id).html('<i>Found ' + data.records_found_count + ' records in ' + data.response_time + ' seconds.</i>');
 		}
 
+		// if the advanced search screen is open, be sure to shrink the main area		
+		if (tool_objects[data.the_tool_id].advanced_search_open == 1) {
+			tool_objects[data.the_tool_id].shrink_or_grow_tool_display('shrink');
+		}
+
 	// if it is an action screen, we shall show previous & next buttons plus any inline actions
 	} else if (tool_objects[data.the_tool_id]['tool_type'] == 'Action - Screen') {
 		if (localStorage.getItem("altcodes_keys_" + data.parent_tool_id)) {
