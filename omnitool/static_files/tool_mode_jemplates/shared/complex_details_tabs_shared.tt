@@ -341,7 +341,6 @@
 								[% PROCESS full_screen_form %]
 
 							[% ELSIF tabs.$tab_key.form_type == 'spreadsheet_form_entries' %]
-
 								[% PROCESS spreadsheet_form_entries %]
 
 							[% END %]

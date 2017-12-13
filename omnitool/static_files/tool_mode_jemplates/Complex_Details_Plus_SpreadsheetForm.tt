@@ -42,7 +42,7 @@
 
 	[% SET tab_info.0 = ['forms','Forms'] %]
 	[% SET tabs.0.form_type = 'spreadsheet_form_entries' %]
-	[% SET tabs.0.type = 'forms' %]
+	[% SET tabs.0.type = 'form' %]
 
 [% END %]
 

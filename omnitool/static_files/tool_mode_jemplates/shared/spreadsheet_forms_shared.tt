@@ -2,7 +2,7 @@
 [% BLOCK spreadsheet_form_entries %]
 
 	<div class="row">
-	<div class="col-xs-12" style="margin-top: 10px">
+	<div class="col-xs-12" style="margin: 10px">
 
 		[% IF success_message %]
 			<div class="page-header">
