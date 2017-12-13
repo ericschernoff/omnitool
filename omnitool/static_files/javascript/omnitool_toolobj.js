@@ -153,6 +153,7 @@ function Tool (tool_attributes) {
 				// if the advanced search form was open earlier in this window's life, re-show it
 				if (tool_objects[this_tool_id].advanced_search_open == 1) {
 					tool_objects[this_tool_id].show_advanced_search();
+					this.shrink_or_grow_tool_display('shrink')
 				}
 
 				// if it's a modal, show it off
