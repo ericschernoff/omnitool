@@ -149,6 +149,11 @@ function Tool (tool_attributes) {
 					// and process it again
 					jemplate_bindings[ this_tool_display_div ].process_json_uri();
 				}
+				
+				// if the advanced search form was open earlier in this window's life, re-show it
+				if (tool_objects[this_tool_id].advanced_search_open == 1) {
+					tool_objects[this_tool_id].show_advanced_search();
+				}
 
 				// if it's a modal, show it off
 				if (this_tool_type_short == 'modal') {
@@ -724,6 +729,9 @@ function Tool (tool_attributes) {
 			if ($('#advanced_search_filters_badge').html().length > 0) {
 				$('.advanced_search_filters_badge').show();
 			}
+			
+			// make note that the form is now closed
+			tool_objects[tool_id].advanced_search_open = 0;
 
 		} else { // otherwise, load and show!
 
@@ -752,6 +760,9 @@ function Tool (tool_attributes) {
 				form_display_div.show();
 				$('#search-controls').hide();
 				$('#quick_keyword_controls').hide();
+
+				// make note of the fact that this form is open for return to this tool
+				tool_objects[tool_id].advanced_search_open = 1;
 
 				// enliven the form
 				interactive_form_elements(tool_id,'advanced_search_form');
@@ -786,6 +797,7 @@ function Tool (tool_attributes) {
 			// only one of sort and search can be shown at once
 			if ($('#advanced_search_' + tool_id).is(':visible')) {
 				this.show_advanced_search();
+				this.shrink_or_grow_tool_display('shrink');
 			}
 
 			// query for the advanced search form and send into the modal
