@@ -186,10 +186,13 @@
 	[% ELSE %]
 		[% SET checked = '' %]
 	[% END %]
-	<label class="col-xs-10 col-sm-5">
-		<input id="form-field-[%f%]" name="[%form.fields.$f.name%]" class="ace ace-switch ace-switch-4" type="checkbox" [%checked%] />
-		<span class="lbl" data-lbl="Active Inactive"></span>
-	</label>
+	<div>
+		<label class="col-xs-10 col-sm-5">
+			<input id="form-field-[%f%]" name="[%form.fields.$f.name%]_switch" class="ace ace-switch ace-switch-4 ot-switch" type="checkbox" [%checked%] />
+			<span class="lbl" data-lbl="Active Inactive"></span>
+		</label>
+		<input type="hidden" name="[%form.fields.$f.name%]" class="ot-switch-transporter" value="[%form.fields.$f.preset%]"/>
+	</div>
 [% END %]
 
 [% BLOCK access_roles_select %]
@@ -344,10 +347,13 @@
 	[% ELSE %]
 		[% SET checked = '' %]
 	[% END %]
-	<label class="col-xs-10 col-sm-5">
-		<input id="form-field-[%f%]" name="[%form.fields.$f.name%]" class="ace ace-switch ace-switch-5" type="checkbox" [%checked%] />
-		<span class="lbl"></span>
-	</label>
+	<div>
+		<label class="col-xs-10 col-sm-5">
+			<input id="form-field-[%f%]" name="[%form.fields.$f.name%]_switch" class="ace ace-switch ace-switch-5 ot-switch" type="checkbox" [%checked%] />
+			<span class="lbl"></span>
+		</label>
+		<input type="hidden" name="[%form.fields.$f.name%]" class="ot-switch-transporter" value="[%form.fields.$f.preset%]"/>
+	</div>
 [% END %]
 
 [% BLOCK font_awesome_select %]

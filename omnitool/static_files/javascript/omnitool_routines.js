@@ -1056,6 +1056,21 @@ function interactive_form_elements (tool_id,form_type) {
 			tool_objects[tool_id].tag_auto_complete_fields('advanced_search_form_tag_suggest',$( this ));
 		});
 	}
+	
+	// support the fancy active/inactive and yes/no switches
+	$( '.ot-switch' ).change(function() {
+		var on_value = 'Yes';
+		var off_value = 'No';
+		if ($( this ).hasClass('ace-switch-4')) {
+			on_value = 'Active';
+			off_value = 'Inactive';
+		}
+		if ($( this ).prop('checked') == false) {
+			$(this).closest("div").find('.ot-switch-transporter').val(off_value);
+		} else {
+			$(this).closest("div").find('.ot-switch-transporter').val(on_value);
+		}
+	});
 
 	// support any recaptcha fields
 	$( '.g-recaptcha-fields' ).each(function() {
