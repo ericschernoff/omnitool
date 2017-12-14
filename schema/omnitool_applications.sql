@@ -425,6 +425,8 @@ CREATE TABLE `omnitool_users` (
   `username` varchar(25) DEFAULT NULL,
   `password` varchar(250) DEFAULT NULL,
   `hard_set_access_roles` text,
+  `require_password_change` varchar(3) DEFAULT NULL,
+  `password_set_date` varchar(10) DEFAULT NULL,  
   PRIMARY KEY (`code`,`server_id`),
   KEY `parent` (`parent`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
@@ -436,7 +438,7 @@ CREATE TABLE `omnitool_users` (
 
 LOCK TABLES `omnitool_users` WRITE;
 /*!40000 ALTER TABLE `omnitool_users` DISABLE KEYS */;
-INSERT INTO `omnitool_users` VALUES (1,1,'top','OmniTool Admin','omnitool_admin','6e3e7cc8708d07b6019193d486415e85d7c288390ddc327d9af174b2',NULL);
+INSERT INTO `omnitool_users` VALUES (1,1,'top','OmniTool Admin','omnitool_admin','6e3e7cc8708d07b6019193d486415e85d7c288390ddc327d9af174b2',NULL,'No',curdate());
 /*!40000 ALTER TABLE `omnitool_users` ENABLE KEYS */;
 UNLOCK TABLES;
 
