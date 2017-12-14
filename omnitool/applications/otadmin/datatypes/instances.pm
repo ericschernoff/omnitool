@@ -276,6 +276,15 @@ sub post_validate_form {
 	}
 }
 
+# database names have to be all lower case
+sub pre_save {
+	my $self = shift;
+	my ($args) = @_; # args passed to save()
+	
+	$self->{luggage}{params}{database_name} = lc($self->{luggage}{params}{database_name});
+	
+}
+
 # routine to run at the end of save().  Good for any clean-up actions or sending notices.
 # need to clear the otstatedata.hostname_info_cache Instances cache for this app-instance
 sub post_save {
