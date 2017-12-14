@@ -281,6 +281,9 @@
 									</div>
 									<div class="body">
 									<div class="text">
+										[% IF data_row.internal_note == 'Yes' %]
+											<span class="label label-warning arrowed-right">Internal Note</span>
+										[% END %]
 										<span class="label label-info arrowed-right">[% data_row.updater_type %]</span>
 										<a href="[%data_row.updater_directory_page%]" target="_new">[% data_row.updater_name %]</a> posted via [% data_row.posted_via %]  <i class="ace-icon fa fa-clock-o"></i> [% data_row.nice_create_age %].
 										<span class="black">
