@@ -1,0 +1,34 @@
+<div class="row">
+<div class="col-xs-12">
+
+<div class="center h3">
+	[% title %]
+</div>
+
+<div class="row">
+<div class="col-xs-10 col-xs-offset-1 text-center">
+<div class="col-xs-12">
+<div class="center">
+[% FOREACH button IN buttons %]
+	[% IF button.javascript %]
+		<button type="button" class="btn btn-white btn-primary btn-lg" style="margin: 10px; white-space: normal;" onclick="[%button.javascript%]" aria-hidden="true">
+			<i class="ace-icon fa [%button.glyph%] blue bigger-280"></i>
+			<br/>
+			[%button.text%]
+		</button>
+
+	[% ELSE %]
+		<a href="[%button.uri%]" class="btn btn-white btn-primary btn-lg" style="margin: 10px; white-space: normal;">
+			<i class="ace-icon fa [%button.glyph%] blue bigger-280"></i>
+			<br/>
+			[%button.text%]
+		</a>
+	[% END %]
+[% END %]
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
