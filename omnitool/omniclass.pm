@@ -626,6 +626,13 @@ Simple method to load up the most recently-saved record (created or updated) by 
 If you supply an argument, clear_records() will be called first, so that the loaded record will
 be the only one loaded (and be in $self->{data}).
 
+=head2 set_primary_record()
+
+Utility method to make any previously-loaded record into $self->{data} as described in load() above.  
+Handy when you are re-using methods that were originally intended for single-loaded records.
+
+Usage:  $dt_object->set_primary_record($record);
+
 =head2 simple_load()
 
 OK, so load() is pretty, pretty cool with all the arguments and doo-dads, but you know, sometimes you

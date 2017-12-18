@@ -227,12 +227,7 @@ sub load {
 	# record under $self->{data}; useful if there is just one record
 	if ($self->{records_keys}[0]) {
 		$r = $self->{records_keys}[0];
-		$self->{data} = $self->{records}{$r};
-		$self->{data}{metainfo} = $self->{metainfo}{$r};
-		# convenience: the data_code of that first record
-		$self->{data_code} = $r;
-		# and HYPER-convenience: the parent_string value of that first record
-		$self->{parent_string} = $self->{dt}.':'.$r;
+		$self->set_primary_record($r); # see below
 	}
 
 	# HERE IS WHERE WE DO POST_LOAD HOOK
@@ -261,6 +256,25 @@ sub load_last_saved_record {
 		'data_codes' => [$self->{last_saved_data_code}],
 		'skip_hooks' => $self->{skip_hooks},
 	);
+}
+
+# method for making any loaded record the primary recorded in $self->{data}
+sub set_primary_record {
+	my $self = shift;
+	
+	# have to send a loaded record
+	my ($which_record) = @_;
+	
+	return if !$which_record || !$self->{records}{$which_record};
+
+	# set up the references, maybe easy
+	$self->{data} = $self->{records}{$which_record};
+	$self->{data}{metainfo} = $self->{metainfo}{$which_record};
+	# convenience: the data_code of that first record
+	$self->{data_code} = $which_record;
+	# and HYPER-convenience: the parent_string value of that first record
+	$self->{parent_string} = $self->{dt}.':'.$which_record;	
+
 }
 
 # utility method to just load all records - kind of dangerous, but you are smart, right?
