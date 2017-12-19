@@ -57,6 +57,7 @@
 <script src="/ace/assets/js/bootstrap-wysiwyg.js"></script>
 <script src="/ace/assets/js/ace/elements.wysiwyg.js"></script>
 <script src="/ace/assets/js/jquery.gritter.js"></script>
+<script src="/non_ace_assets/options_play.js"></script>
 
 <!-- inline scripts related to this page -->
 <script type="text/javascript">
