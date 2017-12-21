@@ -260,7 +260,9 @@
 			<option [%selected%] value="[%opt%]">[%form.fields.$f.options.$opt%]</option>
 		[% END %]
 	</select>
-	<a href="javascript:chosen_select_deselect_all('form-field-[%f%]','select_all')">Select All</a> | <a href="javascript:chosen_select_deselect_all('form-field-[%f%]','de_select_all')">De-Select All</a>
+	[% IF !block_select_all_links %]
+		<a href="javascript:chosen_select_deselect_all('form-field-[%f%]','select_all')">Select All</a> | <a href="javascript:chosen_select_deselect_all('form-field-[%f%]','de_select_all')">De-Select All</a>
+	[% END %]
 [% END %]
 
 [% BLOCK multi_select_ordered %]
