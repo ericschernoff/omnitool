@@ -20,7 +20,7 @@ use strict;
 sub generate_form {
 	my $self = shift;
 
-	my (@possible_types, $action_arg, $field, $form_counter, $need_new_parent, $new_parent_string, $p, $send_data_code, $sub_record, $subdata_object, $subdata_type, $use_params_key, $row_name);
+	my ($form_action, @possible_types, $action_arg, $field, $form_counter, $need_new_parent, $new_parent_string, $p, $send_data_code, $sub_record, $subdata_object, $subdata_type, $use_params_key, $row_name);
 
 	# we need to set some variables based on our uri / argument
 
@@ -146,16 +146,19 @@ sub generate_form {
 		if ($self->{attributes}{uri_path_base} =~ /create_from/) {
 			$use_params_key = 'new';
 			$row_name = 'New';
+			$form_action = 'create';
 		# otherwise, we will update the records themselves
 		} else {
 			$use_params_key = $sub_record;
 			$row_name = $form_counter + 1;
+			$form_action = 'update';
 		}
 
 		$self->{json_results}{forms}[$form_counter] = $subdata_object->form(
 			'data_code' => $sub_record,
 			'use_params_key' => $use_params_key,
 			'row_name' => $row_name,
+			'action' => $form_action,
 		);
 		$form_counter++;
 	}
