@@ -20,7 +20,7 @@ use strict;
 sub generate_form {
 	my $self = shift;
 
-	my (@possible_types, $action_arg, $field, $form_counter, $need_new_parent, $new_parent_string, $p, $send_data_code, $sub_record, $subdata_object, $subdata_type, $use_params_key, $row_name);
+	my ($sub_record_dt, $sub_record_child, @possible_types, $action_arg, $field, $form_counter, $need_new_parent, $new_parent_string, $p, $send_data_code, $sub_record, $subdata_object, $subdata_type, $use_params_key, $row_name);
 
 	# we need to set some variables based on our uri / argument
 
@@ -90,7 +90,7 @@ sub generate_form {
 	$subdata_object = $self->{omniclass_object}->get_omniclass_object(
 		'dt' => $subdata_type,
 	);
-	
+
 	$self->{json_results}{sub_forms_title} = 'Manage '.$subdata_object->{datatype_info}{name}.' Records';
 	$self->{json_results}{sub_forms_instructions} = $subdata_object->{datatype_info}{description};
 	$self->{json_results}{sub_forms_instructions} ||= 'Clear the leftmost field to delete an existing record.';
@@ -140,8 +140,11 @@ sub generate_form {
 	# the forms will be in an array
 	$form_counter = 0;
 
-	# now let's add a form for each of those records
-	foreach $sub_record (@{$subdata_object->{records_keys}}) {
+	# now let's add a form for each of those records - in the current order of the children column
+	foreach $sub_record_child (split /,/, $self->{omniclass_object}->{data}{metainfo}{children}) { # (@{$subdata_object->{records_keys}}) {
+		($sub_record_dt, $sub_record) = split /:/, $sub_record_child;
+		next if $sub_record_dt ne $subdata_object->{dt}; # has to be of the preferred type, may have multiple child types
+
 		# create_from mode means they are all 'New' values
 		if ($self->{attributes}{uri_path_base} =~ /create_from/) {
 			$use_params_key = 'new';
