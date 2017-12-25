@@ -652,13 +652,15 @@ sub build_search {
 		$parent_tool_datatype = $self->{luggage}{session}{tools}{$parent_datacode}{target_datatype};
 
 		$parent_string = $self->{altcode_decoder}->parent_string_from_altcode($self->{display_options}{altcode}, $parent_tool_datatype);
-		$$searches[$n]{match_column} = 'parent';
-		$$searches[$n]{operator} = '=';
-		$$searches[$n]{match_value} = $parent_string;
+		if ($parent_string) { # if the parent was found
+			$$searches[$n]{match_column} = 'parent';
+			$$searches[$n]{operator} = '=';
+			$$searches[$n]{match_value} = $parent_string;
 
-		# TEST CODE:
-		# $self->{belt}->logger('Parent string is '.$parent_string.' for '.$self->{display_options}{altcode},'searches');
-		$n++ if !$n; # so below tests work
+			# TEST CODE:
+			# $self->{belt}->logger('Parent string is '.$parent_string.' for '.$self->{display_options}{altcode},'searches');
+			$n++ if !$n; # so below tests work
+		}
 	}
 
 	# what if no searches found?
