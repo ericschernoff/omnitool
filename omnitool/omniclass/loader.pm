@@ -261,10 +261,10 @@ sub load_last_saved_record {
 # method for making any loaded record the primary recorded in $self->{data}
 sub set_primary_record {
 	my $self = shift;
-	
+
 	# have to send a loaded record
 	my ($which_record) = @_;
-	
+
 	return if !$which_record || !$self->{records}{$which_record};
 
 	# set up the references, maybe easy
@@ -273,7 +273,7 @@ sub set_primary_record {
 	# convenience: the data_code of that first record
 	$self->{data_code} = $which_record;
 	# and HYPER-convenience: the parent_string value of that first record
-	$self->{parent_string} = $self->{dt}.':'.$which_record;	
+	$self->{parent_string} = $self->{dt}.':'.$which_record;
 
 }
 

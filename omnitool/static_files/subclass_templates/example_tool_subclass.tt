@@ -12,6 +12,9 @@ use strict;
 # any special new() routines
 sub init {
 	my $self = shift;
+
+	# uncomment this to log your search logic for Searching Tools
+	# $self->{log_search} = 1;
 }
 
 1;

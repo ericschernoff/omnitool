@@ -33,6 +33,16 @@ sub pre_load {
 
 }
 
+
+# hook to run before field_* Virtual Fields methods are run in load()
+# use to modify $self and/or load in other data prior to running these virtual fields
+# also useful if you are reblessing into another subclass based on one of the database columns
+sub pre_virtual_fields {
+	my $self = shift;
+	my ($args) = @_; # args passed to load()
+
+}
+
 # virtual field hook subroutine; should be named 'field_' + 'table_column' val
 # likely will have more than one of these
 sub field_XYZ {
