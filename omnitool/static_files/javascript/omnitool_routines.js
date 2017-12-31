@@ -343,7 +343,7 @@ function post_data_fetch_operations (data) {
 			$('#above_tool_display_'+ data.the_tool_id).html('<i>Found ' + data.records_found_count + ' records in ' + data.response_time + ' seconds.</i>');
 		}
 
-		// if the advanced search screen is open, be sure to shrink the main area		
+		// if the advanced search screen is open, be sure to shrink the main area
 		if (tool_objects[data.the_tool_id].advanced_search_open == 1) {
 			tool_objects[data.the_tool_id].shrink_or_grow_tool_display('shrink');
 		}
@@ -562,7 +562,7 @@ function post_data_fetch_operations (data) {
 
 // utility function to either show an element with html or hide it
 function show_or_hide_element (element_id, some_content) {
-	if (some_content != undefined && some_content > 0) { // something to show, then show it
+	if (some_content != undefined && some_content != 0) { // something to show, then show it
 		$('#' + element_id).html( some_content );
 		$('#' + element_id).show();
 	} else { // no filters, hide it out
@@ -698,7 +698,7 @@ function omnitool_controller (event,target_tool_uri) {
 						// and make sure it is the active tool
 						the_active_tool_ids['screen'] = the_tool_id;
 						tool_objects[the_tool_id]['search_paused'] = 'No';
-						
+
 					// otherwise, refresh all the records
 					} else {
 						// also reload the tool_controls, in case the keyword changed
@@ -1056,7 +1056,7 @@ function interactive_form_elements (tool_id,form_type) {
 			tool_objects[tool_id].tag_auto_complete_fields('advanced_search_form_tag_suggest',$( this ));
 		});
 	}
-	
+
 	// support the fancy active/inactive and yes/no switches
 	$( '.ot-switch' ).change(function() {
 		var on_value = 'Yes';
@@ -1177,7 +1177,7 @@ function append_spreadsheet_form (the_tool_id, source_row_id) {
 	count_of_new_forms = count_of_new_forms + 1;
 	var new_html = $( '#new_item_form_entry_storage' ).html();
 	var new_form_html = new_html.replace(/new_item_form_entry/g,'new_item_form_entry'+count_of_new_forms);
-	
+
 	// if we cloning an existing row, we will want to insert the new row after the source...
 	if (source_row_id != undefined) {
 		$.when( $('#' + source_row_id).after( new_form_html ) ).done(function() {
@@ -1194,8 +1194,8 @@ function append_spreadsheet_form (the_tool_id, source_row_id) {
 
 			// re-empower the form once the new bits are added
 			interactive_form_elements(the_tool_id);
-		});		
-	
+		});
+
 	// or just appending a new form?
 	} else {
 		$.when( $('#' + the_tool_id + '_form_area').append( new_form_html ) ).done(function() {
