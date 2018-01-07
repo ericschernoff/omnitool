@@ -318,6 +318,44 @@
 
 							</div>
 
+						[% ELSIF tabs.$tab_key.type == 'update_history'%]
+
+							[% FOREACH data_row IN tabs.$tab_key.data %]
+								<div class="col-xs-12 widget-container-col">
+									<div class="widget-box widget-color-blue2">
+									<div class="widget-header">
+										<h5 class="widget-title">
+											[% data_row.name %]
+										</h5>
+									</div>
+									<div class="widget-body">
+
+										<div class="widget-toolbox align-right" id="widget-toolbox-1">
+											[% IF data_row.new_status %]
+												New Status: [% data_row.new_status %]
+											[% END %]
+
+											[% IF data_row.attachment_link.uri %]
+												<i class="ace-icon fa fa-file"></i>
+												Attachment: <a href="[%data_row.attachment_link.uri%]">[%data_row.attachment_link.text%]</a>
+												|
+											[% END %]
+
+											[% data_row.updater_name %] posted
+											<i class="ace-icon fa fa-clock-o bigger-110"></i>
+											[% data_row.nice_create_age %]
+										</div>
+
+									<div class="widget-main">
+										[% data_row.notes %]
+
+									</div> <!-- /widget-main -->
+									</div> <!-- /widget-body -->
+
+									</div> <!-- /widget-box -->
+								</div>
+							[% END %]
+
 						[% ELSIF tabs.$tab_key.type == 'network_diagram'%]
 							<div class="row">
 								<div class="col-xs-6 align-center" id="network_diagram_instructions_[%the_tool_id%]-[%tabs.$tab_key.data.0%]"></div>
