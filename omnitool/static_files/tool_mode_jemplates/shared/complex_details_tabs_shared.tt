@@ -266,58 +266,6 @@
 							</table>
 							</div>
 
-						[% ELSIF tabs.$tab_key.type == 'activity_table'%]
-							<div class="col-xs-12">
-								<div class="dialogs">
-								[% FOREACH data_row IN tabs.$tab_key.data %]
-
-									[% IF data_row.posted_via_tool_name %]
-										[% SET data_row.posted_via = data_row.posted_via _ ': ' _ data_row.posted_via_tool_name %]
-									[% END %]
-
-									<div class="itemdiv dialogdiv">
-									<div class="user">
-									<img src="[%data_row.updater_picture_link%]" />
-									</div>
-									<div class="body">
-									<div class="text">
-										[% IF data_row.internal_note == 'Yes' %]
-											<span class="label label-warning arrowed-right">Internal Note</span>
-										[% END %]
-										<span class="label label-info arrowed-right">[% data_row.updater_type %]</span>
-										<a href="[%data_row.updater_directory_page%]" target="_new">[% data_row.updater_name %]</a> posted via [% data_row.posted_via %]  <i class="ace-icon fa fa-clock-o"></i> [% data_row.nice_create_age %].
-										<span class="black">
-											<br/>Status: [% data_row.new_status %]  |  Priority: [% data_row.new_priority %]
-												[% IF data_row.includes_location_change == 'Yes' %]
-													| New Location: [% data_row.lab_location %]
-												[% END %]
-										</span>
-									</div>
-									<div class="text">
-										[% IF data_row.attachment_link.uri %]
-											<div style="margin-left: 20px">
-												<i class="ace-icon fa fa-file"></i>
-												Attachment: <a href="[%data_row.attachment_link.uri%]">[%data_row.attachment_link.text%]</a>
-											</div>
-										[% END %]
-
-										[% IF data_row.eval_was_good_experience && data_row.eval_was_good_experience != 'N/A' %]
-											<div style="margin-left: 20px">
-												<i class="ace-icon fa fa-check-circle-o"></i>
-												<b>EVALUATION:</b> <u>Did You Have a Good Experience? [% data_row.eval_was_good_experience %]</u>
-											</div>
-										[% END %]
-
-										<div style="margin-left: 20px">
-											[% data_row.notes %]
-										</div>
-									</div>
-									</div>
-								[% END %]
-								</div>
-
-							</div>
-
 						[% ELSIF tabs.$tab_key.type == 'update_history'%]
 
 							[% FOREACH data_row IN tabs.$tab_key.data %]

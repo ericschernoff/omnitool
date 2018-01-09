@@ -132,7 +132,7 @@
 		<table class="table-col" align="left" width="700" style="padding-right: 16px; table-layout: fixed;" cellspacing="0" cellpadding="0" border="0"><tbody><tr><td class="table-col-td" width="496" style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13pt; font-weight: normal; width: 496px;" valign="top" align="left">
 		<div style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13pt; width: calc(-24px + 100%); margin-top: 0px; margin-bottom: 0px;">
 			[% FOREACH data_set IN email_vars.tabs.$tab_key.data %]
-				[% FOREACH data_pair IN data_set %]				
+				[% FOREACH data_pair IN data_set %]
 				<div style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13pt;">
 					<table width="100%" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;">
 					<tbody>
@@ -236,7 +236,7 @@
 		</td></tr></tbody></table>
 		</td></tr></tbody></table>
 
-	[% ELSIF email_vars.tabs.$tab_key.type == 'activity_table' %]
+	[% ELSIF email_vars.tabs.$tab_key.type == 'update_history' %]
 
 		[% IF email_vars.tabs.$tab_key.data.0.notes %]
 			[% FOREACH data_row IN email_vars.tabs.$tab_key.data %]
@@ -246,13 +246,18 @@
 				<table width="100%" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;"><tbody><tr><td width="100%" style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: normal; padding-right: 3px; padding-bottom: 0px;" valign="top" align="left">
 					<table width="100%" cellspacing="0" cellpadding="0" border="0" style="table-layout: fixed;"><tbody><tr><td width="100%" style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; font-weight: normal; width: 100%; border-width: 1px 1px 1px 2px; border-style: solid; border-color: #dde4ed; padding: 5px 8px 8px;" valign="top" align="left">
 					<div style="font-family: Arial, sans-serif; line-height: 19px; color: #999999; font-size: 13px;">
-						<img src="[%data_row.updater_picture_link%]" style="border: 2px solid #c9d6e5; float: left" hspace="10" vspace="0" border="0">
-						<span style="font-family: Arial, sans-serif; line-height: 14px; color: #ffffff; font-size: 12px; padding: 2.4px 7.2px 3.6px; text-align: center; vertical-align: baseline; height: 20px; background-color: #3a87ad;">[% data_row.updater_type %]</span>
-						<a href="[%data_row.updater_directory_page%]" target="_new" style="color: #337ab7; text-decoration: none; background-color: transparent;">[% data_row.updater_name %]</a>
-							posted [% data_row.nice_create_age %].
+						[% data_row.name %]
+
 						<span style="font-family: Arial, sans-serif; line-height: 19px; color: #a069c3; font-size: 13px;">
-							<br/>Status: [% data_row.new_status %]  |  Priority: [% data_row.new_priority %]  | Location: [% data_row.lab_location %]
+							<br/>[% data_row.updater_name %] [% data_row.nice_create_age %]
 						</span>
+
+						[% IF data_row.new_status %]
+							<span style="font-family: Arial, sans-serif; line-height: 19px; color: #a069c3; font-size: 13px;">
+								<br/>Status: [% data_row.new_status %]
+							</span>
+						[% END %]
+
 					</div>
 					<div style="font-family: Arial, sans-serif; line-height: 19px; color: #444444; font-size: 13px; padding-bottom: 0px; padding-left: 0px; border-bottom-width: 0px; border-bottom-style: none; border-bottom-color: #444444;">
 						[% data_row.notes %]
@@ -266,7 +271,7 @@
 
 		[% ELSE %]
 			<table><tr><td class="table-td-wrap" align="center" width="800">
-				<i>No Activity Log Entries At This Time.</i>
+				<i>No Update History Log Entries At This Time.</i>
 			</td></tr></table>
 		[% END %]
 

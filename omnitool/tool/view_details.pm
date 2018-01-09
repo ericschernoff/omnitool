@@ -71,6 +71,7 @@ sub network_diagram_data {
 	} else { # just return our data
 		$self->{json_results}{diagram_data} = $saved_network_diagram_object->{data}{diagram_data};
 	}
+
 }
 
 # method to build a basic, one-tab %$details_hash, working from the 'Fields to Include' option for the Tool View Mode
