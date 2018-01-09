@@ -278,6 +278,7 @@
 										<div class="widget-toolbar">
 											[% IF data_row.new_status %]
 												New Status: [% data_row.new_status %]
+												|
 											[% END %]
 
 											[% IF data_row.attachment_link.uri %]
