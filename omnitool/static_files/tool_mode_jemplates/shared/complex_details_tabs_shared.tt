@@ -270,15 +270,12 @@
 
 							[% FOREACH data_row IN tabs.$tab_key.data %]
 								<div class="col-xs-12 widget-container-col">
-									<div class="widget-box widget-color-blue2">
+									<div class="widget-box transparent">
 									<div class="widget-header">
 										<h5 class="widget-title">
 											[% data_row.name %]
 										</h5>
-									</div>
-									<div class="widget-body">
-
-										<div class="widget-toolbox align-right" id="widget-toolbox-1">
+										<div class="widget-toolbar">
 											[% IF data_row.new_status %]
 												New Status: [% data_row.new_status %]
 											[% END %]
@@ -293,6 +290,8 @@
 											<i class="ace-icon fa fa-clock-o bigger-110"></i>
 											[% data_row.nice_create_age %]
 										</div>
+									</div>
+									<div class="widget-body">
 
 									<div class="widget-main">
 										[% data_row.notes %]
