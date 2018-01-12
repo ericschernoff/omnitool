@@ -341,6 +341,8 @@ function post_data_fetch_operations (data) {
 		// show the results and time took to load -- including transfer, as this was calcuated in query_tool
 		if (data.records_found_count) {
 			$('#above_tool_display_'+ data.the_tool_id).html('<i>Found ' + data.records_found_count + ' records in ' + data.response_time + ' seconds.</i>');
+		} else {
+			$('#above_tool_display_'+ data.the_tool_id).html('');
 		}
 
 		// if the advanced search screen is open, be sure to shrink the main area
