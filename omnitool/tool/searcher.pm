@@ -159,14 +159,20 @@ sub search {
 
 	# method below to get subordinate/inline actions and add them to $self->{omniclass_object}->{records}{actions}[]
 
-	# we will want the list of altcodes
-	$self->{omniclass_object}->get_altcodes_keys();
-
-	# we utilzie those altcodes on the front-end for the subordinate action tools' prev/next buttons
+	# we utilize the altcodes on the front-end for the subordinate action tools' prev/next buttons
 	# let's also stash them in this tool's display options so we can have batch-operator tools which
 	# act on our search results
-	$self->{display_options}{altcodes_keys} = $self->{omniclass_object}{altcodes_keys};
-
+	# we can only use the altcodes if we are sure they will be unique
+	if ($self->{omniclass_object}->{datatype_info}{altcodes_are_unique} ne 'No') {
+		$self->{omniclass_object}->get_altcodes_keys();
+		$self->{display_options}{altcodes_keys} = $self->{omniclass_object}->{altcodes_keys};
+	
+	# otherwise, use the list of data codes
+	} else {
+		$self->{omniclass_object}->{altcodes_keys} = $self->{omniclass_object}->{records_keys};
+		$self->{display_options}{altcodes_keys} = $self->{omniclass_object}->{records_keys};
+	}
+	
 	# finally, convert that to a very nice hashref for sending out as JSON via mr_zebra()
 	# pass $self->{attributes}{load_trees} in as a instruction to be recursive or not
 	$self->{json_results} = $self->{luggage}{object_factory}->omniclass_data_extractor($self->{omniclass_object},{},$self->{attributes}{load_trees});

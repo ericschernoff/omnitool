@@ -355,7 +355,7 @@ function post_data_fetch_operations (data) {
 		if (localStorage.getItem("altcodes_keys_" + data.parent_tool_id)) {
 			var parent_tools_results = localStorage.getItem("altcodes_keys_" + data.parent_tool_id).split(',');
 			for (var i = 0; i < parent_tools_results.length; i++) {
-				if (data.altcode == parent_tools_results[i]) {
+				if (data.altcode == parent_tools_results[i] || data.data_code == parent_tools_results[i]) {
 					var previous_altcode = parent_tools_results[i-1];
 					var next_altcode = parent_tools_results[i+1];
 				}
