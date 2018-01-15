@@ -46,7 +46,7 @@
 					<tr>
 						[% FOREACH heading IN sub_records_headings %]
 							<th>
-								[% heading.upper %]
+								[% heading %]
 							</th>
 						[% END %]
 					</tr>
