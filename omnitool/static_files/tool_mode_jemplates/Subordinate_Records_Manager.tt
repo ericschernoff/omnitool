@@ -1,0 +1,109 @@
+[*#
+	Subordinate_Records_Manager.tt - designed to display a main record, list out subordiante records
+	and provide links to manage / view those records.  Original design was for a Project Manager with
+	subordiante 'steps.'
+
+	The 'json_results' hash should include:
+
+		'title' => the name of the main record
+		'top_details' => a hash, with 'name' and 'value' entries for each key
+		'top_details_keys' => an array of the keys for 'top_details', in the order they should be displayed
+		'subordinate_records_title' => the title for the subordinate records section (i.e. 'Project Steps')
+		'sub_records_headings' => arrayref of the headings for the subrodinate records table.
+		'sub_records' => the hashref of subrodinate records.  A	hash of hashes, keyed by record ID.
+				=> the second level values can be complex results as per the 'complex_results_columns_' block below
+		'sub_records_keys' => the top keys for %$sub_records
+		'sub_records_sub_keys' => the sub-keys to dispay in %$sub_records
+*]
+
+<div class="row">
+<div class="col-xs-12">
+
+	<div class="page-header">
+		<h3>
+			[% title %]
+		</h3>
+
+		[% FOREACH detail_key IN top_details_keys %]
+			[% IF top_details.$detail_key.value %]
+				<b>[%top_details.$detail_key.name%]:</b> [% top_details.$detail_key.value %] <br/>
+			[% END %]
+		[% END %]
+
+	</div>
+	<div class="col-md-12 widget-container-col">
+	<div class="widget-box widget-color-blue">
+		<div class="widget-header widget-header-flat">
+			<h4 class="widget-title lighter">
+				[% subordinate_records_title %]
+			</h4>
+		</div>
+
+		<div class="widget-body">
+			<div class="widget-main no-padding">
+				<table class="table table-bordered">
+				<thead class="thin-border-bottom">
+					<tr>
+						[% FOREACH heading IN sub_records_headings %]
+							<th>
+								[% heading.upper %]
+							</th>
+						[% END %]
+					</tr>
+				</thead>
+				<tbody>
+					[% FOREACH sub_record IN sub_records_keys %]
+						<tr>
+						[% FOREACH sub_key IN sub_records_sub_keys %]
+							<td>
+								[% IF sub_records.$sub_record.$sub_key.0.text || sub_records.$sub_record.$sub_key.0.image || sub_records.$sub_record.$sub_key.0.glyph %]
+									[% PROCESS complex_results_columns_[*tool_and_instance*] %]
+								[% ELSE %]
+									[% sub_records.$sub_record.$sub_key %]
+								[% END %]
+							</td>
+						[% END %]
+						</tr>
+					[% END %]
+				</tbody>
+				</table>
+			</div><!-- /.widget-main -->
+		</div><!-- /.widget-body -->
+	</div><!-- /.widget-box -->
+	</div><!-- /.col -->
+
+</div>
+</div>
+
+[%# for complete results - mimics the 'complex_field' jemplate for the search tools %]
+[% BLOCK complex_results_columns_[*tool_and_instance*] %]
+	[% FOREACH line IN sub_records.$sub_record.$sub_key %]
+		[% IF line.class %]
+			<div class="[%line.class%]">
+		[% ELSE %]
+			<div>
+		[% END %]
+		[% IF line.uri.match('http') %]
+			<a href="[%line.uri%]" target="_blank">
+		[% ELSIF line.uri %]
+			<a href="[%line.uri%]">
+		[% ELSIF line.action_uri %]
+			<a href="javascript:tool_objects['[%the_tool_id%]'].process_action_uri('[%line.action_uri%]')">
+		[% ELSIF line.message_uri %]
+			<a href="javascript:tool_objects['[%the_tool_id%]'].simple_message_modal('[%line.message_uri%]')">
+		[% END %]
+		[% IF line.glyph %]
+			<i class="ace-icon fa [% line.glyph %]"></i>
+		[% END %]
+		[% IF line.image %]
+			<img src="[%line.image%]"/>
+		[% END %]
+		[% line.text %]
+		[% IF line.uri || line.action_uri || line.message_uri %]
+			</a>
+		[% END %]
+		</div>
+	[% END %]
+[% END %]
+
+
