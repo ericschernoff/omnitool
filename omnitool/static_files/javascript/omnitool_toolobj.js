@@ -205,7 +205,7 @@ function Tool (tool_attributes) {
 			// start the background refresh
 			var _this = this;
 			this['background_refresher'] = setInterval(
-				function() { _this.refresh_json_data(_this['tool_display_div']); },
+				function() { _this.refresh_json_data(); },
 				(_this['query_interval'] * 1000)
 			);
 			this['search_paused'] = 'No';

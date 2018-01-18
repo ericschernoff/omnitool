@@ -1578,6 +1578,10 @@ function show_sub_data_widgets ( sub_data_container_id, clicked_button_id ) {
 	// know which tool we are in
 	var current_tool_id = the_active_tool_ids['screen'];
 
+	// pause the search refreshing for this tool, as that would remove these inserted div's
+	tool_objects[current_tool_id]['search_paused'] = 'Yes';
+	
+	// get the number of available slots for sub-data
 	var number_of_sub_divs = $( '#' + sub_data_container_id + ' .sub_data_widget' ).length;
 
 	// go through each device in th pod
