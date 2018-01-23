@@ -347,7 +347,7 @@ sub setup_field {
 		}
 
 		# if it is a file-upload with a previous file, note that in the instructions
-		if ($self->{datatype_info}{fields}{$field}{field_type} eq 'file_upload' && $self->{records}{$data_code}{$table_column}) {
+		if ($$form{action} eq 'update' && $self->{datatype_info}{fields}{$field}{field_type} eq 'file_upload' && $self->{records}{$data_code}{$table_column}) {
 			# $attachment_info = $self->{file_manager}->load_file_info( $self->{records}{$r}{$table_column} );
 			$$form{fields}{$key}{instructions} .= "\n" if $$form{fields}{$key}{instructions};
 			$$form{fields}{$key}{instructions} .= 'Only use if you wish to overwrite the previous file. ('.$self->{records}{$data_code}{$table_column.'_download'}[0]{text}.')';
