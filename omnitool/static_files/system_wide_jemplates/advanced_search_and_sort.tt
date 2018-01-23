@@ -119,11 +119,8 @@
 	<div class="widget-body">
 	<div class="widget-main">
 
-	<div class="alert alert-block">
-		This form allows you configure up to four fields and directions to sort your results. <b>Note:</b> This does not work well for Enhanced Table Modes.
-		<br/><br/>
-		Tip: Be sure to use the 'Bookmark / Share' menu to save your Search &amp; Sort options!
-	</div>
+	This form allows you configure up to four fields and directions to sort your results.
+	Tip: Be sure to use the 'Bookmark / Share' menu to save your Search &amp; Sort options!
 
 	<form class="form-horizontal" id="[%tool_and_instance%]_advanced_sort_form" action="[%form.target_url%]" method="post" role="form">
 
@@ -134,9 +131,9 @@
 	<div class="row">
 	[% SET directions = ['Up','Down'] %]
 	[% FOREACH f IN form.field_keys %]
-		<div class="col-xs-3">
+		<div class="col-xs-12">
 		<div class="form-group">
-			<label for="form-field-[%form.fields.$f.order_number%]" class="col-md-2 control-label">
+			<label for="form-field-[%form.fields.$f.order_number%]" class="col-md-3 control-label">
 				Sort Field [%form.fields.$f.order_number%]:
 			</label>
 			<div class="col-xs-9">
