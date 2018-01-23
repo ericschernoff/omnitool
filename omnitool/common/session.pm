@@ -312,6 +312,13 @@ sub find_access_roles {
 	foreach $role (@$roles_keys) {
 		next if $self->{access_roles}{$role};
 
+		# 'omnitool_admin' is the super-user
+		if ($self->{username} eq 'omnitool_admin') {
+			$self->{access_roles}{$role} = 1;
+			next;
+		}
+		# otherwise, do proper tests
+
 		# skip if either the 'match_hash_key' or 'match_value' is blank
 		next if !$$access_roles{$role}{match_hash_key} || !$$access_roles{$role}{match_value};
 

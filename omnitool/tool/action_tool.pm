@@ -336,14 +336,14 @@ sub validate_form {
 			$self->{stop_form_action} = 1;
 
 		# email address
-		} elsif ($field_type eq 'email_address' && $self->{luggage}{params}{$param_name} !~ /^([^@]+?)@(([a-z0-9]-*)*[a-z0-9]+\.)+([a-z0-9]+)$/i) {
+		} elsif ($field_type eq 'email_address' && $self->{luggage}{params}{$param_name} && $self->{luggage}{params}{$param_name} !~ /^([^@]+?)@(([a-z0-9]-*)*[a-z0-9]+\.)+([a-z0-9]+)$/i) {
 			$self->{json_results}{form}{fields}{$field}{field_error} = 1; # jemplate will handle properly
 
 			# try to block form processing
 			$self->{stop_form_action} = 1;
 
 		# phone number is a little softer, for now
-		} elsif ($field_type eq 'phone_number' && $self->{luggage}{params}{$param_name} !~ /\d\d\d\d/) {
+		} elsif ($field_type eq 'phone_number' && $self->{luggage}{params}{$param_name} && $self->{luggage}{params}{$param_name} !~ /\d\d\d\d/) {
 			$self->{json_results}{form}{fields}{$field}{field_error} = 1; # jemplate will handle properly
 
 			# try to block form processing
