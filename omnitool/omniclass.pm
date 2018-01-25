@@ -629,7 +629,8 @@ be the only one loaded (and be in $self->{data}).
 =head2 set_primary_record()
 
 Utility method to make any previously-loaded record into $self->{data} as described in load() above.  
-Handy when you are re-using methods that were originally intended for single-loaded records.
+Handy when you are re-using methods that were originally intended for single-loaded records.  Will
+load() the record if it's not already loaded.
 
 Usage:  $dt_object->set_primary_record($record);
 

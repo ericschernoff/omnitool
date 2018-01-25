@@ -264,8 +264,12 @@ sub set_primary_record {
 
 	# have to send a loaded record
 	my ($which_record) = @_;
-
-	return if !$which_record || !$self->{records}{$which_record};
+	return if !$which_record;
+	
+	# if it's not loaded already, load it up
+	if (!$self->{records}{$which_record}) {
+		$self->load($which_record);
+	}
 
 	# set up the references, maybe easy
 	$self->{data} = $self->{records}{$which_record};
