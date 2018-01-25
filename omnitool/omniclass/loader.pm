@@ -268,7 +268,7 @@ sub set_primary_record {
 	
 	# if it's not loaded already, load it up
 	if (!$self->{records}{$which_record}) {
-		$self->load($which_record);
+		$self->simple_load($which_record);
 	}
 
 	# set up the references, maybe easy
