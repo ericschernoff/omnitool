@@ -611,9 +611,10 @@ function loading_modal_display (display_text) {
 		$('#modal-loading-text').text(display_text + '...');
 	// if it's not shown and there is display text, show the modal
 	} else if (display_text != undefined && display_text != 'hide') {
-		$('#modal-loading').modal();
+		$('#modal-loading').modal({
+			backdrop: false,
+		});
 		$('#modal-loading-text').text(display_text + '...');
-		$('.modal-backdrop').removeClass("modal-backdrop");
 	// otherwise, hide it
 	} else if ($("#modal-loading").hasClass('in')) {
 		$("#modal-loading").modal('hide');
@@ -1580,7 +1581,7 @@ function show_sub_data_widgets ( sub_data_container_id, clicked_button_id ) {
 
 	// pause the search refreshing for this tool, as that would remove these inserted div's
 	tool_objects[current_tool_id]['search_paused'] = 'Yes';
-	
+
 	// get the number of available slots for sub-data
 	var number_of_sub_divs = $( '#' + sub_data_container_id + ' .sub_data_widget' ).length;
 
