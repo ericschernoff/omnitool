@@ -708,7 +708,7 @@ function omnitool_controller (event,target_tool_uri) {
 						tool_objects[the_tool_id].reload_tool_controls();
 						// reload the json now
 						jemplate_bindings[ tool_objects[the_tool_id]['tool_display_div'] ].process_json_uri();
-						// show the advanced search
+						// hide the advanced search?
 						if ($('#advanced_search_' + the_tool_id).is(':visible')) {
 							tool_objects[the_tool_id].show_advanced_search();
 						}
@@ -722,6 +722,10 @@ function omnitool_controller (event,target_tool_uri) {
 						jemplate_bindings[ tool_objects[the_tool_id]['tool_display_div'] ].process_json_uri();
 						// and un-pause the search
 						tool_objects[the_tool_id]['search_paused'] = 'No';
+						// hide the advanced search?
+						if ($('#advanced_search_' + the_tool_id).is(':visible')) {
+							tool_objects[the_tool_id].show_advanced_search();
+						}
 					});
 				}
 			}
@@ -1555,11 +1559,11 @@ function enable_chosen_menu (jquery_identifier, custom_width) {
 }
 
 // small ui function to support the 'Search Controls' button to reveal the search controls in XS mode
-function xs_show_search_controls () {
+function xs_show_search_controls (tool_id) {
 	// show the controls
-	$('#search-controls').removeClass('hidden-xs');
+	$('#search-controls_'+tool_id).removeClass('hidden-xs');
 	// hide the button
-	$('#search-controls-toggle').hide();
+	$('#search-controls-toggle_'+tool_id).hide();
 	// fix the menus - if on desktop, chosen is un-supported on a mobile browser
 	if (mobile_device != 1) {
 		$('.tool-search-menu').chosen('destroy');

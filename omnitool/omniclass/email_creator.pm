@@ -181,7 +181,7 @@ sub send_outbound_email {
 	# if it's blank, we shall try to send the next 20 queued emails
 
 	# declare our vars
-	my ($pause_background_tasks, @driver_options, $db_status, $default_domain, $driver_name, $email_ids_list, $email_ids, $email_key, $email_keys, $email_password, $email_sending_info_encrypted, $email_sending_info, $email_username, $emails_to_send, $error_logfile, $file_contents, $file_id, $file_info, $mailer, $now, $protocol, $q_marks_list, $recipient, $send_logfile, $server_hostname, $file_attachment);
+	my ($target_recipients, $target_recipients_unique, $pause_background_tasks, @driver_options, $db_status, $default_domain, $driver_name, $email_ids_list, $email_ids, $email_key, $email_keys, $email_password, $email_sending_info_encrypted, $email_sending_info, $email_username, $emails_to_send, $error_logfile, $file_contents, $file_id, $file_info, $mailer, $now, $protocol, $q_marks_list, $recipient, $send_logfile, $server_hostname, $file_attachment);
 
 	# support multiple worker nodes, defaulting to 1
 	$ENV{WORKER_ID} ||= 1;
@@ -325,7 +325,10 @@ sub send_outbound_email {
 
 		# we shall create a separate email per recipient
 		$$emails_to_send{$email_key}{to_addresses} =~ s/\s//gi; # no spaces
-		foreach $recipient (split /,/, $$emails_to_send{$email_key}{to_addresses}) {
+		# make sure each recipient only gets one copy of this email
+		@$target_recipients = split /,/, $$emails_to_send{$email_key}{to_addresses};
+		$target_recipients_unique = $self->{belt}->uniquify_list($target_recipients);
+		foreach $recipient (@$target_recipients_unique) {
 			next if $recipient eq 'none';
 
 			# do it oo style so that we can have multiple attachments

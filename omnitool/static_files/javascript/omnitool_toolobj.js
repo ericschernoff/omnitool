@@ -718,8 +718,8 @@ function Tool (tool_attributes) {
 			// re-expand the tool main display area to full size on large screens
 			tool_objects[tool_id].shrink_or_grow_tool_display('grow');
 
-			$('#search-controls').show();
-			$('#quick_keyword_controls').show();
+			$('#search-controls_'+tool_id).show();
+			$('#quick_keyword_controls_'+tool_id).show();
 
 			// make sure the advanced item badges are shown as needed -- use the class way
 			// because there may be a few in the DOM by now
@@ -758,8 +758,8 @@ function Tool (tool_attributes) {
 				
 				// now toggle it
 				form_display_div.show();
-				$('#search-controls').hide();
-				$('#quick_keyword_controls').hide();
+				$('#search-controls_'+tool_id).hide();
+				$('#quick_keyword_controls_'+tool_id).hide();
 
 				// make note of the fact that this form is open for return to this tool
 				tool_objects[tool_id].advanced_search_open = 1;
@@ -889,8 +889,8 @@ function Tool (tool_attributes) {
 			tool_objects[this_tool_id].quick_search_enable();
 			// but keep it hidden, if we are in advanced search mode
 			if (adv_search_mode != undefined) {
-				$('#search-controls').hide();
-				$('#quick_keyword_controls').hide();
+				$('#search-controls_'+this_tool_id).hide();
+				$('#quick_keyword_controls_'+this_tool_id).hide();
 			}
 		});
 

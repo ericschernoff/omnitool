@@ -114,10 +114,10 @@ Expects all of $self for a Tool.pm class/sub-class.
 <span style="white-space: nowrap">
 
 [%# search-related buttons %]
-<div class="btn-group" id="search-controls-toggle">
-	<button type="button" class="btn btn-white visible-xs" onclick="xs_show_search_controls();">Search Controls</button>
+<div class="btn-group" id="search-controls-toggle_[%tool_and_instance%]">
+	<button type="button" class="btn btn-white visible-xs" onclick="xs_show_search_controls('[%tool_and_instance%]');">Search Controls</button>
 </div>
-<span id="search-controls" class="hidden-xs">
+<span id="search-controls_[%tool_and_instance%]" class="hidden-xs">
 [%# show up to four search menus - chosen drop-down menus %]
 [% FOREACH search_menu IN quick_search_menus %]
 	<div class="btn-group" id="field_div_quick_menu_[%search_menu%]">
@@ -156,7 +156,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 
 <!-- Quick search box -->
 [% IF has_search_box %]
-	<div class="btn-group" id="quick_keyword_controls">
+	<div class="btn-group" id="quick_keyword_controls_[%tool_and_instance%]">
 	<span class="input-icon">
 		<input type="text" size="12" name='quick_keyword' id="quick_keyword_[%tool_and_instance%]" class="quick_keyword_fields" placeholder="Sticky Search" value="[%display_options.quick_keyword%]"/>
 		<i class="ace-icon fa fa-search quick_keyword_fields_icon"></i>
