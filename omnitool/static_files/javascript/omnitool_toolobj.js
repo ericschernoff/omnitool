@@ -81,7 +81,7 @@ function Tool (tool_attributes) {
 		// make myself the active tool for this category
 		the_active_tool_ids[ this['tool_type_short'] ] = this['the_tool_id'];
 
-		// if it's a "don't keep warm" screen, scroll to top 
+		// if it's a "don't keep warm" screen, scroll to top
 		if (this['tool_type_short'] == 'screen' && this['keep_warm'] != 'Yes') {
 			goToTop();
 		}
@@ -123,6 +123,9 @@ function Tool (tool_attributes) {
 				// this html will include all the div tags, and we can add it to the 'page-content' div
 				$("#page-content").append( tool_html );
 
+				// empower bookmark create links
+				bookmark_manager.enable_create_bookmark_buttons();
+
 				// empower the tool search drop-down menus
 				enable_chosen_menu('.tool-search-menu');
 
@@ -138,7 +141,7 @@ function Tool (tool_attributes) {
 						this_tool_uri + '/send_json_data' // ?client_connection_id='+client_connection_id
 					);
 
-					
+
 				} else if (reload_jemplate == 1 || jemplate_bindings[ this_tool_display_div ].jemplate_loaded == 0) {
 					jemplate_bindings[ this_tool_display_div ].load_jemplate();
 
@@ -149,7 +152,7 @@ function Tool (tool_attributes) {
 					// and process it again
 					jemplate_bindings[ this_tool_display_div ].process_json_uri();
 				}
-				
+
 				// if the advanced search form was open earlier in this window's life, re-show it
 				if (tool_objects[this_tool_id].advanced_search_open == 1) {
 					tool_objects[this_tool_id].show_advanced_search();
@@ -254,12 +257,12 @@ function Tool (tool_attributes) {
 	this.refresh_json_data = function (from_button_click) {
 		var this_tool_display_div = this['tool_display_div']; // sanity
 		var my_json_uri = this['tool_json_uri'];
-		
+
 		// if the counter for active queries in blank, just make it 0
 		if (active_queries[my_json_uri] == undefined) {
 			active_queries[my_json_uri] = 0;
 		}
-		
+
 		// return if it's not bound yet
 		if (jemplate_bindings[ this_tool_display_div ] == undefined) {
 			return;
@@ -277,14 +280,14 @@ function Tool (tool_attributes) {
 				jemplate_bindings[ this_tool_display_div ].process_json_uri('Refreshing Data');
 			}
 		}
-		
-		
+
+
 		// if the advanced search or sort is still open, then maintain the shrunken table
 		var tool_id = this['the_tool_id'];
-		if ($('#advanced_search_' + tool_id).is(':visible') || $('#advanced_sort_' + tool_id).is(':visible')) { 
-			this.shrink_or_grow_tool_display('shrink');		
+		if ($('#advanced_search_' + tool_id).is(':visible') || $('#advanced_sort_' + tool_id).is(':visible')) {
+			this.shrink_or_grow_tool_display('shrink');
 		}
-		
+
 	}
 
 	// function to reload one search result in the UI
@@ -355,7 +358,7 @@ function Tool (tool_attributes) {
 			// preform the query
 			$.when( query_tool(jemplate_bindings[ this_tool_display_div ].json_data_uri, post_object) ).done(function(json_data) {
 				jemplate_bindings[ this_tool_display_div ].process_json_data(json_data);
-				
+
 				// reveal the page
 				loading_modal_display('hide');
 			});
@@ -587,7 +590,7 @@ function Tool (tool_attributes) {
 			success: function(json_data, textStatus, jqXHR) {
 				// make the json uri no longer active
 				active_queries[this_tool_json_uri] -= 1;
-				
+
 				// use the check_for_errors function to see if the server sent back an error message
 				var is_error = check_for_errors(json_data);
 				if (is_error == 1) { // error found, stop here
@@ -603,12 +606,12 @@ function Tool (tool_attributes) {
 
 				} else { // omnitool wants you to see the form again, or maybe this is a multiple part form?
 					if (form_id.match('advanced_search')) { // reload the tools controls
-						
+
 						// for our response-time tracking
 						var end  = new Date();
 						// pack that up as seconds
 						json_data.response_time = (end.getTime() - start.getTime()) / 1000;
-												
+
 						// postpone the post_data_fetch_operations function
 						json_data.skip_post_data_ops = 1;
 						// process the results
@@ -644,12 +647,12 @@ function Tool (tool_attributes) {
 					// regular display of results in the screen
 					} else {
 						jemplate_bindings[ this_tool_display_div ].process_json_data(json_data);
-						
+
 						// if adv. sort, keep the display sized correctly
 						if (form_id.match('advanced_sort')) {
 							tool_objects[this_tool_id].shrink_or_grow_tool_display('shrink');
 						}
-							
+
 						loading_modal_display('hide');
 					}
 				}
@@ -729,7 +732,7 @@ function Tool (tool_attributes) {
 			if ($('#advanced_search_filters_badge').html().length > 0) {
 				$('.advanced_search_filters_badge').show();
 			}
-			
+
 			// make note that the form is now closed
 			tool_objects[tool_id].advanced_search_open = 0;
 
@@ -755,7 +758,7 @@ function Tool (tool_attributes) {
 
 				// shrink the tool main display area to half size on large screens
 				tool_objects[tool_id].shrink_or_grow_tool_display('shrink');
-				
+
 				// now toggle it
 				form_display_div.show();
 				$('#search-controls_'+tool_id).hide();
@@ -828,7 +831,7 @@ function Tool (tool_attributes) {
 			});
 		}
 	}
-	
+
 	// support method to shrink/expand the main tool area for displaying the forms next-door
 	this.shrink_or_grow_tool_display = function(action) {
 		// gather up the main area
@@ -850,10 +853,10 @@ function Tool (tool_attributes) {
 			$( '.hidden-advanced-search').each(function() {
 				$(this).show();
 			});
-		
+
 		}
 	}
-	
+
 	// validation routine for that advanced sort form
 	this.advanced_sort_validate = function() {
 		$('#advanced_sort_warning').hide();
@@ -864,7 +867,7 @@ function Tool (tool_attributes) {
 			} else {
 				chosen_choices[ this.value ] = 1;
 			}
-		});		
+		});
 	}
 
 	// routine to facilitate easy modal-opening for special subroutines
@@ -877,7 +880,7 @@ function Tool (tool_attributes) {
 	// function to reload the tool_controls area if needed
 	this.reload_tool_controls = function (adv_search_mode) {
 		var this_tool_id = this['the_tool_id'];
-	
+
 		// use a promise so that we can make sure to return a waiting task
 		// NOTE: this is how I should handle nested promises!
 		var post_promise = query_tool(
@@ -889,6 +892,8 @@ function Tool (tool_attributes) {
 			enable_chosen_menu('.tool-search-menu');
 			// empower the quick search keyword
 			tool_objects[this_tool_id].quick_search_enable();
+			// empower bookmark create links
+			bookmark_manager.enable_create_bookmark_buttons();
 			// but keep it hidden, if we are in advanced search mode
 			if (adv_search_mode != undefined) {
 				$('#search-controls_'+this_tool_id).hide();
@@ -897,8 +902,8 @@ function Tool (tool_attributes) {
 		});
 
 		// return to caller
-		return post_promise;	
-	
+		return post_promise;
+
 	}
 
 	// function to reset search options (for searching tools)
@@ -907,7 +912,7 @@ function Tool (tool_attributes) {
 
 		// sadly, a sequential job
 		loading_modal_display('Resetting Search Options...');
-		
+
 		// first, call the 'clear_search_options' method from the back-end
 		$.when( query_tool( this['tool_uri'] + '/reset_search_options' ,{}) ).done(function(json_data) {
 			// then reload the tools controls
@@ -916,7 +921,7 @@ function Tool (tool_attributes) {
 				tool_objects[this_tool_id].refresh_json_data();
 			});
 		});
-	
+
 	}
 
 	// function to power the quick-search keyword search - screens only

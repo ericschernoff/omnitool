@@ -117,6 +117,8 @@ $( document ).ready(function() {
 
 		// fire up the bookmark manager js routines
 		bookmark_manager = new Bookmark_Manager();
+		// empower bookmark create links
+		bookmark_manager.enable_create_bookmark_buttons();
 
 		// start the very-important monitoring of the change to the hash / loaction
 		$(window).bind('hashchange',omnitool_controller);

@@ -52,6 +52,9 @@ sub new {
 sub fetch_tool_bookmarks {
 	my $self = shift;
 
+	# optional argument is to filter by the tool data_code
+	my ($for_tool_data_code) = @_;
+
 	# declare local vars
 	my ($tool_id, $bm);
 
@@ -65,17 +68,20 @@ sub fetch_tool_bookmarks {
 	foreach $bm (@{$self->{bookmark_keys}}) {
 		$tool_id = $self->{bookmarks}{$bm}{tool_id}; # sanity
 
+		# filter by this $tool_id if they specified one tool
+		next if $for_tool_data_code && $for_tool_data_code ne $tool_id;
+
 		# if the acl's changed and they no longer have access to this tool, blank the bookmark
 		if (!$self->{luggage}{session}{tools}{$tool_id}{button_name}) {
 			delete($self->{bookmarks}{$bm});
 			next;
 		}
 
-		# track the default bookmarks
-		if ($self->{bookmarks}{$bm}{default_for_instance} eq 'Yes') {
+		# track the default bookmarks, unless we are going for a specific tool
+		if ($self->{bookmarks}{$bm}{default_for_instance} eq 'Yes' && !$for_tool_data_code) {
 			$self->{bookmarks}{$bm}{saved_name} .= ' **';
 		}
-		if ($self->{bookmarks}{$bm}{default_for_tool} eq 'Yes') {
+		if ($self->{bookmarks}{$bm}{default_for_tool} eq 'Yes' && !$for_tool_data_code) {
 			$self->{bookmarks}{$bm}{saved_name} .= ' *';
 		}
 
@@ -365,7 +371,7 @@ It's very likely you won't need to use this documentation, unless you are fixing
 This module exists to save / modify display options records into the 'tools_display_options_saved'
 tables in the various intstances' MySQL databases.  This module works in conjunction with
 omnitool::tool::bookmark_manager, the 'system_modals.tt' Jemplate and omnitool_bookmarks.js
-(both under 'static_files') to provide bookmarking of Tools with display/view criteria within 
+(both under 'static_files') to provide bookmarking of Tools with display/view criteria within
 the Web UI.  This behavior is described a bit more in the POD notes for tool.pm, under the 'Tool
 Display Options and Bookmarks' heading.
 
@@ -383,9 +389,9 @@ much for the Tools' saved options to be full-fledged OmniClass datatypes - altho
 probably be pretty cool ;)  In any event, this sub-tool should be the only such monster in
 the system; all other UI areas should be configured as Tools in OmniTool Admin.
 
-The Tool Bookmarks created with this class are primarily used in omnitool::common::ui::build_navigation() 
-to add a menu for the user's Tool Bookmarks at the very start of the navigation menu.  It does call this 
-class specifically to get these bookmarks.  Also, in ui::get_instance_info(), the user's Default Tool 
+The Tool Bookmarks created with this class are primarily used in omnitool::common::ui::build_navigation()
+to add a menu for the user's Tool Bookmarks at the very start of the navigation menu.  It does call this
+class specifically to get these bookmarks.  Also, in ui::get_instance_info(), the user's Default Tool
 Bookmark is fetched as well via this class.
 
 The loading of these bookmarks is in omnitool::tool::display_options_manager::load_display_options(),
@@ -414,6 +420,9 @@ To load the hash of Tool Bookmarks for this user/app instance combination:
 
 Loads up the bookmarks' names, tool names, and default-for-tool/default-for-instance status ('Yes'
 or 'No') into $bookmark_broker->{bookmarks}.
+
+Provide a tool's data_code as an argument to pull bookmarks for only that specific tools, i.e. for
+preparing data for tools_controls.tt.
 
 Will automatically call sort_bookmarks() to load an arrayref of keys of $bookmark_broker->{bookmarks}
 into $bookmark_broker->{bookmark_keys}, sorted by the {tool_name} then {saved_name} entries, so

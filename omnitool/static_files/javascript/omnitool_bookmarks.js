@@ -15,26 +15,6 @@ function Bookmark_Manager () {
 	// this object set up routine is to establish behavior for the create/manage/share
 	// bookmarks links in the ui skeleton's navbar
 
-	// empower create link
-	$('.bookmark_create').click(function(e){
-		e.preventDefault();
-		var current_tool_id = the_active_tool_ids['screen'];
-		var data = {
-			bookmark_mode: 1,
-			show_bookmark_create_form: 1,
-			modal_title_icon: 'fa-bookmark',
-			modal_title:  'Create a Bookmark - ' + tool_objects[current_tool_id]['button_name'],
-			current_tool_name: tool_objects[current_tool_id]['button_name'],
-			instance_title: instance_title,
-		};
-
-		// open it up
-		open_system_modal(data);
-
-		// hidden validation span
-		$('#new_bookmark_required').hide();
-	});
-
 	// keep bookmark manager data in wider scope for re-use
 	var manager_data = {
 		bookmark_mode: 1,
@@ -65,6 +45,28 @@ function Bookmark_Manager () {
 			open_system_modal(manager_data);
 		});
 	});
+
+	// function to enable bookmark create buttons - called when UI is setup and when the tools_controls.tt is loaded
+	this.enable_create_bookmark_buttons = function () {
+		$('.bookmark_create').click(function(e){
+			e.preventDefault();
+			var current_tool_id = the_active_tool_ids['screen'];
+			var data = {
+				bookmark_mode: 1,
+				show_bookmark_create_form: 1,
+				modal_title_icon: 'fa-bookmark',
+				modal_title:  'Create a Bookmark - ' + tool_objects[current_tool_id]['button_name'],
+				current_tool_name: tool_objects[current_tool_id]['button_name'],
+				instance_title: instance_title,
+			};
+
+			// open it up
+			open_system_modal(data);
+
+			// hidden validation span
+			$('#new_bookmark_required').hide();
+		});
+	};
 
 	// function to submit the new bookmark form
 	this.create_bookmark = function () {
@@ -134,7 +136,7 @@ function Bookmark_Manager () {
 		if (manager_data.form_action == 'share') {
 			// where are we?
 			var current_tool_id = the_active_tool_ids['screen'];
-			
+
 			// probably on a different tool, so we need to call back to the server to get the proper uri
 			manager_data.share_bookmark = $( "#bookmark_to_manage" ).val();
 			$.when( query_tool(tool_objects[current_tool_id]['tool_uri'] + '/bookmark_manager',manager_data) ).done(function(json_response) {
@@ -147,7 +149,7 @@ function Bookmark_Manager () {
 				// now reprocess
 				manager_data.selected = new Object();
 					manager_data.selected[manager_data.form_action] = 'SELECTED';
-				jemplate_bindings['system_modal'].process_json_data(manager_data);				
+				jemplate_bindings['system_modal'].process_json_data(manager_data);
 			});
 		} else if (manager_data.form_action == 'make_default_for_instance' || manager_data.form_action == 'make_default_for_tool') {
 			manager_data.target_bookmark = $( "#bookmark_to_manage" ).val();
@@ -166,7 +168,7 @@ function Bookmark_Manager () {
 		} else { // simple redisplay to show form
 			manager_data.selected = new Object();
 				manager_data.selected[manager_data.form_action] = 'SELECTED';
-			jemplate_bindings['system_modal'].process_json_data(manager_data);				
+			jemplate_bindings['system_modal'].process_json_data(manager_data);
 		}
 	}
 

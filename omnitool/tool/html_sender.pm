@@ -10,6 +10,8 @@ $omnitool::tools::html_sender::VERSION = '6.0';
 # time to grow up
 use strict;
 
+use omnitool::common::bookmark_broker;
+
 # start our method to prepare/process the tool's skeleton divs
 sub send_html {
 	my $self = shift;
@@ -38,7 +40,7 @@ sub send_html {
 		my ($other_tool, $other_tool_name) = $self->{db}->quick_select(qq{
 			select code,name from tools where uri_path_base=? and parent=?
 		},[ $self->{display_options}{altcode}, '8_1:'.$self->{tool_datacode} ]);
-		
+
 		if ($other_tool) { # another Tool found == they don't have access to this Tool.
 			# try to clear the altcode for this parent Tool's config, so they won't see the
 			# message if they go to the have-access tool in another window.
@@ -47,9 +49,9 @@ sub send_html {
 			my $inst_contact = $self->{luggage}{session}{app_instance_info}{inst_contact};
 			# message for tools_area_skeleton.tt
 			$self->{access_error_message} .= qq{
-				NOTICE: You do not have access to the $other_tool_name Tool.  
-				We can display $self->{attributes}{name} instead.  
-				Please contact <a href="mailto:$inst_contact">$inst_contact</a> for additional access.				
+				NOTICE: You do not have access to the $other_tool_name Tool.
+				We can display $self->{attributes}{name} instead.
+				Please contact <a href="mailto:$inst_contact">$inst_contact</a> for additional access.
 			};
 		}
 	}
@@ -110,7 +112,17 @@ sub send_breadcrumbs {
 sub tool_controls {
 	my $self = shift;
 
-	my ($filter_menu, $menu_cnt, $mode_view, $tk);
+	my ($bookmark_broker, $filter_menu, $menu_cnt, $mode_view, $tk);
+
+	# we want to send the bookmarks for this tool
+	$bookmark_broker = omnitool::common::bookmark_broker->new(
+		'luggage' => $self->{luggage},
+		'db' => $self->{db},
+	);
+	$bookmark_broker->fetch_tool_bookmarks( $self->{tool_datacode} );
+	# prepare for shipping
+	$self->{bookmarks} = $bookmark_broker->{bookmarks};
+	$self->{bookmark_keys} = $bookmark_broker->{bookmark_keys};
 
 	# determine the child-actions which are labeled 'quick actions'
 	foreach $tk (@{ $self->{attributes}{child_tools_keys} }) {

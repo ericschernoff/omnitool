@@ -12,6 +12,11 @@ Expects all of $self for a Tool.pm class/sub-class.
 
 <!-- show print button -->
 <div class="btn-group">
+[% IF attributes.tool_type.match('Search') %]
+	<button class="btn btn-white" title="Reset Search Options" onclick="tool_objects['[%tool_and_instance%]'].reset_search_options()">
+		<i class="fa fa-search-minus red"></i>
+	</button>
+[% END %]
 <button class="btn btn-white" onclick="$('#tool_display_[%tool_and_instance%]').printThis();">
 	<i class="fa fa-print"></i>
 </button>
@@ -21,9 +26,15 @@ Expects all of $self for a Tool.pm class/sub-class.
 <div class="btn-group">
 
 [% IF attributes.tool_type.match('Search') %]
-	<button class="btn btn-white" title="Reset Search Options" onclick="tool_objects['[%tool_and_instance%]'].reset_search_options()">
-		<i class="fa fa-search-minus red"></i>
+	<button data-toggle="dropdown" class="btn btn-white dropdown-toggle" title="Search Bookmarks">
+		<i class="fa fa-bookmark blue"></i>
 	</button>
+	<ul class="dropdown-menu">
+		[% FOREACH bm IN bookmark_keys %]
+			<li><a href="#[%bookmarks.$bm.uri%]">[% bookmarks.$bm.saved_name %]</a></li>
+		[% END %]
+		<li><a href="#" class="bookmark_create"><i class="fa fa-plus"></i> Create Bookmark</a></li>
+	</ul>
 [% END %]
 
 [%# indicate if tool has a search query refresh interval %]
