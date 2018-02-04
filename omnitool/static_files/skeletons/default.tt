@@ -96,7 +96,7 @@
 								</a>
 								<ul class="dropdown-menu-right dropdown-navbar dropdown-menu dropdown-caret dropdown-close">
 									<li><a href="#" class="bookmark_create">Create Bookmark</a></li>
-									<li><a href="#" id="bookmark_manage">Manage Bookmarks</a></li>
+									<li><a href="#" class="bookmark_manage">Manage Bookmarks</a></li>
 									<li><a href="#" class="bookmark_create">Share Current View</a></li>
 								</ul>
 							</li>

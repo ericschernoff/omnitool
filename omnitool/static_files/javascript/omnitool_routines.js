@@ -117,8 +117,9 @@ $( document ).ready(function() {
 
 		// fire up the bookmark manager js routines
 		bookmark_manager = new Bookmark_Manager();
-		// empower bookmark create links
+		// empower bookmark create and manage links
 		bookmark_manager.enable_create_bookmark_buttons();
+		bookmark_manager.enable_manage_bookmarks_button();
 
 		// start the very-important monitoring of the change to the hash / loaction
 		$(window).bind('hashchange',omnitool_controller);
@@ -275,6 +276,10 @@ function post_data_fetch_operations (data) {
 				// tool_objects[the_tool_id].refresh_json_data();
 			}
 		});
+
+		// also make sure the bookmark links are enabled
+		bookmark_manager.enable_create_bookmark_buttons();
+		bookmark_manager.enable_manage_bookmarks_button();
 	}
 
 	// breadcrumbs mode: empower the app-wide search box which will appear in the breadcrumbs area

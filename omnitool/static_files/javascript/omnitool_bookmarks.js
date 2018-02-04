@@ -25,27 +25,6 @@ function Bookmark_Manager () {
 		fetch_bookmarks: 1
 	};
 
-	// empower manage link
-	$('#bookmark_manage').click(function(e){
-		e.preventDefault();
-		var current_tool_id = the_active_tool_ids['screen'];
-
-		// we need to call on the server to give us the current list of bookmarks for this user before opening the modal
-		$.when( query_tool(tool_objects[current_tool_id]['tool_uri'] + '/bookmark_manager',manager_data) ).done(function(json_response) {
-			manager_data.bookmark_mode = 1;
-			manager_data.bookmark_keys = json_response.bookmark_keys;
-			manager_data.bookmarks = json_response.bookmarks;
-			manager_data.form_action = 'none'; // set default
-			manager_data.selected = new Object();
-
-			manager_data.mobile_device = mobile_device;
-			manager_data.status_message = json_response.status_message;
-
-			// open it up & let jemplate handle the rest
-			open_system_modal(manager_data);
-		});
-	});
-
 	// function to enable bookmark create buttons - called when UI is setup and when the tools_controls.tt is loaded
 	this.enable_create_bookmark_buttons = function () {
 		$('.bookmark_create').click(function(e){
@@ -68,6 +47,28 @@ function Bookmark_Manager () {
 		});
 	};
 
+	// function to empower manage link
+	this.enable_manage_bookmarks_button = function () {
+		$('.bookmark_manage').click(function(e){
+			e.preventDefault();
+			var current_tool_id = the_active_tool_ids['screen'];
+
+			// we need to call on the server to give us the current list of bookmarks for this user before opening the modal
+			$.when( query_tool(tool_objects[current_tool_id]['tool_uri'] + '/bookmark_manager',manager_data) ).done(function(json_response) {
+				manager_data.bookmark_mode = 1;
+				manager_data.bookmark_keys = json_response.bookmark_keys;
+				manager_data.bookmarks = json_response.bookmarks;
+				manager_data.form_action = 'none'; // set default
+				manager_data.selected = new Object();
+
+				manager_data.mobile_device = mobile_device;
+				manager_data.status_message = json_response.status_message;
+
+				// open it up & let jemplate handle the rest
+				open_system_modal(manager_data);
+			});
+		});
+	};
 	// function to submit the new bookmark form
 	this.create_bookmark = function () {
 		// where are we?
