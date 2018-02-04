@@ -20,6 +20,12 @@ Expects all of $self for a Tool.pm class/sub-class.
 <!-- show Refresh Data for all tools -->
 <div class="btn-group">
 
+[% IF attributes.tool_type.match('Search') %]
+	<button class="btn btn-white" title="Reset Search Options" onclick="tool_objects['[%tool_and_instance%]'].reset_search_options()">
+		<i class="fa fa-search-minus red"></i>
+	</button>
+[% END %]
+
 [%# indicate if tool has a search query refresh interval %]
 [% IF attributes.query_interval %]
 	[% SET refresh_button_title = 'title="Search auto-runs every ' _ attributes.query_interval _ ' seconds."' %]

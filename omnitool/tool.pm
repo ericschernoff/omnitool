@@ -208,6 +208,16 @@ sub get_omniclass_object {
 	# it in $self for easy transfer
 }
 
+# method to allow them to easily clear search options hash for this client connection
+sub reset_search_options {
+	my $self = shift;
+	
+	# use save_display_options_hash() from the display_options_manager
+	$self->save_display_options_hash(1); # argument tells it to reset
+
+	return 'OK';
+}
+
 # little method to send non-fatal log messages to a log file named for this tool's button name
 sub logger {
 	my $self = shift;

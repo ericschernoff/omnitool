@@ -764,8 +764,9 @@ function Tool (tool_attributes) {
 				// make note of the fact that this form is open for return to this tool
 				tool_objects[tool_id].advanced_search_open = 1;
 
-				// enliven the form
+				// enliven the form and popovers
 				interactive_form_elements(tool_id,'advanced_search_form');
+				enable_popovers();
 				loading_modal_display('hide');
 			});
 
@@ -820,8 +821,9 @@ function Tool (tool_attributes) {
 				// now toggle it
 				form_display_div.show();
 
-				// enliven the form
+				// enliven the form and popovers
 				interactive_form_elements(tool_id,'advanced_sort_form');
+				enable_popovers();
 				loading_modal_display('hide');
 			});
 		}
@@ -896,6 +898,24 @@ function Tool (tool_attributes) {
 
 		// return to caller
 		return post_promise;	
+	
+	}
+
+	// function to reset search options (for searching tools)
+	this.reset_search_options = function () {
+		var this_tool_id = this['the_tool_id'];
+
+		// sadly, a sequential job
+		loading_modal_display('Resetting Search Options...');
+		
+		// first, call the 'clear_search_options' method from the back-end
+		$.when( query_tool( this['tool_uri'] + '/reset_search_options' ,{}) ).done(function(json_data) {
+			// then reload the tools controls
+			$.when( tool_objects[this_tool_id].reload_tool_controls() ).done(function() {
+				// and finally, reload the search results
+				tool_objects[this_tool_id].refresh_json_data();
+			});
+		});
 	
 	}
 

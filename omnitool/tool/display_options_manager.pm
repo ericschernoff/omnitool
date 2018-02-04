@@ -121,6 +121,13 @@ sub load_display_options_hash {
 sub save_display_options_hash {
 	my $self = shift;
 
+	# pass an argument to reset the display_options altogether
+	my ($reset_display_options) = @_;
+	
+	if ($reset_display_options) { # they want to reset, see reset_search_options() in tool.pm
+		$self->{display_options} = {};
+	}
+
 	# removed all the bookmark / save-out code as the bookmark sub-system handles
 	# this with bookmark_broker.pm
 	# commit the save now
