@@ -461,7 +461,7 @@ function post_data_fetch_operations (data) {
 	$( ".omnitool-heading" ).click(function() {
 		// if this tool has advanced search & advanced sort available, and we are not in the
 		// enhanced table let's open advanced sort
-		if ( ! $.fn.DataTable.isDataTable( '#tool_results_' + data.the_tool_id ) && $('#advanced_search_features').length ) {
+		if ( ! $.fn.DataTable.isDataTable( '#tool_results_' + data.the_tool_id ) && $('#advanced_sort_features').length ) {
 			tool_objects[data.the_tool_id].show_advanced_sort();
 
 		// otherwise, standard one-column sort

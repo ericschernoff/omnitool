@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.19, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.21, for Linux (x86_64)
 --
 -- Host: localhost    Database: omnitool
 -- ------------------------------------------------------
--- Server version	5.7.19-0ubuntu0.16.04.1-log
+-- Server version	5.7.21-0ubuntu0.16.04.1-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -162,7 +162,7 @@ CREATE TABLE `datatype_fields` (
   `search_tool_heading` varchar(60) DEFAULT NULL,
   PRIMARY KEY (`code`,`server_id`),
   KEY `parent` (`parent`)
-) ENGINE=InnoDB AUTO_INCREMENT=172 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=175 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -316,7 +316,7 @@ CREATE TABLE `instances` (
   `public_mode` varchar(3) DEFAULT NULL,
   PRIMARY KEY (`code`,`server_id`),
   KEY `parent` (`parent`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -347,7 +347,7 @@ CREATE TABLE `metainfo` (
   KEY `parent` (`parent`),
   KEY `altcode` (`altcode`),
   KEY `data_code` (`data_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=441 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=446 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -529,7 +529,7 @@ CREATE TABLE `tool_mode_configs` (
   `display_a_chart` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`code`,`server_id`),
   KEY `parent` (`parent`)
-) ENGINE=InnoDB AUTO_INCREMENT=104 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -570,9 +570,10 @@ CREATE TABLE `tools` (
   `require_quick_search_keyword` varchar(3) DEFAULT NULL,
   `menus_required_for_search` varchar(3) DEFAULT NULL,
   `display_tool_controls` varchar(3) DEFAULT NULL,
+  `supports_advanced_sorting` varchar(3) DEFAULT NULL,
   PRIMARY KEY (`code`,`server_id`),
   KEY `parent` (`parent`)
-) ENGINE=InnoDB AUTO_INCREMENT=94 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=95 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -698,4 +699,4 @@ CREATE TABLE `user_api_keys_metainfo` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-08-30 11:01:24
+-- Dump completed on 2018-02-08 20:50:18

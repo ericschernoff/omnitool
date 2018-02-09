@@ -129,14 +129,16 @@ sub search {
 
 	# are we using advanced sorting?
 	# try to find them
-	foreach $display_option (sort { $a cmp $b } keys %{ $self->{display_options} }) {
-		next if $display_option !~ /advanced_sort_/ || $self->{display_options}{$display_option} eq '-' || $self->{display_options}{$display_option} eq 'none'; # skip blanks
-		push(@$advanced_sort_options, $self->{display_options}{$display_option});
+	if ($self->{attributes}{supports_advanced_sorting} eq 'Yes') {
+		foreach $display_option (sort { $a cmp $b } keys %{ $self->{display_options} }) {
+			next if $display_option !~ /advanced_sort_/ || $self->{display_options}{$display_option} eq '-' || $self->{display_options}{$display_option} eq 'none'; # skip blanks
+			push(@$advanced_sort_options, $self->{display_options}{$display_option});
+		}
+		if ($$advanced_sort_options[0]) { # found at least one; do the complex search
+			$self->{omniclass_object}->complex_sort($advanced_sort_options);
+		}
 	}
-	if ($$advanced_sort_options[0]) { # found at least one; do the complex search
-		$self->{omniclass_object}->complex_sort($advanced_sort_options);
-	}
-
+	
 	# does this view want us to limit results?
 	if ($self->{tool_configs}{tool_mode_configs}{$tool_mode_id}{max_results} ne 'No Max') {
 		$self->limit_results( $self->{tool_configs}{tool_mode_configs}{$tool_mode_id}{max_results} );
