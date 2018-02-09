@@ -895,7 +895,7 @@ function Tool (tool_attributes) {
 			// empower bookmark create links
 			bookmark_manager.enable_create_bookmark_buttons();
 			// but keep it hidden, if we are in advanced search mode
-			if (adv_search_mode != undefined) {
+			if ($('#advanced_search_' + this_tool_id).is(':visible')) { 
 				$('#search-controls_'+this_tool_id).hide();
 				$('#quick_keyword_controls_'+this_tool_id).hide();
 			}
