@@ -520,8 +520,9 @@ sub log_errors {
 		$self->{belt} = omnitool::common::utility_belt->new();
 	}
 
-	# send the message
-	$self->{belt}->mr_zebra($error_message,1);
+	# log and then send the message
+    $self->{belt}->logger($error_message,'database_errors');
+    $self->{belt}->mr_zebra($error_message,1);
 }
 
 # quick_select: easily execute sql SELECTs that will return one row; returns live array
