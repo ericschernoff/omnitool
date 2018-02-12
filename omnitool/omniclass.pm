@@ -715,6 +715,9 @@ This how you search (and load) data.  Meant to take the place of SQL 'select' st
 				# Tells the searcher the relationship to the primary table from the alternative 'table_name' table.
 				# This allows us to search against true foreign keys, and not just other tables represent children
 				# of this datatype.
+				# Will get auto-built if 'relationship_column' is set to 'parent, and otherwise, you should set 
+				# this field when using 'table_name'. If set to 'data_code' will be translated to
+				# 'concat(code,'_',server_id)'
 
 			### See example below on cross-table relationships.
 
@@ -792,7 +795,7 @@ Here is an example query for cross-table relationships, since I feel like my exp
 				'match_value' => 'Japan', # "'name' => 'Japan'" would also work
 				'table_name' => 'countries',
 				'relationship_column' => 'data_code', # so concat(code,'_',server_id) on 'countries' table
-				'primary_table_column' => 'country_id', # so 'cities.country'
+				'primary_table_column' => 'country_id', # so 'cities.country_id'
 			},
 		],
 		'auto_load' => 1,

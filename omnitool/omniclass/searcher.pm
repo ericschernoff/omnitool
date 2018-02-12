@@ -121,8 +121,11 @@ sub search {
 			$$so{relationship_column} = qq{concat(code,'_',server_id)};
 		}
 
-		# get the relationship right
+		# default primary_table_column to data_code if it's blank with relationship_column=data_code
 		if (!$$so{primary_table_column} && $$so{relationship_column} eq 'data_code') {
+			$$so{primary_table_column} = qq{concat(code,'_',server_id)};
+		# or they set primary_table_column=data_code
+		} elsif ($$so{primary_table_column} eq 'data_code') {
 			$$so{primary_table_column} = qq{concat(code,'_',server_id)};
 		}
 
