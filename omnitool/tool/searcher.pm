@@ -138,7 +138,7 @@ sub search {
 			$self->{omniclass_object}->complex_sort($advanced_sort_options);
 		}
 	}
-	
+
 	# does this view want us to limit results?
 	if ($self->{tool_configs}{tool_mode_configs}{$tool_mode_id}{max_results} ne 'No Max') {
 		$self->limit_results( $self->{tool_configs}{tool_mode_configs}{$tool_mode_id}{max_results} );
@@ -168,13 +168,13 @@ sub search {
 	if ($self->{omniclass_object}->{datatype_info}{altcodes_are_unique} ne 'No') {
 		$self->{omniclass_object}->get_altcodes_keys();
 		$self->{display_options}{altcodes_keys} = $self->{omniclass_object}->{altcodes_keys};
-	
+
 	# otherwise, use the list of data codes
 	} else {
 		$self->{omniclass_object}->{altcodes_keys} = $self->{omniclass_object}->{records_keys};
 		$self->{display_options}{altcodes_keys} = $self->{omniclass_object}->{records_keys};
 	}
-	
+
 	# finally, convert that to a very nice hashref for sending out as JSON via mr_zebra()
 	# pass $self->{attributes}{load_trees} in as a instruction to be recursive or not
 	$self->{json_results} = $self->{luggage}{object_factory}->omniclass_data_extractor($self->{omniclass_object},{},$self->{attributes}{load_trees});
@@ -508,7 +508,7 @@ sub get_inline_actions {
 sub build_search {
 	my $self = shift;
 
-	my ($parent_string, $filter_menu, $keyword_key, $parent_datacode, $tool_datacode, $parent_tool_datatype, $keyword_operator_key, $n, $searches, $this_tool_filter_menu, $value_key, @apply_to_table_col_parts, @searches, $start_key, $end_key);
+	my (@match_columns, @keyword_operators, @match_values, $match_value, $kw_search, $parent_string, $filter_menu, $keyword_key, $parent_datacode, $tool_datacode, $parent_tool_datatype, $keyword_operator_key, $n, $searches, $this_tool_filter_menu, $value_key, @apply_to_table_col_parts, @searches, $start_key, $end_key);
 
 	# go through each filter menu
 	$n = 0;
@@ -533,23 +533,33 @@ sub build_search {
 		$$this_tool_filter_menu{which_search} = $n;
 
 		# keyword menus let you select the field-to-match with the menu and specify a keyword
-		# only use if sent both a selected field and a keyword value
-		if ($$this_tool_filter_menu{menu_type} eq 'Keyword' && $self->{display_options}{$value_key} && $self->{display_options}{$keyword_key} && $self->{display_options}{$value_key} ne 'Skip') {
+		# for special fun, the JS allows them to send an unlimited combination of searches for this field ;)
+		if ($$this_tool_filter_menu{menu_type} eq 'Keyword') {
+			(@match_columns) = split /,/, $self->{display_options}{$value_key};
+			(@keyword_operators) = split /,/, $self->{display_options}{$keyword_operator_key};
+			(@match_values) = split /,/, $self->{display_options}{$keyword_key};
 
-			$$searches[$n]{match_column} = $self->{display_options}{$value_key};
+			$kw_search = 0; # to keep the three arrays in sync
+			foreach $match_value (@match_values) {
+				if ($match_value && $match_value ne 'DO_CLEAR') {
+					# positive or negative match?
+					if ($keyword_operators[$kw_search] =~ /not/i) {
+						$$searches[$n]{operator} = 'not regexp';
+					} else {
+						$$searches[$n]{operator} = 'regexp';
+					}
+					$$searches[$n]{match_column} = $match_columns[$kw_search];
+					$$searches[$n]{match_value} = $match_values[$kw_search];
+					# note that these are all regular expressions
 
-			$$searches[$n]{match_value} = $self->{display_options}{$keyword_key};
-
-			# positive or negative match?
-			if ( $self->{display_options}{$keyword_operator_key} =~ /not/i) {
-				$$searches[$n]{operator} = 'not regexp';
-			} else {
-				$$searches[$n]{operator} = 'regexp';
-			}
-			# note that these are all regular expressions
-
-			if ($$this_tool_filter_menu{matches_relate_to_tool_dt} ne 'Direct') {
-				$$searches[$n]{relationship_column} = $$this_tool_filter_menu{matches_relate_to_tool_dt};
+					# they may have put in a complex match_column for a foreign-table match
+					# in that case, it would be match_column::table_nam::primary_table_column::relationship_column
+					if ($$searches[$n]{match_column} =~ /::/) {
+						($$searches[$n]{match_column}, $$searches[$n]{table_name}, $$searches[$n]{primary_table_column}, $$searches[$n]{relationship_column}) = split /::/, $$searches[$n]{match_column};
+					}
+					$n++; # advance that @$searches array
+				}
+				$kw_search++;
 			}
 
 		# date ranges are also kind of fun
@@ -646,8 +656,8 @@ sub build_search {
 				$self->{advanced_search_filters}++;
 			}
 
-			# advance for the array
-			$n++;
+			# advance for the array, if not a keyword, as $n was advanced above
+			$n++ if $$this_tool_filter_menu{menu_type} ne 'Keyword';
 		}
 
 	}

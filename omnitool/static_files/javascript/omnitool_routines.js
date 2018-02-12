@@ -1219,6 +1219,20 @@ function append_spreadsheet_form (the_tool_id, source_row_id) {
 	}
 }
 
+// routine to add advanced keyword search fields
+// it's a bit ugly, because we aren't keeping one in storage
+function add_advanced_search_keyword_field (tool_id) {
+	var adv_keyword_field_selector = tool_id+'_advanced_search_keyword';
+
+	// crazy copy command
+	$('.'+adv_keyword_field_selector).last().after( $('.'+adv_keyword_field_selector).last().clone() );
+
+	// show the plus only on the last one
+	$('.'+adv_keyword_field_selector).find( "a" ).hide();
+	$('.'+adv_keyword_field_selector).last().find( "a" ).show();
+
+}
+
 // routine to clear a form, most likely an advanced search or sort form
 function reset_form (form_id) {
 	var $form = $('#'+form_id);

@@ -23,12 +23,12 @@
 			[% form.instructions %]
 		</div>
 	[% END %]
-	
+
 	<form class="form-horizontal" id="[%tool_and_instance%]_advanced_search_form" action="[%form.target_url%]" method="post" role="form">
 	[% FOREACH hf IN form.hidden_fields.keys %]
 		<input type="hidden" name="[%hf%]" value="[%form.hidden_fields.$hf%]" />
 	[% END %]
-	
+
 	<div class="center">
 		If you need to clear this form and start over, then
 		<button class="btn btn-white" type="button" onclick="reset_form('[%tool_and_instance%]_advanced_search_form')">
@@ -43,8 +43,8 @@
 	[% SET n = 0 %]
 	[% FOREACH f IN form.field_keys %]
 
-		<div class="col-xs 12" id="field_div_[%form.fields.$f.name%]">
-		
+		<div class="col-xs 12 [%tool_and_instance%]_[%form.fields.$f.field_type%]" id="field_div_[%form.fields.$f.name%]">
+
 			<div class="form-group">
 				<label for="form-field-[%f%]" class="col-md-3 control-label">
 					[% IF form.fields.$f.field_error %]
@@ -55,9 +55,14 @@
 					[% ELSE %]
 						[% form.fields.$f.title %]
 					[% END %]
+
+					[% IF form.fields.$f.field_type == 'advanced_search_keyword' && form.fields.$f.duplicator_link  %]
+						<a href="javascript:add_advanced_search_keyword_field('[%tool_and_instance%]');"><i class="blue fa fa-plus"></i></a>
+					[% END %]
+
 					[% IF (field_type.match('_tags|_autocomplete')) %]
 						<i class="ace-icon fa fa-spin fa-spinner blue" id="form-field-[%f%]-spinner" style="display:none"></i>
-					[% END %]					
+					[% END %]
 					[% IF form.fields.$f.instructions %]
 						<span class="help-button" data-rel="popover" data-trigger="hover" data-placement="right" data-content="[%form.fields.$f.instructions%]">?</span>
 					[% END %]
@@ -66,7 +71,7 @@
 					[% IF form.fields.$f.preset == 'DO_CLEAR' %]
 						[% SET form.fields.$f.preset = '' %]
 					[% END %]
-					
+
 					[% SET field_type = form.fields.$f.field_type %]
 					[% PROCESS $field_type %]
 
@@ -97,7 +102,7 @@
 	</div>
 	</div>
 	</div>
-		
+
 [% END %]
 
 [%# templates for the advanced sort form %]

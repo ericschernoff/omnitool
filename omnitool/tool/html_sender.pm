@@ -221,7 +221,7 @@ sub advanced_sort_form {
 sub advanced_search_form {
 	my $self = shift;
 
-	my ($num, $trigger_menu, $filter_menu, $value_key, $tool_filter_menu, $form_field_type, $keyword_key, $keyword_operator_key, $start_key, $end_key, $opt);
+	my (@keyword_match_presets, @keyword_operator_presets, @keyword_presets, $keyword_preset, $kw_search, , $num, $trigger_menu, $filter_menu, $value_key, $tool_filter_menu, $form_field_type, $keyword_key, $keyword_operator_key, $start_key, $end_key, $opt);
 
 	# use method below to fetch the search options for ALL menus:
 	$self->build_filter_menu_options( $self->{tool_configs_keys}{tool_filter_menus} );
@@ -285,30 +285,66 @@ sub advanced_search_form {
 
 		}
 
-		$self->{json_results}{form}{fields}{$num} = {
-			'title' => $$tool_filter_menu{name},
-			'name' => $value_key,
-			'preset' => $self->{display_options}{$value_key},
-			'options_keys' => $$tool_filter_menu{options_keys},
-			'options' => $$tool_filter_menu{options},
-			'instructions' => $$tool_filter_menu{instructions},
-			'field_type' => $form_field_type,
-		};
-		push (@{ $self->{json_results}{form}{field_keys} }, $num);
+		# if it's not a keyword field, it's safe to add here
+		if ($$tool_filter_menu{menu_type} ne 'Keyword') {
+			$self->{json_results}{form}{fields}{$num} = {
+				'title' => $$tool_filter_menu{name},
+				'name' => $value_key,
+				'preset' => $self->{display_options}{$value_key},
+				'options_keys' => $$tool_filter_menu{options_keys},
+				'options' => $$tool_filter_menu{options},
+				'instructions' => $$tool_filter_menu{instructions},
+				'field_type' => $form_field_type,
+			};
+			push (@{ $self->{json_results}{form}{field_keys} }, $num);
+		}
 
-		# we need a few extra values for keyword fields
+		# keyword fields are wild, because we need one for each preset, plus an extra 'new' one
 		if ($$tool_filter_menu{menu_type} eq 'Keyword') {
 			$keyword_key = 'keyword_'.$filter_menu;
 			$keyword_operator_key = 'keyword_operator_'.$filter_menu;
 
-			# this field needs to be wide
-			$self->{json_results}{form}{fields}{$num}{both_columns} = 1;
+			@keyword_presets = split /,/, $self->{display_options}{$keyword_key};
+			@keyword_operator_presets = split /,/, $self->{display_options}{$keyword_operator_key};
+			@keyword_match_presets = split /,/, $self->{display_options}{$value_key};
 
-			$self->{json_results}{form}{fields}{$num}{keyword_key} = $keyword_key;
-			$self->{json_results}{form}{fields}{$num}{keyword_operator_key} = $keyword_operator_key;
+			$kw_search = 0;
+			foreach $keyword_preset (@keyword_presets) {
+				if ($keyword_preset && $keyword_preset ne 'DO_CLEAR') {
+					$self->{json_results}{form}{fields}{$num} = {
+						'title' => $$tool_filter_menu{name},
+						'name' => $value_key,
+						'options_keys' => $$tool_filter_menu{options_keys},
+						'options' => $$tool_filter_menu{options},
+						'instructions' => $$tool_filter_menu{instructions},
+						'field_type' => $form_field_type,
+						'preset' => $keyword_match_presets[$kw_search],
+						'keyword_preset' => $keyword_presets[$kw_search],
+						'keyword_operator_preset' => $keyword_operator_presets[$kw_search],
+						'keyword_key' => $keyword_key,
+						'keyword_operator_key' => $keyword_operator_key,
+						'both_columns' => 1,
+					};
+					push (@{ $self->{json_results}{form}{field_keys} }, $num);
+					$num++;
+				}
+				$kw_search++;
+			}
 
-			$self->{json_results}{form}{fields}{$num}{keyword_preset} = $self->{display_options}{$keyword_key};
-			$self->{json_results}{form}{fields}{$num}{keyword_operator_preset} = $self->{display_options}{$keyword_operator_key};
+			$self->{json_results}{form}{fields}{$num} = {
+				'title' => $$tool_filter_menu{name},
+				'name' => $value_key,
+				'options_keys' => $$tool_filter_menu{options_keys},
+				'options' => $$tool_filter_menu{options},
+				'instructions' => $$tool_filter_menu{instructions},
+				'field_type' => $form_field_type,
+				'keyword_key' => $keyword_key,
+				'keyword_operator_key' => $keyword_operator_key,
+				'both_columns' => 1,
+				'duplicator_link' => 1,
+			};
+			push (@{ $self->{json_results}{form}{field_keys} }, $num);
+			$num++;
 
 		# and the keyword_tags field
 		} elsif ($$tool_filter_menu{menu_type} eq 'Keyword Tags') {
@@ -344,7 +380,8 @@ sub advanced_search_form {
 			}
 		}
 
-		$num++;
+		# advance for all fields other than the keyword, as it handles it above
+		$num++ if $$tool_filter_menu{menu_type} ne 'Keyword';
 	}
 
 	# allow for a hook to play with this form structure
