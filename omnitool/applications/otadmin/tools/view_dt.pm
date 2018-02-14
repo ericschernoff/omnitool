@@ -14,10 +14,9 @@ sub init {
 sub perform_action {
 	my $self = shift;
 
-	my (@dt_codes, $dt_code, $dt_field);
+	my (@dt_codes, $dt_code, $dt_field, $main_record);
 
-
-	$self->{json_results}{data_title} = 'Details for "'.$self->{omniclass_object}{data}{name}.'" OmniClass Datatype';
+	$self->{json_results}{data_title} = 'Details for "'.$self->{omniclass_object}->{data}{name}.'" OmniClass Datatype';
 	$self->{json_results}{hide_altcode} = 1;
 
 	$self->{json_results}{tab_info} = {
@@ -30,39 +29,43 @@ sub perform_action {
 	# some defaults
 
 	# description
-	if (!$self->{omniclass_object}{data}{description}) {
-		$self->{omniclass_object}{data}{description} = 'Not Defined';
+	if (!$self->{omniclass_object}->{data}{description}) {
+		$self->{omniclass_object}->{data}{description} = 'Not Defined';
 	}
 
 	# lock lifetime
-	if ($self->{omniclass_object}{data}{lock_lifetime}) {
-		$self->{omniclass_object}{data}{lock_lifetime} .= ' mins' ;
+	if ($self->{omniclass_object}->{data}{lock_lifetime}) {
+		$self->{omniclass_object}->{data}{lock_lifetime} .= ' mins' ;
 	} else {
-		$self->{omniclass_object}{data}{lock_lifetime} = 'App / Tool Default';
+		$self->{omniclass_object}->{data}{lock_lifetime} = 'App / Tool Default';
 	}
 
 	# perl module / sub-class
-	if ($self->{omniclass_object}{data}{perl_module}) {
-		$self->{omniclass_object}{data}{perl_module} .= '.pm' ;
+	if ($self->{omniclass_object}->{data}{perl_module}) {
+		$self->{omniclass_object}->{data}{perl_module} .= '.pm' ;
 	} else {
-		$self->{omniclass_object}{data}{perl_module} = 'Not Defined';
+		$self->{omniclass_object}->{data}{perl_module} = 'Not Defined';
 	}
 
 	# containable datatypes is a bit of a pain
-	if (!$self->{omniclass_object}{data}{containable_datatypes}) {
-		$self->{omniclass_object}{data}{containable_datatypes} = 'Not Defined';
+	if ($self->{omniclass_object}->{data}{containable_datatypes} !~ /_/) {
+		$self->{omniclass_object}->{data}{containable_datatypes} = 'Not Defined';
 
 	# if there are some, have to resolve to names
 	} else {
-		(@dt_codes) = split /,/, $self->{omniclass_object}{data}{containable_datatypes};
+		$main_record = $self->{omniclass_object}->{data_code};
+		# take out myself, so this display doesn't get broken
+		$self->{omniclass_object}->{data}{containable_datatypes} =~ s/(^|,)$main_record($|,)//;
+		(@dt_codes) = split /,/, $self->{omniclass_object}->{data}{containable_datatypes};
 		$self->{omniclass_object}->load(
 			'skip_hooks' => 1,
-			'data_codes' => [@dt_codes],
+			'data_codes' => \@dt_codes,
 			'load_fields' => 'name',
 		);
-		$self->{omniclass_object}{data}{containable_datatypes} = '';
+		$self->{omniclass_object}->{data}{containable_datatypes} = '';
+		$self->{omniclass_object}->set_primary_record($main_record);
 		foreach $dt_code (@dt_codes) {
-			$self->{omniclass_object}{data}{containable_datatypes} .= $self->{omniclass_object}->{records}{$dt_code}{name}."\n";
+			$self->{omniclass_object}->{data}{containable_datatypes} .= $self->{omniclass_object}->{records}{$dt_code}{name}."\n";
 		}
 	}
 
@@ -72,24 +75,24 @@ sub perform_action {
 			'type' => 'info_groups',
 			'data' => [
 				[
-					[ 'DB Table', $self->{omniclass_object}{data}{table_name} ],
-					[ 'Metainfo Table', $self->{omniclass_object}{data}{metainfo_table} ],
-					[ 'Sub-Class', $self->{omniclass_object}{data}{perl_module} ],
-					[ 'Lock Lifetime', $self->{omniclass_object}{data}{lock_lifetime}],
+					[ 'DB Table', $self->{omniclass_object}->{data}{table_name} ],
+					[ 'Metainfo Table', $self->{omniclass_object}->{data}{metainfo_table} ],
+					[ 'Sub-Class', $self->{omniclass_object}->{data}{perl_module} ],
+					[ 'Lock Lifetime', $self->{omniclass_object}->{data}{lock_lifetime}],
 				],
 				[
-					[ 'Show Name Field', $self->{omniclass_object}{data}{show_name} ],
-					[ 'Log Updates', $self->{omniclass_object}{data}{extended_change_history} ],
-					[ 'Archive Deletes', $self->{omniclass_object}{data}{archive_deletes} ],
-					[ 'Tasks / Email', $self->{omniclass_object}{data}{support_email_and_tasks} ],
+					[ 'Show Name Field', $self->{omniclass_object}->{data}{show_name} ],
+					[ 'Log Updates', $self->{omniclass_object}->{data}{extended_change_history} ],
+					[ 'Archive Deletes', $self->{omniclass_object}->{data}{archive_deletes} ],
+					[ 'Tasks / Email', $self->{omniclass_object}->{data}{support_email_and_tasks} ],
 				],
 			],
 		},
 		2 => {
 			'type' => 'text_blocks',
 			'data' => [
-				[ 'Description', $self->{omniclass_object}{data}{description} ],
-				[ 'Can Contain Datatypes', $self->{omniclass_object}{data}{containable_datatypes} ],
+				[ 'Description', $self->{omniclass_object}->{data}{description} ],
+				[ 'Can Contain Datatypes', $self->{omniclass_object}->{data}{containable_datatypes} ],
 			],
 		},
 		3 => {
@@ -289,7 +292,7 @@ sub perform_form_action {
 
 	# if you want to convert to a pop-up notice
 	$self->{json_results}{title} = 'Records Have Been Re-Ordered';
-	$self->{json_results}{message} = $n.' '.$self->{this_omniclass_object}{datatype_info}{name}.' records re-ordered under '.$self->{omniclass_object}{data}{name};
+	$self->{json_results}{message} = $n.' '.$self->{this_omniclass_object}{datatype_info}{name}.' records re-ordered under '.$self->{omniclass_object}->{data}{name};
 	$self->{json_results}{show_gritter_notice} = 1;
 
 	# otherwise, fill in some values in $self->{json_results} for your Jemplate
