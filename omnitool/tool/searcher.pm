@@ -558,6 +558,7 @@ sub build_search {
 						($$searches[$n]{match_column}, $$searches[$n]{table_name}, $$searches[$n]{primary_table_column}, $$searches[$n]{relationship_column}) = split /::/, $$searches[$n]{match_column};
 					}
 					$n++; # advance that @$searches array
+					$self->{advanced_search_filters}++
 				}
 				$kw_search++;
 			}
@@ -653,7 +654,7 @@ sub build_search {
 			# we need to track the number of advanced search menus which we are using
 			# to report via $self->{json_results}{advanced_search_filters} and use in the JS/UI
 			if ($$this_tool_filter_menu{display_area} eq 'Advanced Search') {
-				$self->{advanced_search_filters}++;
+				$self->{advanced_search_filters}++ if $$this_tool_filter_menu{menu_type} ne 'Keyword';
 			}
 
 			# advance for the array, if not a keyword, as $n was advanced above

@@ -915,6 +915,11 @@ function Tool (tool_attributes) {
 
 		// first, call the 'clear_search_options' method from the back-end
 		$.when( query_tool( this['tool_uri'] + '/reset_search_options' ,{}) ).done(function(json_data) {
+			// reset the advanced search form, if it is open
+			if ($('#advanced_search_' + this_tool_id).is(':visible')) { 
+				reset_form(this_tool_id+'_advanced_search_form');
+			}			
+			
 			// then reload the tools controls
 			$.when( tool_objects[this_tool_id].reload_tool_controls() ).done(function() {
 				// and finally, reload the search results
