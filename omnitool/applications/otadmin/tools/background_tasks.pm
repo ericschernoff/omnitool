@@ -142,7 +142,7 @@ sub perform_form_action {
 	}
 
 	$self->{json_results}{results_headings} = [
-		'Task ID','Datatype','Record','For User','Method to Run','Created','Starts/ed','Status'
+		'Task ID','Datatype','Record','For User','Method to Run','Created','Start/End','Status'
 	];
 	$self->{json_results}{results_sub_keys} = [
 		'datatype_name', 'altcode', 'username', 'method', 'created','ran','status_info'
