@@ -108,7 +108,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 
 [% IF attributes.tool_type.match('Search') %]
 	[% IF has_advanced_search %]
-		<div class="btn-group" id="advanced_search_features">
+		<div class="btn-group" id="advanced_search_features_[%tool_and_instance%]">
 			<button class="btn btn-white" onclick="tool_objects['[%tool_and_instance%]'].show_advanced_search()">
 			<i class="ace-icon fa fa-search-plus"></i>
 			<span id="advanced_search_text" class="hidden-xs">Adv. Search</span>
@@ -118,7 +118,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 	[% END %]
 	
 	[% IF attributes.supports_advanced_sorting == 'Yes' %]
-		<div class="btn-group" id="advanced_sort_features">
+		<div class="btn-group" id="advanced_sort_features_[%tool_and_instance%]">
 			<button class="btn btn-white" onclick="tool_objects['[%tool_and_instance%]'].show_advanced_sort()">
 			<i class="ace-icon fa fa-sort"></i>
 			<span id="advanced_sort_text" class="hidden-xs">Sort</span>
