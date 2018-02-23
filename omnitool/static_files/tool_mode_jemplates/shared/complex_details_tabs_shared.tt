@@ -72,7 +72,7 @@
 							<h2>[%tab_info.$tab_key.1%]</h2>
 						[% END %]
 
-						[% IF n == 0 && tags_keys.0 %]
+						[% IF tabs.$tab_key.type == 'info_groups' && !did_tags_already && tags_keys.0 %]
 							<div class="profile-info-row">
 							<div class="profile-info-name"> Tags </div>
 							<div class="profile-info-value">
@@ -81,6 +81,8 @@
 							[% END %]
 							</div>
 							</div>
+							
+							[% SET did_tags_already = 1 %]
 						[% END %]
 
 						[%# set the large/medium col-size based on the number of columns

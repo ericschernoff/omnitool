@@ -419,6 +419,9 @@ sub get_inline_actions {
 			# safe to use the parent's inline actions
 			$tool_datacode = $parent_tool_datacode;
 		}
+		
+		# for test below
+		$self->{using_parents_tools} = 1;
 	}
 
 	# if all those tests fail, we shall just stick with  $self->{tool_datacode};
@@ -457,6 +460,9 @@ sub get_inline_actions {
 
 			# if this is a locking action, do not allow it if someone else has it locked
 			next if $self->{luggage}{session}{tools}{$child_tool_key}{is_locking} eq 'Yes' && $lock_user;
+
+			# do not show the same tool that we are already on, if we are in parent-sharing mode
+			next if $child_tool_key eq $self->{tool_datacode} && $self->{using_parents_tools};
 
 			# so we can only use altcodes if they can be trusted to be unique, which is controlled by the 'Altcodes are Unique'
 			# setting for the datatype.  We *want* to use altcodes for friendlier URIs, and we will in 99% of situations

@@ -20,15 +20,11 @@ use MIME::Types;
 # for determining the size of a file / scalar
 use Devel::Size qw(total_size);
 
-# for checking the status of the S3/Swift connections
+# for checking the status of the Swift connections
 use Scalar::Util qw(blessed);
 
 # import our class for saving/loading files via swift
 use omnitool::common::swiftstack_client;
-
-# import our class for saving/loading files via amazon s3
-use omnitool::common::aws_s3_client;
-# that uses AWS::S3 on CPAN
 
 # set myself up:  need the %$luggage and alternatively a $db object
 sub new {
@@ -66,7 +62,7 @@ sub new {
 	# first the method
 	$self->{file_storage_method} = $self->{luggage}{session}{app_instance_info}{file_storage_method};
 
-	# the location is encrypted because if the method is 'Swift Store' or 'Amazon S3',
+	# the location is encrypted because if the method is 'Swift Store',
 	# the credentials will be in there
 	$self->{file_location} = $self->{db}->decrypt_string( $self->{luggage}{session}{app_instance_info}{file_location}, '127_1' );
 
@@ -75,7 +71,7 @@ sub new {
 }
 
 # method to connect to the preferred file store
-# used when our 'file_storage_method' is 'Swift Store' or 'Amazon S3'
+# used when our 'file_storage_method' is 'Swift Store'
 sub connect_to_store {
 	my $self = shift;
 
@@ -91,18 +87,6 @@ sub connect_to_store {
 			'auth_url' => $auth_url,
 			'username' => $username,
 			'password' => $password,
-		);
-	# same treatment for the amazon s3 method
-	} elsif ($self->{file_storage_method} eq 'Amazon S3') {
-		# exit if we already have it
-		return if blessed($self->{s3}) =~ /aws_s3_client/;
-
-		# proceed with connection
-		my ($access_key_id, $secret_access_key) = split /\:/, $self->{file_location};
-		$self->{s3} = omnitool::common::aws_s3_client->new(
-			'luggage' => $self->{luggage},
-			'access_key_id' => $access_key_id,
-			'secret_access_key' => $secret_access_key,
 		);
 	}
 
@@ -214,9 +198,6 @@ sub store_file {
 	} elsif ($self->{file_storage_method} eq 'Swift Store') {
 		$self->save_to_swift($file,$data_code,$suffix,$location);
 
-	} elsif ($self->{file_storage_method} eq 'Amazon S3') {
-		$self->save_to_s3($file,$data_code,$suffix,$location);
-
 	}
 
 	# return the new data_code from stored_files
@@ -251,9 +232,6 @@ sub retrieve_file {
 
 		} elsif ($self->{file_storage_method} eq 'Swift Store') {
 			$file = $self->load_from_swift($data_code,$file_info);
-
-		} elsif ($self->{file_storage_method} eq 'Amazon S3') {
-			$file = $self->load_from_s3($data_code,$file_info);
 
 		}
 	};
@@ -299,9 +277,6 @@ sub remove_file {
 
 	} elsif ($self->{file_storage_method} eq 'Swift Store') {
 		$result = $self->remove_from_swift($data_code,$file_info);
-
-	} elsif ($self->{file_storage_method} eq 'Amazon S3') {
-		$self->remove_from_s3($data_code,$file_info);
 
 	}
 
@@ -559,34 +534,6 @@ sub save_to_swift {
 
 }
 
-# method to save a file into Amazon S3
-sub save_to_s3 {
-	my $self = shift;
-	# arguments are: (1) the memory reference to the file contents,
-	# (2) the data_code for the file in the 'stored_files' table,
-	# (3) the suffix / extension for the file and (4) the sub-location/sub-directory
-	# for the file to be saved into
-	my ($file,$data_code,$suffix,$location) = @_;
-
-	# all of those are required
-	if (!$file || !$data_code || !$suffix || !$location) {
-		$self->{luggage}{belt}->logger("ERROR: All four arguments required for save_to_swift().",$self->{logtype});
-		return;
-	}
-
-	# make sure we are connected
-	$self->connect_to_store();
-
-	# have to fix the location
-	$location =~ s/_/-/g;
-
-	# pretty easy ;)
-	my $result = $self->{s3}->put_file($location,$data_code.'.'.$suffix, $file);
-
-	# and that's it ;)
-
-}
-
 # method to load up a file saved in the file system
 sub load_from_filesystem {
 	my $self = shift;
@@ -652,45 +599,6 @@ sub load_from_swift {
 	return \$file;
 }
 
-# Load a file from Amazon S3
-sub load_from_s3 {
-	my $self = shift;
-
-	# required argument is the primary key / data_code from the stored_files table
-	# optional is to provide the %$file_info hash from load_file_info()
-	my ($data_code, $file_info) = @_;
-
-	# first arg is required
-	if (!$data_code) {
-		$self->{luggage}{belt}->logger("ERROR: A 'data_code' argument is required for retrieve_file().",$self->{logtype});
-		return;
-	}
-
-	# if file-info was not provied, grab the file information from the DB
-	if (!$$file_info{updated}) {
-		$file_info = $self->load_file_info($data_code);
-	}
-
-	# no underscores in the location
-	$$file_info{location} =~ s/_/-/g;
-
-	# make sure we are connected
-	$self->connect_to_store();
-
-	# pull it from amazon s3
-	my ($file);
-	eval {
-		$file = $self->{s3}->get_file($$file_info{location}, $$file_info{object_name});
-    };
-    if ($@) { # if it's not there, show the error in the file and not a fatal error
-		$file = $@;
-    }
-
-	# it's already a memory reference
-	return $file;
-}
-
-
 # method to delete a file from our file system
 sub remove_from_filesystem {
 	my $self = shift;
@@ -741,39 +649,6 @@ sub remove_from_swift {
 	# remove from swift store - carefully
 	eval {
 		my $headers = $self->{swift_object}->delete_object($$file_info{location}, $$file_info{object_name} );
-	};
-
-	return 1;
-}
-
-# method to delete a file from Amazon S3
-sub remove_from_s3 {
-	my $self = shift;
-
-	# required argument is the primary key / data_code from the stored_files table
-	# optional is to provide the %$file_info hash from load_file_info()
-	my ($data_code, $file_info) = @_;
-
-	# first arg is required
-	if (!$data_code) {
-		$self->{luggage}{belt}->logger("ERROR: A 'data_code' argument is required for remove_from_swift().",$self->{logtype});
-		return 0;
-	}
-
-	# if file-info was not provied, grab the file information from the DB
-	if (!$$file_info{updated}) {
-		$file_info = $self->load_file_info($data_code);
-	}
-
-	# no underscores in the location
-	$$file_info{location} =~ s/_/-/g;
-
-	# make sure we are connected
-	$self->connect_to_store();
-
-	# remove from S3 - carefully
-	eval {
-		my $result = $self->{s3}->delete_file( $$file_info{location}, $$file_info{object_name} );
 	};
 
 	return 1;
