@@ -189,6 +189,10 @@
 <div id="modal-loading" class="modal" tabindex="-1" style="z-index: 9998;">
 	<div class="modal-dialog">
 		<div class="modal-content">
+			<button type="button" class="close pull-right" data-dismiss="modal" aria-hidden="true">
+				<span class="black">&times;</span>
+				&nbsp;
+			</button>			
 			<div class="modal-header">
 				<h4 class="blue bigger">
 				<i class="ajax-loading-icon fa fa-spin fa-spinner fa-2x blue"></i>

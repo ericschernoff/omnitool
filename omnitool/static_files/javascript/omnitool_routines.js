@@ -620,6 +620,7 @@ function loading_modal_display (display_text) {
 	} else if (display_text != undefined && display_text != 'hide') {
 		$('#modal-loading').modal({
 			backdrop: false,
+			keyboard: true,
 		});
 		$('#modal-loading-text').text(display_text + '...');
 	// otherwise, hide it
