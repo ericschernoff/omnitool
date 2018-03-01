@@ -557,6 +557,8 @@ sub build_search {
 					$$searches[$n]{match_column} = $match_columns[$kw_search];
 					$$searches[$n]{match_value} = $match_values[$kw_search];
 					# note that these are all regular expressions
+					# trim leading/trailing spaces from the keyword
+					$$searches[$n]{match_value} =~ s/^\s+|\s+$//g;
 
 					# they may have put in a complex match_column for a foreign-table match
 					# in that case, it would be match_column::table_nam::primary_table_column::relationship_column

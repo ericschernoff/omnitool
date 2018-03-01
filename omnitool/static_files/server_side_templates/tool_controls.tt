@@ -127,6 +127,9 @@ Expects all of $self for a Tool.pm class/sub-class.
 		</ul>
 		</div>
 	[% END %]
+	[% IF quick_search_menus.2 && (has_advanced_search || attributes.has_advanced_sort == 'Yes') %]
+		<br/>
+	[% END %]
 [% END %]
 
 <!-- end first line-break preventer
