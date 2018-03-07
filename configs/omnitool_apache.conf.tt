@@ -82,6 +82,10 @@ SSLProxyEngine off
 		Require all granted
 	</Directory>
 
+	# try to speed things up
+	SetOutputFilter DEFLATE 
+	SetEnvIfNoCase Request_URI "\.(?:gif|jpe?g|png)$" no-gzip 
+
 	<Proxy *>
 		Order deny,allow
 		Allow from all
