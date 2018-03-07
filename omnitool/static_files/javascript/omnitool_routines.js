@@ -713,13 +713,14 @@ function omnitool_controller (event,target_tool_uri) {
 					// otherwise, refresh all the records
 					} else {
 						// also reload the tool_controls, in case the keyword changed
-						tool_objects[the_tool_id].reload_tool_controls();
-						// reload the json now
-						jemplate_bindings[ tool_objects[the_tool_id]['tool_display_div'] ].process_json_uri();
-						// hide the advanced search?
-						if ($('#advanced_search_' + the_tool_id).is(':visible')) {
-							tool_objects[the_tool_id].show_advanced_search();
-						}
+						$.when( tool_objects[the_tool_id].reload_tool_controls() ).done(function() {
+							// then re-run the process_json_uri
+							jemplate_bindings[ tool_objects[the_tool_id]['tool_display_div'] ].process_json_uri();
+							// hide the advanced search?
+							if ($('#advanced_search_' + the_tool_id).is(':visible')) {
+								tool_objects[the_tool_id].show_advanced_search();
+							}
+						});
 					}
 
 				// and if it's not a screen with a single_record_jemplate_block, just reload all the displayed results for this tool

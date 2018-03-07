@@ -104,10 +104,12 @@ function Tool (tool_attributes) {
 			if (reload_jemplate == 1) {
 				jemplate_bindings[ this['tool_display_div'] ].load_jemplate();
 			} else { // no, just load in the json feed to the display area
-				//jemplate_bindings[ this['tool_display_div'] ].load_jemplate();
-				jemplate_bindings[ this['tool_display_div'] ].process_json_uri();
-				// reload the tools controls as well
-				this.reload_tool_controls();
+				// reload the tools controls first
+				var this_tool_display_div = this['tool_display_div'];
+				$.when( this.reload_tool_controls() ).done(function() {
+					// then load the JSON in the middle
+					jemplate_bindings[ this_tool_display_div ].process_json_uri();
+				});		
 			}
 
 		// not already there and a modal or screen: we must fetch the HTML skeleton for the tool,
