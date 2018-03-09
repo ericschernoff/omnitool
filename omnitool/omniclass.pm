@@ -187,6 +187,13 @@ sub new {
 	return $self;
 }
 
+# small utility method to duplicate an omniclass object, to speed up omniclass_tree
+sub clone {
+	my $self = shift;
+	my $copy = bless { %$self }, ref $self;
+	return $copy;
+}
+
 # now a subroutine to allow them to change the options for this object
 sub change_options {
 	my $self = shift;
@@ -524,6 +531,11 @@ Also, you can pass the 'table_name' value for the datatype in omnitool(_*).datat
 that your table names are unique within your applications.
 
 If this datatype accepts file uploads, omnitool::common::file_manager will be instantiated into $self->{file_manager}.
+
+=head2 clone()
+
+This will create a clone of the current object. Meant to speed up the omniclass_tree() method 
+in object factory, but have lots of other potentially bad uses ;)
 
 =head2 change_options()
 

@@ -171,7 +171,7 @@ sub omniclass_tree {
 	$args{search_options} = '';
 
 	# declare our variables
-	my (%all_children_by_type, %all_records_by_type, $child_data_code, $child_record, $child_table, $child_type, $child, $loader_objects, $possible_table_name, $r, $record, $translated_tree_dts, $tree_datatype, $tree_dt);
+	my (%all_children_by_type, %all_records_by_type, $child_data_code, $child_record, $cloning_objects, $child_table, $child_type, $child, $loader_objects, $possible_table_name, $r, $record, $translated_tree_dts, $tree_datatype, $tree_dt);
 
 	# return silently if there is no parent object
 	return if !$parent_object;
@@ -229,7 +229,12 @@ sub omniclass_tree {
 			$args{dt} = $tree_datatype;
 			next if !$all_children_by_type{$record}{$tree_datatype}[0];
 
-			$parent_object->{children_objects}{$record}{$tree_datatype} = $self->omniclass_object(%args);
+			# if we do not have a plain 'clone-from' object, create one here
+			if (!$$cloning_objects{$tree_datatype}) {
+				$$cloning_objects{$tree_datatype} = $self->omniclass_object(%args);
+			}
+			# we are going to use the 'clone' method in there to dup them off and try to save some time
+			$parent_object->{children_objects}{$record}{$tree_datatype} = $$cloning_objects{$tree_datatype}->clone();
 
 			# load the found records into this new object
 			# first the record_keys
