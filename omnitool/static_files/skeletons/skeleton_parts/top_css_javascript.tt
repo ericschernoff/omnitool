@@ -160,6 +160,11 @@
 		#rc-imageselect, .g-recaptcha {transform:scale(0.77);-webkit-transform:scale(0.77);transform-origin:0 0;-webkit-transform-origin:0 0;}
 	}
 
+	/* so autocompletes work for modals */
+	.ui-autocomplete {
+		z-index:2147483647;
+	}	
+
 </style>
 
 <!-- Google's reCaptcha library -->
