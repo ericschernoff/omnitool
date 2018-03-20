@@ -400,9 +400,11 @@ function post_data_fetch_operations (data) {
 
 	}
 
-	// empower any tool quick/inline actions drop-down menus
-	enable_chosen_menu('.tool-action-menu');
-
+	// empower any tool quick/inline actions drop-down menus - do async for speed's sake
+	setTimeout(function () {
+		enable_chosen_menu('.tool-action-menu')
+	}, 0);
+	
 	// if their session was flushed since we last checked
 	// reload the menubar, clear the backgrounded tools,
 	// and suggest reloading the current tool
