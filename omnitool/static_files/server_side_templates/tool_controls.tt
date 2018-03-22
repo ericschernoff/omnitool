@@ -164,7 +164,6 @@ Expects all of $self for a Tool.pm class/sub-class.
 		[% IF is_trigger_menu %]
 			[% SET menu_onchange = menu_onchange _ "tool_objects['" _ tool_and_instance _ "'].trigger_menu('quick_menu_" _ tool_configs.tool_filter_menus.$search_menu.trigger_menu _ "',this.options[this.selectedIndex].value);" %]
 		[% END %]
-
 		<select id="quick_[%this_menu%]" style="padding: 20px; min-width: 144px;" data-placeholder="[% tool_configs.tool_filter_menus.$search_menu.name %]" class="tool-search-menu" tabindex="2" onchange="[%menu_onchange%]">
 			<!-- <option value="[%tool_configs.tool_filter_menus.$search_menu.options_keys.0%]">[% tool_configs.tool_filter_menus.$search_menu.name %]</option> -->
 			[% FOREACH option_value IN tool_configs.tool_filter_menus.$search_menu.options_keys %]
@@ -175,17 +174,30 @@ Expects all of $self for a Tool.pm class/sub-class.
 				[% END %]
 			[% END %]
 		</select>
+		[%# Quick search box married up last menu for wrapping purposes %]
+		[% IF has_search_box && search_menu == quick_search_menus.-1 %]
+			<span id="quick_keyword_controls_[%tool_and_instance%]">
+				<span class="input-icon">
+					<input style="height: 32px" type="text" size="12" name='quick_keyword' id="quick_keyword_[%tool_and_instance%]" class="quick_keyword_fields" placeholder="Sticky Search" value="[%display_options.quick_keyword%]"/>
+					<i class="ace-icon fa fa-search quick_keyword_fields_icon"></i>
+				</span>
+				<span class="badge badge-info" onclick="tool_objects['[%tool_and_instance%]'].clear_quick_keyword()" id="clear_quick_search_button_[%tool_and_instance%]">
+					<i class="fa fa-close white"></i>
+				</span>
+			</span>
+		[% END %]
+		
 	</div>
 [% END %]
 
-<!-- Quick search box -->
-[% IF has_search_box %]
+[%# make sure you show the search box as needed %]
+[% IF !quick_search_menus.0 && has_search_box %]
 	<div class="btn-group" id="quick_keyword_controls_[%tool_and_instance%]">
 	<span class="input-icon">
 		<input type="text" size="12" name='quick_keyword' id="quick_keyword_[%tool_and_instance%]" class="quick_keyword_fields" placeholder="Sticky Search" value="[%display_options.quick_keyword%]"/>
 		<i class="ace-icon fa fa-search quick_keyword_fields_icon"></i>
 	</span>
-	<span class="badge badge-info"onclick="tool_objects['[%tool_and_instance%]'].clear_quick_keyword()" id="clear_quick_search_button_[%tool_and_instance%]">
+	<span class="badge badge-info" onclick="tool_objects['[%tool_and_instance%]'].clear_quick_keyword()" id="clear_quick_search_button_[%tool_and_instance%]">
 		<i class="fa fa-close white"></i>
 	</span>
 	</div>

@@ -980,6 +980,13 @@ create_gritter_notice = function(data) {
 		message_time = data.message_time;
 	}
 
+	$.extend($.gritter.options, {
+	    position: 'bottom-right', // possibilities: bottom-left, bottom-right, top-left, top-right
+		fade_in_speed: 100, // how fast notifications fade in (string or int)
+		fade_out_speed: 100, // how fast the notices fade out
+		time: 3000 // hang on the screen for...
+	});
+
 	// show our message
 	$.gritter.add({
 		title: this_tool_title,
