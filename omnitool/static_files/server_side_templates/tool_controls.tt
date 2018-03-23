@@ -47,7 +47,6 @@ Expects all of $self for a Tool.pm class/sub-class.
 </button>
 </div>
 
-
 [%# Process quick actions %]
 <!-- quick actions menu goes here -->
 [% IF quick_actions.0 && quick_actions.1 %]
@@ -60,7 +59,11 @@ Expects all of $self for a Tool.pm class/sub-class.
 		<ul class="dropdown-menu">
 		[% FOREACH qa IN quick_actions %]
 			<li>
-				<a href="#/tools/[%luggage.session.tools.$qa.uri_path_base%]/[%display_options.altcode%]" tabindex="-1">
+				[% IF luggage.session.tools.$qa.tool_type == 'Action - Message Display' %]
+					<a onclick="omnitool_controller({message_tool:1},'/tools/[%luggage.session.tools.$qa.uri_path_base%]/[%display_options.altcode%]');" tabindex="-1">
+				[% ELSE %]
+					<a href="#/tools/[%luggage.session.tools.$qa.uri_path_base%]/[%display_options.altcode%]" tabindex="-1">
+				[% END %]
 					<i class="ace-icon fa [%luggage.session.tools.$qa.icon_fa_glyph%]"></i>
 					[%luggage.session.tools.$qa.button_name%]
 				</a>
@@ -116,7 +119,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 			</button>
 		</div>
 	[% END %]
-	
+
 	[% IF attributes.supports_advanced_sorting == 'Yes' %]
 		<div class="btn-group" id="advanced_sort_features_[%tool_and_instance%]">
 			<button class="btn btn-white" onclick="tool_objects['[%tool_and_instance%]'].show_advanced_sort()">
@@ -186,7 +189,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 				</span>
 			</span>
 		[% END %]
-		
+
 	</div>
 [% END %]
 

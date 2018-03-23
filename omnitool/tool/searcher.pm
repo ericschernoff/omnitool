@@ -419,7 +419,7 @@ sub get_inline_actions {
 			# safe to use the parent's inline actions
 			$tool_datacode = $parent_tool_datacode;
 		}
-		
+
 		# for test below
 		$self->{using_parents_tools} = 1;
 	}
@@ -480,6 +480,7 @@ sub get_inline_actions {
 				'button_name' => $self->{luggage}{session}{tools}{$child_tool_key}{button_name},
 				'icon_fa_glyph' => $self->{luggage}{session}{tools}{$child_tool_key}{icon_fa_glyph}, # from font-awesome glyphs
 				'uri' => '#/tools/'.$self->{luggage}{session}{tools}{$child_tool_key}{uri_path_base}.'/'.$this_record_id,
+				'tool_type' => $self->{luggage}{session}{tools}{$child_tool_key}{tool_type},
 			});
 
 			# if it's the current tool, which happens when we are showing the parent tool's inline actions,

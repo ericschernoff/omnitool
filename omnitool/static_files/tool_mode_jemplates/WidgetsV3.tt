@@ -119,15 +119,18 @@
 				<div class="btn-group" style="margin-right: 20px">
 
 				[% FOREACH action IN records.$record_key.inline_actions %]
-					<a href="[% action.uri %]" class="btn btn-sm btn-white btn-info" data-rel="popover" data-placement="bottom" data-trigger="hover" data-content="[% action.button_name %]">
-					<!--data-rel="tooltip" data-placement="bottom" title="[% action.button_name %]"-->
+					[% IF action.tool_type == 'Action - Message Display' %]
+						<a href="omnitool_controller({message_tool:1},'[%action.uri.replace('#','')%]');" class="btn btn-sm btn-white btn-info" data-rel="popover" data-placement="bottom" data-trigger="hover" data-content="[% action.button_name %]">
+					[% ELSE %]
+						<a href="[% action.uri %]" class="btn btn-sm btn-white btn-info" data-rel="popover" data-placement="bottom" data-trigger="hover" data-content="[% action.button_name %]">
+					[% END %]
 						<i class="ace-icon fa [% action.icon_fa_glyph %]"></i>
 					</a>
 					[% IF tool_separator && tool_separator == action.key %]
 						</div>
 						<div class="btn-group" style="margin-right: 20px">
 					[% END %]
-					
+
 				[% END %]
 				</div>
 			</div>

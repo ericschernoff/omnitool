@@ -109,7 +109,7 @@ function Tool (tool_attributes) {
 				$.when( this.reload_tool_controls() ).done(function() {
 					// then load the JSON in the middle
 					jemplate_bindings[ this_tool_display_div ].process_json_uri();
-				});		
+				});
 			}
 
 		// not already there and a modal or screen: we must fetch the HTML skeleton for the tool,
@@ -184,6 +184,8 @@ function Tool (tool_attributes) {
 			// notice that these tools simply work on GET params, no POST, and those
 			// params were set when we loaded up the tool initially
 			$.when( query_tool(this['tool_json_uri'],{}) ).done(function(data) {
+				//history.pushState({}, document.title, data.return_link_uri);
+
 				// use our handy create_gritter_notice() method
 				if (data.simple_error == undefined) { // let them short-circuit with an error modal
 					create_gritter_notice(data);
@@ -197,7 +199,7 @@ function Tool (tool_attributes) {
 				}
 
 				// having popped up the messages, set the location.hash to the screen uri
-				location.hash = data.return_link_uri;
+				omnitool_controller({message_tool:1}, data.return_link_uri );
 			});
 		}
 
@@ -392,6 +394,8 @@ function Tool (tool_attributes) {
 	this.quick_action_link = function(action_menu) {
 		if (action_menu.val() == 'refresh_json_data') { // allow for refresh link
 			this.refresh_json_data();
+		} else if (action_menu.val().match('message_tool:')) { // pop-up message
+			omnitool_controller({message_tool:1}, action_menu.val().replace(/message_tool:/,'') );
 		} else if (action_menu.val() != '') { // only if it's filled
 			location.hash = action_menu.val();
 			// may do more later on
@@ -899,7 +903,7 @@ function Tool (tool_attributes) {
 			// empower bookmark create links
 			bookmark_manager.enable_create_bookmark_buttons();
 			// but keep it hidden, if we are in advanced search mode
-			if ($('#advanced_search_' + this_tool_id).is(':visible')) { 
+			if ($('#advanced_search_' + this_tool_id).is(':visible')) {
 				$('#search-controls_'+this_tool_id).hide();
 				$('#quick_keyword_controls_'+this_tool_id).hide();
 			}
@@ -920,10 +924,10 @@ function Tool (tool_attributes) {
 		// first, call the 'clear_search_options' method from the back-end
 		$.when( query_tool( this['tool_uri'] + '/reset_search_options' ,{}) ).done(function(json_data) {
 			// reset the advanced search form, if it is open
-			if ($('#advanced_search_' + this_tool_id).is(':visible')) { 
+			if ($('#advanced_search_' + this_tool_id).is(':visible')) {
 				reset_form(this_tool_id+'_advanced_search_form');
-			}			
-			
+			}
+
 			// then reload the tools controls
 			$.when( tool_objects[this_tool_id].reload_tool_controls() ).done(function() {
 				// and finally, reload the search results

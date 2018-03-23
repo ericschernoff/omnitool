@@ -404,7 +404,7 @@ function post_data_fetch_operations (data) {
 	setTimeout(function () {
 		enable_chosen_menu('.tool-action-menu')
 	}, 0);
-	
+
 	// if their session was flushed since we last checked
 	// reload the menubar, clear the backgrounded tools,
 	// and suggest reloading the current tool
@@ -651,7 +651,9 @@ function omnitool_controller (event,target_tool_uri) {
 	var tool_uri = tool_uri.replace( /\/\//, '/' );
 
 	// tell the user we are loading
-	loading_modal_display('Loading the Tool...');
+	if (event == undefined || event.message_tool == undefined) {
+		loading_modal_display('Loading the Tool...');
+	}
 
 	// first step is to resolve that uri to a tool ID (app-inst + tool_id)
 	// we do it this way because a specific tool may have multiple uri's, and

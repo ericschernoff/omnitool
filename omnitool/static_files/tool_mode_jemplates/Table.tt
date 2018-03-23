@@ -139,9 +139,14 @@
 					</option>
 				[% END %]
 				[% FOREACH action IN records.$record_key.inline_actions %]
-					<option value="[%action.uri%]">
+					[% IF action.tool_type == 'Action - Message Display' %]
+						<option value="message_tool:[%action.uri.replace('#','')%]">
+					[% ELSE %]
+						<option value="[%action.uri%]">
+					[% END %]
 						[% action.button_name %]
 					</option>
+
 				[% END %]
 				</select>
 			</div>
@@ -163,9 +168,13 @@
 			[% END %]
 			[% FOREACH action IN records.$record_key.inline_actions %]
 				<li>
-					<a href="[%action.uri%]" tabindex="-1">
-						<i class="ace-icon fa [% action.icon_fa_glyph %]"></i>
-						[% action.button_name %]
+					[% IF action.tool_type == 'Action - Message Display' %]
+						<a onclick="omnitool_controller({message_tool:1},'[%action.uri.replace('#','')%]');" tabindex="-1">
+					[% ELSE %]
+						<a href="[%action.uri%]" tabindex="-1">
+					[% END %]
+					<i class="ace-icon fa [% action.icon_fa_glyph %]"></i>
+					[% action.button_name %]
 					</a>
 				</li>
 			[% END %]
@@ -173,7 +182,11 @@
 			</div>
 		[%# one action - simple link %]
 		[% ELSIF records.$record_key.inline_actions.0 %]
-			<a href="[%records.$record_key.inline_actions.0.uri%]">
+			[% IF records.$record_key.inline_actions.0.tool_type == 'Action - Message Display' %]
+				<a onclick="omnitool_controller({message_tool:1},'[%records.$record_key.inline_actions.0.uri.replace('#','')%]');" tabindex="-1">
+			[% ELSE %]
+				<a href="[%records.$record_key.inline_actions.0.uri%]" tabindex="-1">
+			[% END %]
 				<i class="ace-icon fa [% records.$record_key.inline_actions.0.icon_fa_glyph %]"></i>
 				[% records.$record_key.inline_actions.0.button_name %]
 			</a>

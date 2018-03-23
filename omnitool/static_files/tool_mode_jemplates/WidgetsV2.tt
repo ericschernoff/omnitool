@@ -110,7 +110,11 @@
 				[% END %]
 				[% FOREACH action IN records.$record_key.inline_actions %]
 					<li>
-						<a href="[% action.uri %]">[% action.button_name %]</a>
+						[% IF action.tool_type == 'Action - Message Display' %]
+							<a href="omnitool_controller({message_tool:1},'[%action.uri.replace('#','')%]');">[% action.button_name %]</a>
+						[% ELSE %]
+							<a href="[% action.uri %]">[% action.button_name %]</a>
+						[% END %]
 					</li>
 				[% END %]
 				</ul>

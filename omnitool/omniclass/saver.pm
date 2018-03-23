@@ -204,6 +204,8 @@ sub do_create {
 		# altcode-maker method below; it is recommended that for important datatypes,
 		# you override this in the datatype's specific class/perl_module
 		$altcode = $self->altcode_maker($args);
+		# no spaces in that altcode!
+		$altcode =~ s/\s//g;
 
 		# on create only, they can flag something as 'draft' data, and later set it to not draft
 		# via the 'not_draft()' method below
