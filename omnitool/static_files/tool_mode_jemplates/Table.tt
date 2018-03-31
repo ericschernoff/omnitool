@@ -48,9 +48,9 @@
 		[* SET num = 0 *]
 		[* FOREACH field_name IN included_field_names *]
 			[* IF field_count > 4 *]
-				<th class="hidden-1025 hidden-advanced-search omnitool-data omnitool-heading text-nowrap" data-otsortcol="[*included_records_fields.$num*]"><i class="fa fa-arrow-up"></i>[*field_name*]</th>
+				<th class="hidden-1025 hidden-advanced-search-[*tool_and_instance*] omnitool-data omnitool-heading text-nowrap" data-otsortcol="[*included_records_fields.$num*]"><i class="fa fa-arrow-up"></i>[*field_name*]</th>
 			[* ELSIF field_count > 2 *]
-				<th class="hidden-480 hidden-advanced-search omnitool-data omnitool-heading text-nowrap" data-otsortcol="[*included_records_fields.$num*]"><i class="fa fa-arrow-up"></i>[*field_name*]</th>
+				<th class="hidden-480 hidden-advanced-search-[*tool_and_instance*] omnitool-data omnitool-heading text-nowrap" data-otsortcol="[*included_records_fields.$num*]"><i class="fa fa-arrow-up"></i>[*field_name*]</th>
 			[* ELSE *]
 				<th class="omnitool-data omnitool-heading text-nowrap" data-otsortcol="[*included_records_fields.$num*]"><i class="fa fa-arrow-up"></i>[*field_name*]</th>
 			[* END *]
@@ -103,9 +103,9 @@
 	[* SET field_count = 1 *]
 	[* FOREACH field IN included_records_fields *]
 		[* IF field_count > 4 *]
-			<td class="hidden-1025 hidden-advanced-search omnitool-data">
+			<td class="hidden-1025 hidden-advanced-search-[*tool_and_instance*] omnitool-data">
 		[* ELSIF field_count > 2 *]
-			<td class="hidden-480 hidden-advanced-search omnitool-data">
+			<td class="hidden-480 hidden-advanced-search-[*tool_and_instance*] omnitool-data">
 		[* ELSE *]
 			<td class="omnitool-data">
 

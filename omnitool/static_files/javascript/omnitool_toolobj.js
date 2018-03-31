@@ -346,6 +346,10 @@ function Tool (tool_attributes) {
 				setTimeout(function () {
 					enable_chosen_menu('.tool-action-menu')
 				}, 0);		
+				// if the advanced search or sort is still open, then maintain the shrunken table
+				if ($('#advanced_search_' + tool_id).is(':visible') || $('#advanced_sort_' + tool_id).is(':visible')) { 
+					tool_objects[tool_id].shrink_or_grow_tool_display('shrink');		
+				}					
 				// hide the loading modal
 				loading_modal_display('hide');
 			}
@@ -869,7 +873,7 @@ function Tool (tool_attributes) {
 			// change the main area
 			main_display_div.addClass('col-lg-6').removeClass('col-lg-12');
 			// if it is in Table.tt mode, hide all but the first two columns
-			$( '.hidden-advanced-search').each(function() {
+			$( '.hidden-advanced-search-'+tool_id).each(function() {
 				$(this).hide();
 			});
 
@@ -877,7 +881,7 @@ function Tool (tool_attributes) {
 			// change the main area
 			main_display_div.addClass('col-lg-12').removeClass('col-lg-6');
 			// if it is in Table.tt mode, reveal all columns
-			$( '.hidden-advanced-search').each(function() {
+			$( '.hidden-advanced-search-'+tool_id).each(function() {
 				$(this).show();
 			});
 
