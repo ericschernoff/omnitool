@@ -23,6 +23,8 @@ var active_queries = new Array(); // used to track active queries to the server,
 var the_active_tool_ids = new Array();
 	the_active_tool_ids['modal'] = 'none';
 	the_active_tool_ids['screen'] = 'none';
+// need to know the ID of which tool is in front, maintained in omnitool_controller()
+var the_current_active_tool_id = 'none';
 
 // var to hold the contact email and title fetched just below
 var instance_contact_email = '';
@@ -303,13 +305,13 @@ function post_data_fetch_operations (data) {
 	// enable any pop-overs that were just loaded up
 	enable_popovers();
 
-	// attach the sent altcode to the tool, for possible un-locking purposes -- and maybe refreshing that targeted record
-	if (data.altcode) {
-		tool_objects[data.the_tool_id]['current_altcode'] = data.altcode;
+	// attach the sent altcode/data_code to the tool, for possible un-locking purposes -- and maybe refreshing that targeted record
+ 	if (data.data_code) {
+		tool_objects[data.the_tool_id]['current_data_code'] = data.data_code;
 	} else {
-		tool_objects[data.the_tool_id]['current_altcode'] = 'none';
+		tool_objects[data.the_tool_id]['current_data_code'] = 'none';
 	}
-
+ 	
 	// reveal the 'return to tool' link, if one was provided
 	$('.return_link').hide();
 	if (data.the_tool_id == the_active_tool_ids['screen'] && data.return_link_uri && data.return_link_title) {
@@ -684,6 +686,9 @@ function omnitool_controller (event,target_tool_uri) {
 			}
 		}
 
+		// will need to know the tool we are discarding, for the record refreshing below
+		var outgoing_tool_id = the_current_active_tool_id;
+
 		// if they are moving to a new phase/method of the active tool, update that tool's jemplate binding
 		if (this_active_tool != 'Not Found') {
 			// if keep-warm = Never, we need to always start fresh
@@ -701,16 +706,10 @@ function omnitool_controller (event,target_tool_uri) {
 				// if it's a screen tool, and has a setting for 'single_record_jemplate_block', then just refresh the target
 				if (tool_objects[the_tool_id]['tool_type_short'] == 'screen' && tool_objects[the_tool_id]['single_record_jemplate_block'] != undefined && tool_objects[the_tool_id]['single_record_jemplate_block'] != 0) {
 
-					// need to find the 'current_altcode' for the outgoing modal or message tool
-					var outgoing_tool_id = the_active_tool_ids['modal'];
-					if (outgoing_tool_id == 'none') { // must be a message tool that just closed
-						outgoing_tool_id = the_active_tool_ids['message'];
-					}
-
-					// if there was a current altcode for that tool, refresh that record
-					if (tool_objects[outgoing_tool_id] != undefined && tool_objects[outgoing_tool_id]['current_altcode'] != undefined && tool_objects[outgoing_tool_id]['current_altcode'] != 'none') {
-						tool_objects[the_tool_id].refresh_one_result( tool_objects[outgoing_tool_id]['current_altcode'] );
-						// and make sure it is the active tool
+					// if there was a current altcode for the outgoing tool, refresh that record
+					if (tool_objects[outgoing_tool_id] != undefined && tool_objects[outgoing_tool_id]['current_data_code'] != undefined && tool_objects[outgoing_tool_id]['current_data_code'] != 'none') {
+						tool_objects[the_tool_id].refresh_one_result( tool_objects[outgoing_tool_id]['current_data_code'] );
+ 						// and make sure it is the active tool
 						the_active_tool_ids['screen'] = the_tool_id;
 						tool_objects[the_tool_id]['search_paused'] = 'No';
 
@@ -771,9 +770,17 @@ function omnitool_controller (event,target_tool_uri) {
 			if (tool_uri.match('tool_mode')) { // force the jemplate to reload
 				tool_objects[the_tool_id].load_tool(1);
 			} else { // normal reload
-				tool_objects[the_tool_id].load_tool();
+				$.when( tool_objects[the_tool_id].load_tool() ).done(function() {
+					if (tool_objects[the_tool_id]['tool_type_short'] == 'screen' && tool_objects[the_tool_id]['single_record_jemplate_block'] != undefined && tool_objects[the_tool_id]['single_record_jemplate_block'] != 0
+					&& tool_objects[outgoing_tool_id] != undefined && tool_objects[outgoing_tool_id]['current_data_code'] != undefined && tool_objects[outgoing_tool_id]['current_data_code'] != 'none') {
+						tool_objects[the_tool_id].refresh_one_result( tool_objects[outgoing_tool_id]['current_data_code'] );
+					}
+				});									
 			}
 		}
+
+		// set the actual current active tool id
+		the_current_active_tool_id = the_tool_id;
 
 		// close the loading modal now that we are done - commented out, as we need to
 		// let jemplate_bindings['xx'].process_json_uri() handle this part, since it is

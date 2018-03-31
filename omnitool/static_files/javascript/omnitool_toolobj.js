@@ -103,13 +103,19 @@ function Tool (tool_attributes) {
 			// do they want to reload the jemplate?
 			if (reload_jemplate == 1) {
 				jemplate_bindings[ this['tool_display_div'] ].load_jemplate();
-			} else { // no, just load in the json feed to the display area
+			// now, we can try to just do a hot drop-in -- that means do not reload
+			// if they are coming from the same uri as before or from the tool's base uri
+			} else if ('#'+this['base_uri'] != location.hash && this['last_access_uri'] != location.hash) {
 				// reload the tools controls first
 				var this_tool_display_div = this['tool_display_div'];
 				$.when( this.reload_tool_controls() ).done(function() {
 					// then load the JSON in the middle
 					jemplate_bindings[ this_tool_display_div ].process_json_uri();
 				});
+			} else { // have to reload the tools controls no matter what
+				$.when( this.reload_tool_controls() ).done(function() {
+					loading_modal_display('hide');
+				});				
 			}
 
 		// not already there and a modal or screen: we must fetch the HTML skeleton for the tool,
@@ -191,11 +197,16 @@ function Tool (tool_attributes) {
 					create_gritter_notice(data);
 				}
 
-				// set the current altcode for this message tool, in case we are reloading that specific result in the search screen
+				// set the current altcode/datacode for this message tool, in case we are reloading that specific result in the search screen
 				if (data.altcode) {
 					tool_objects[data.the_tool_id]['current_altcode'] = data.altcode;
 				} else {
-					tool_objects[data.the_tool_id]['current_altcode'] = 'none';
+					tool_objects[data.the_tool_id]['current_altcode'] = 'none';			
+				}
+				if (data.data_code) {
+					tool_objects[data.the_tool_id]['current_data_code'] = data.data_code;
+				} else {
+					tool_objects[data.the_tool_id]['current_data_code'] = 'none';
 				}
 
 				// having popped up the messages, set the location.hash to the screen uri
@@ -225,6 +236,10 @@ function Tool (tool_attributes) {
 			$(document).attr("title", this['name']);
 			$('#ot_tool_title').text(this['name']);
 		}
+		
+		// remember how i got here (for keep-warm fun in omnitool_controller()
+		this['last_access_uri'] = location.hash;		
+		
 	}
 
 	// easy function for making sure loading a screen closes a modal
@@ -327,6 +342,10 @@ function Tool (tool_attributes) {
 				jemplate_bindings['process_any_div'].process_json_data(json_data);
 				// re-enable any pop-overs
 				enable_popovers();
+				// enable chosen in the background
+				setTimeout(function () {
+					enable_chosen_menu('.tool-action-menu')
+				}, 0);		
 				// hide the loading modal
 				loading_modal_display('hide');
 			}

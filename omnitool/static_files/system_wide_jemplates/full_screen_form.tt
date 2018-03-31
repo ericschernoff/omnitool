@@ -17,7 +17,7 @@
 	[% IF form_was_submitted %]
 
 		[%IF error_title %]
-			<div class="page-header">
+			<div class="page-header center">
 				<h3 class="red">
 					[% error_title %]
 				</h3>
@@ -59,7 +59,7 @@
 		<!-- need to display the form -->
 
 		[% IF form.display_title %] <!-- mostly for complex_details_plus_form -->
-			<div class="page-header">
+			<div class="page-header center">
 				<h3>
 					[% form.display_title %]
 				</h3>
@@ -67,7 +67,7 @@
 		[% END %]
 
 		[% IF form.error_title %]
-			<div class="page-header">
+			<div class="page-header center">
 				<h3 class="red">
 					[% form.error_title %]
 				</h3>

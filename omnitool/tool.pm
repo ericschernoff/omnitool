@@ -158,6 +158,9 @@ sub send_attributes {
 	# we need that app-instance/tool unique ID to be in 'attributes' for easy transfer to the client
 	$self->{attributes}{the_tool_id} = $self->{tool_and_instance};
 
+	# get the base_uri in there too for keep-warm tools
+	$self->{attributes}{base_uri} = $self->{my_base_uri};
+
 	# ship it out
 	return $self->{attributes};
 }
