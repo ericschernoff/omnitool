@@ -177,6 +177,9 @@ sub send_json_data {
 	# suppress 'session refreshed' message if in serious developer mode
 	$self->{json_results}{session_dev_mode} = $ENV{FORCE_FRESH_SESSIONS} if $ENV{FORCE_FRESH_SESSIONS};
 
+	# add a 'response_epoch' for the javascript
+	$self->{json_results}{response_epoch} = time();
+
 	# if we want to execute a JS function when the data loads, add that to our JSON response
 	# this will happen in post_data_fetch_operations() in omnitool_routines.js
 	if ($self->{this_mode_config}{execute_function_on_load} && $self->{this_mode_config}{execute_function_on_load} ne 'None') {

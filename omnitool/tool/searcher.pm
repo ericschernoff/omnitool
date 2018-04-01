@@ -282,8 +282,49 @@ sub load_one_record {
 	$self->{json_results}{the_tool_id} = $self->{tool_and_instance};
 	$self->{json_results}{one_record_mode} = 1;
 
+	# include a 'response_epoch' for the javascript
+	$self->{json_results}{response_epoch} = time();
+
 	# sepcial methods require am explicit return
 	return $self->{json_results};
+}
+
+# support for the refresh_json_data() JS method for tools that have single-record reload functions
+# the JS will send us the records_keys of the displayed data, with the load timestamp, and we
+# will return a list of records which have been updated since that timestamp
+sub fetch_updated_keys {
+	my $self = shift;
+
+	# include a 'response_epoch' for the javascript
+	$self->{json_results}{response_epoch} = time();
+
+	# the omniclass object maybe was already grabbed in our caller, but just in case
+	if (!$self->{omniclass_object}->{table_name}) {
+		# this is up in center_stage.pm
+		$self->get_omniclass_object( 'dt' => $self->{target_datatype} );
+	}
+	
+	# find the records
+	$self->{omniclass_object}->search(
+		'search_options' => [
+			{
+				'data_code' => $self->{luggage}{params}{records_keys},
+				'operator' => 'in', 
+			},
+			{
+				'table_name' => $self->{omniclass_object}->{metainfo_table},
+				'update_time' => $self->{luggage}{params}{timestamp},
+				'operator' => '>', 
+			},
+		]
+	);
+	
+	# pack up the results
+	$self->{json_results}{updated_keys} = $self->{omniclass_object}->{search_results};
+	
+	# and return
+	return $self->{json_results};
+
 }
 
 # method for performing the quick keyword matching &

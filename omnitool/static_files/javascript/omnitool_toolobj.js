@@ -292,13 +292,28 @@ function Tool (tool_attributes) {
 		// if this is from a button click, we do this no matter what
 		if (from_button_click != undefined) {
 			jemplate_bindings[ this_tool_display_div ].process_json_uri('Refreshing Data');
-		} else { // otherwise, doing an automation refresh, and we have to pass some tests
+		} else { // otherwise, doing an automated refresh, and we have to pass some tests
 			// skip if the search is paused or the mouse has not moved in >120 seconds
 			var last_mouse_move = ( Math.floor(Date.now() / 1000) ) - mouse_move_time;
 			// we will also skip if the search is paused or if there is 1 or more active queries
 			// for this tool's json uri in query_tool()
 			if (this['search_paused'] == 'No' && last_mouse_move <= 120 && active_queries[my_json_uri] < 1) {
-				jemplate_bindings[ this_tool_display_div ].process_json_uri('Refreshing Data');
+				// if this is a single-record reload tool (sort of asynchronous), look for updated
+				// records and refresh those
+				if (this['single_record_jemplate_block'] != undefined && this['single_record_jemplate_block'] != 0 && this['records_keys'].length > 0) {
+					var the_url = this['tool_uri'] + '/fetch_updated_keys';
+					var _this = this;
+					$.when( query_tool(the_url, { timestamp: this['response_epoch'], records_keys: this['records_keys'].join() }) ).done(function(json_data) {
+						_this['response_epoch'] = json_data.response_epoch;
+						// doing this silently, no loading modal
+						$.each(json_data.updated_keys, function( index, value ) {
+							_this.refresh_one_result(value);
+						});											
+					});
+				// otherwise, refresh the whole thing
+				} else {			
+					jemplate_bindings[ this_tool_display_div ].process_json_uri('Refreshing Data');
+				}
 			}
 		}
 

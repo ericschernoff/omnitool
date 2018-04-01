@@ -297,6 +297,11 @@ function post_data_fetch_operations (data) {
 		show_or_hide_element('urgent_notification', data.urgent_notification);
 	}
 
+	// stash the server-reported response_epoch
+	if (data.response_epoch != undefined) {
+		tool_objects[data.the_tool_id]['response_epoch'] = data.response_epoch;
+	}
+
 	// the rest is for Tools' JSON only, so return if no data provided
 	if (data.session_created == undefined) {
 		return;
@@ -326,6 +331,9 @@ function post_data_fetch_operations (data) {
 	// also sneak in the advanced_search_filters_badge number ;)
 	if (tool_objects[data.the_tool_id]['tool_type'] == 'Search - Screen' && !data.one_record_mode) {
 		localStorage.setItem("altcodes_keys_" + data.the_tool_id , data.altcodes_keys);
+
+		// we need to stash the sent records_keys into the tool_object
+		tool_objects[data.the_tool_id]['records_keys'] = data.records_keys;
 
 		// be sure to always hide the next/previous buttons for these
 		$('.next_link').hide();
