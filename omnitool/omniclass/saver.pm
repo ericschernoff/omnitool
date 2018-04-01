@@ -533,4 +533,29 @@ sub simple_save {
 
 }
 
+# utility method to change the update_time in a record's metainfo entry
+# use this when you are updating a very important child record
+sub touch_update_time {
+	my $self = shift;
+	
+	# needed arg is a data_code for a record
+	my ($data_code) = @_;
+	
+	# if no $data_code argument, we'll look at $self->{data_code}
+	$data_code ||= $self->{data_code};
+	
+	# do nothing without a data_code
+	return if !$data_code;
+	
+	# do nothing if no metainfo table (rare)
+	return if $self->{datatype_info}{metainfo_table} eq 'No Metainfo';
+	
+	# otherwise, simple sql statement
+	$self->{db}->do_sql(
+		'update '.$self->{database_name}.'.'.$self->{metainfo_table}.
+		' set update_time=unix_timestamp(), updater=? where the_type=? and data_code=?',
+		[ $self->{luggage}{username}, $self->{dt}, $data_code]
+	);
+}
+
 1;

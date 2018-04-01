@@ -952,6 +952,22 @@ So a bit less code, especially if you have a record already loaded and can use $
 NOTE:  This is not appropriate if you have a complex post_save() and need to skip_hooks to avoid it.
 This is best used for simpler, background data types.
 
+=head2 touch_update_time()
+
+Utility method to set the metainfo.update_time to now for a record.  Useful when you are updating
+a very important child record such that changing the child is the same as changing the parent.
+Can lead to single-record reloads on your very important search tools.
+
+Usage:
+
+	$dt_obj->touch_update_time($data_code);
+	
+The 'update_time' value for $data_code's metainfo record is set to unix_timestamp() with the
+updater value becoming $$luggage{username}.
+
+Leave out $data_code and it'll default to the primary record at $dt_obj->{data_code}.  If that's
+not present, it will return doing nothing.
+
 =head2 simple_sort()
 
 This method will sort the keys of the loaded records, aka $dt_obj->{records_keys}, given one field name
