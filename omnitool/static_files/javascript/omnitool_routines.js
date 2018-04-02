@@ -197,16 +197,18 @@ function jemplate_binding (element_id, jemplate_uri, jemplate_name, json_data_ur
 			// fetch the data and see if we need to authenticate
 			if (this.json_data_uri.match('/ui') && !(this.json_data_uri.match('notifications'))) {
 				loading_modal_display('Preparing Interface...');
-			} else if (modal_text != undefined) {
+			} else if (modal_text != undefined && modal_text != 'none') {
 				loading_modal_display(modal_text + '...');
 			// do not show a modal for breadcrumbs / navbar_notification_area
-			} else if (my_element_id != '#breadcrumbs' && my_element_id != '#navbar_notification_area') {
+			} else if (my_element_id != '#breadcrumbs' && my_element_id != '#navbar_notification_area' && modal_text != 'none') {
 				loading_modal_display('Retrieving Data...');
 			}
 
 			$.when( query_tool(this.json_data_uri,{}) ).done(function(data) {
 				if (my_element_id != '#breadcrumbs' && my_element_id != '#navbar_notification_area') {
-					loading_modal_display('Processing Data...');
+					if (modal_text != 'none') { // they may not want to see this
+						loading_modal_display('Processing Data...');
+					}
 				}
 
 				// process the jemplate

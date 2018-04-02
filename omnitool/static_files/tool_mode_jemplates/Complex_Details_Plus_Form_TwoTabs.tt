@@ -15,7 +15,7 @@
 		[% status_message %]
 
 		[% IF button_text %]
-			<button class="btn btn-white btn-sm" onclick="tool_objects['[%the_tool_id%]'].refresh_json_data()">
+			<button class="btn btn-white btn-sm" onclick="tool_objects['[%the_tool_id%]'].refresh_json_data(1)">
 				[% button_text %]
 				<i class="fa fa-refresh green"></i>
 			</button>
