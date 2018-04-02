@@ -289,9 +289,9 @@ sub load_one_record {
 	return $self->{json_results};
 }
 
-# support for the refresh_json_data() JS method for tools that have single-record reload functions
-# the JS will send us the records_keys of the displayed data, with the load timestamp, and we
-# will return a list of records which have been updated since that timestamp
+# this accepts a list of records keys with an epoch value, and responses with a list of
+# those keys which have been updated since that moment.  Currently used to test the need
+# to update view-details screens; maybe useful for targeted single-row reloads in the future
 sub fetch_updated_keys {
 	my $self = shift;
 

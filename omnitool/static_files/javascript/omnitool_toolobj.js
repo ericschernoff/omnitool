@@ -297,10 +297,10 @@ function Tool (tool_attributes) {
 			var last_mouse_move = ( Math.floor(Date.now() / 1000) ) - mouse_move_time;
 			// we will also skip if the search is paused or if there is 1 or more active queries
 			// for this tool's json uri in query_tool()
-			var the_url = this['tool_uri'] + '/fetch_updated_keys';
 			var _this = this;
 			if (this['search_paused'] == 'No' && last_mouse_move <= 120 && active_queries[my_json_uri] < 1) {
 				// support silent refreshing for action screens -- probably view details mostly
+				var the_url = this['tool_uri'] + '/fetch_updated_keys';
 				if (this['tool_type'].match(/Action/)) {
 					$.when( query_tool(the_url, { timestamp: this['response_epoch'], records_keys: this['current_data_code'] }) ).done(function(json_data) {					
 						_this['response_epoch'] = json_data.response_epoch;
@@ -309,19 +309,9 @@ function Tool (tool_attributes) {
 						}
 					});
 					
-				// if this is a single-record reload search tool (sort of asynchronous), 
-				// look for updated records and refresh those
-				} else if (this['single_record_jemplate_block'] != undefined && this['single_record_jemplate_block'] != 0 && this['records_keys'].length > 0) {
- 					$.when( query_tool(the_url, { timestamp: this['response_epoch'], records_keys: this['records_keys'].join() }) ).done(function(json_data) {
-						_this['response_epoch'] = json_data.response_epoch;
-						// doing this silently, no loading modal
-						$.each(json_data.updated_keys, function( index, value ) {
-							_this.refresh_one_result(value);
-						});											
-					});
-				// otherwise, refresh the whole thing
+				// otherwise, refresh the whole thing, silently
 				} else {			
-					jemplate_bindings[ this_tool_display_div ].process_json_uri('Refreshing Data');
+					jemplate_bindings[ this_tool_display_div ].process_json_uri('none');
 				}
 			}
 		}
