@@ -115,7 +115,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 			<button class="btn btn-white" onclick="tool_objects['[%tool_and_instance%]'].show_advanced_search()">
 			<i class="ace-icon fa fa-search-plus"></i>
 			<span id="advanced_search_text" class="hidden-xs">Adv. Search</span>
-			<span class="badge badge-info advanced_search_filters_badge" id="advanced_search_filters_badge"></span>
+			<span class="badge badge-info advanced_search_filters_badge" id="advanced_search_filters_badge">[%display_options.advanced_search_filters%]</span>
 			</button>
 		</div>
 	[% END %]
@@ -125,7 +125,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 			<button class="btn btn-white" onclick="tool_objects['[%tool_and_instance%]'].show_advanced_sort()">
 			<i class="ace-icon fa fa-sort"></i>
 			<span id="advanced_sort_text" class="hidden-xs">Sort</span>
-			<span class="badge badge-info advanced_sort_options_badge" id="advanced_sort_options_badge"></span>
+			<span class="badge badge-info advanced_sort_options_badge" id="advanced_sort_options_badge">[%display_options.advanced_sort_options_length%]</span>
 			</button>
 		</ul>
 		</div>

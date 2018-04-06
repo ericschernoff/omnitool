@@ -199,6 +199,12 @@ sub search {
 	$self->{json_results}{advanced_search_filters} = $self->{advanced_search_filters};
 	$self->{json_results}{advanced_sort_options} = $advanced_sort_options; # send whole array for setting up arrows
 
+	# save those into the options cache for send_tool_controls
+	$self->{display_options}{advanced_search_filters} = $self->{json_results}{advanced_search_filters};
+	if (ref($advanced_sort_options) eq 'ARRAY') {
+		$self->{display_options}{advanced_sort_options_length} = scalar(@$advanced_sort_options);
+	}
+
 	# to indicate use of either:
 	if ($self->{json_results}{advanced_search_filters} || $self->{json_results}{advanced_sort_options}[0]) {
 		$self->{json_results}{advanced_features} = 'On';
