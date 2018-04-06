@@ -306,6 +306,12 @@ sub fetch_updated_keys {
 	# include a 'response_epoch' for the javascript
 	$self->{json_results}{response_epoch} = time();
 
+	# haxie for background task viewer system tool to work. 
+	if ($self->{tool_datacode} eq '74_1') {
+		$self->{json_results}{updated_keys}[0] = 1;
+		return $self->{json_results};
+	}
+
 	# the omniclass object maybe was already grabbed in our caller, but just in case
 	if (!$self->{omniclass_object}->{table_name}) {
 		# this is up in center_stage.pm
