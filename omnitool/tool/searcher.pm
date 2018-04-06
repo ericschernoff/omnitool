@@ -263,8 +263,10 @@ sub load_one_record {
 		$self->{json_results}{found_inline_actions} = $self->{found_inline_actions};
 
 		# for figuring what type of action menu to show in Table.tt
-		$self->{json_results}{max_actions_per_record} = scalar(@{ $self->{omniclass_object}->{data}{inline_actions} });
-
+		if (ref($self->{omniclass_object}->{data}{inline_actions}) eq 'ARRAY') {
+			$self->{json_results}{max_actions_per_record} = scalar(@{ $self->{omniclass_object}->{data}{inline_actions} });
+		}
+		
 	# if no record found, throw them an error
 	} else {
 		$self->{json_results}{error_message} = $self->{display_options}{altcode}.' was not found.';

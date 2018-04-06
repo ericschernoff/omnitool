@@ -224,6 +224,7 @@ function Tool (tool_attributes) {
 		if (this['query_interval'] > 0) {
 			// start the background refresh
 			var _this = this;
+			clearInterval(this['background_refresher']);  // keep-warm tools can be a problem
 			this['background_refresher'] = setInterval(
 				function() { _this.refresh_json_data(); },
 				(_this['query_interval'] * 1000)
