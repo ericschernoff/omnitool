@@ -337,13 +337,12 @@ sub setup_field {
 		# whether or not the validate_form should enforce field requirements
 		if ($self->{datatype_info}{fields}{$field}{is_required} eq 'Yes') {
 			$$form{fields}{$key}{is_required} = 1;
-			# $$form{fields}{$key}{instructions} = 'Required. '.$$form{fields}{$key}{instructions};
 		}
 
 		# if it's an encrypted field, note in the instructions
 		if ($self->{datatype_info}{fields}{$field}{field_type} =~ /encrypt/) {
 			$$form{fields}{$key}{instructions} .= "\n" if $$form{fields}{$key}{instructions};
-			$$form{fields}{$key}{instructions} .= 'Encrypted Field. '.$$form{fields}{$key}{instructions};
+			$$form{fields}{$key}{instructions} = 'Encrypted Field. '.$$form{fields}{$key}{instructions};
 		}
 
 		# if it is a file-upload with a previous file, note that in the instructions
