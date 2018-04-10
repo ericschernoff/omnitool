@@ -1546,39 +1546,6 @@ function complex_data_tab_remembering (tool_id) {
 
 }
 
-// support the ability for the complex data tabs to have network diagrams with
-// these two functions:
-
-// support view details with tab remembering + diagram
-function complex_tabs_with_diagram (tool_id) {
-	initialize_diagram_multiple_no_editing(tool_id);
-	complex_data_tab_remembering(tool_id);
-
-	// do not let it be off-center
-	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-		if (the_active_diagram_objects[0] != undefined) {
-			$.each(the_active_diagram_objects, function( index, value ) {
-				the_active_diagram_objects[index]['network_diagram'].fit();
-			});
-		}
-	});
-
-}
-// support for a form with a complex details screen that includes one or more diagrams
-function interactive_form_plus_diagram (tool_id) {
-	initialize_diagram_multiple_no_editing(tool_id);
-	interactive_form_elements(tool_id);
-
-	// do not let it be off-center
-	$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-		if (the_active_diagram_objects[0] != undefined) {
-			$.each(the_active_diagram_objects, function( index, value ) {
-				the_active_diagram_objects[index]['network_diagram'].fit();
-			});
-		}
-	});
-}
-
 // reusable command to go to the top
 function goToTop () {
 	$("html, body").animate({ scrollTop: 0 }, "slow");

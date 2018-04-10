@@ -16,7 +16,6 @@ use omnitool::tool::subform_data_actions; # for the subforms create/update funct
 use omnitool::tool::basic_data_view; # for the standard view functions
 use omnitool::tool::view_details; # for displaying complex data details via complex_details_tabs_shared.tt
 use omnitool::tool::basic_calendar; # for a super-basic calendar
-use omnitool::tool::setup_diagram; # for vis.js network diagrams
 use omnitool::tool::call_named_method; # runs a action-message tool using an omniclass method named for the tool's uri_base_path
 use omnitool::tool::button_menu; # very simple panel to display buttons for subordinate menubar tools
 
@@ -416,10 +415,9 @@ sub tool_object {
 	# omnitool::tool::standard_delete = deletes
 	# omnitool::tool::basic_data_view = display
 	# omnitool::tool::basic_calendar = calendar --> action tool, very basic
-	# omnitool::tool::setup_diagram --> framework for our network diagram tools
 	# omnitool::tool::call_named_method --> runs a action-message tool using an omniclass method named for the tool's uri_base_path
 	# omnitool::tool::button_menu --> button screen for subordinate menubar tools
-	} elsif ($class_name =~ /^(standard_data_actions|subform_data_actions|singleton_data_actions|standard_delete|basic_data_view|basic_calendar|setup_diagram|view_details|call_named_method|button_menu)$/) {
+	} elsif ($class_name =~ /^(standard_data_actions|subform_data_actions|singleton_data_actions|standard_delete|basic_data_view|basic_calendar|view_details|call_named_method|button_menu)$/) {
 
 		# already loaded above, so we just need to create the object with the proper luggage
 		$the_class_name = 'omnitool::tool::'.$class_name;

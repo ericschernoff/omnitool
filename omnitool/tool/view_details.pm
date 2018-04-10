@@ -20,59 +20,27 @@ sub perform_action {
 
 	my ($part, $details_hash);
 
-	# perhaps they are retrieving a diagram?
-	if ($self->{luggage}{params}{diagram_action}) { # yes, see below
-		$self->network_diagram_data();
+	# load the inline actions via utility method in action_tools.pm so we can embed into the details
+	$self->get_inline_actions_for_action_tool();
 
-	# otherwise, plain old details_hash
+	# for the title (altcode is automatically there)
+	$self->{json_results}{data_title} = $self->{omniclass_object}{data}{name};
+
+	# if the omniclass object has a view_details() method, use that to get a probably-complex %$details_hash
+	if ($self->{omniclass_object}->can('view_details')) {
+		$details_hash = $self->{omniclass_object}->view_details();
+	# otherwise, just use the basic one below, which works off the 'Fields to Include' option for the Tool View Mode
 	} else {
-		# load the inline actions via utility method in action_tools.pm so we can embed into the details
-		$self->get_inline_actions_for_action_tool();
-
-		# for the title (altcode is automatically there)
-		$self->{json_results}{data_title} = $self->{omniclass_object}{data}{name};
-
-		# if the omniclass object has a view_details() method, use that to get a probably-complex %$details_hash
-		if ($self->{omniclass_object}->can('view_details')) {
-			$details_hash = $self->{omniclass_object}->view_details();
-		# otherwise, just use the basic one below, which works off the 'Fields to Include' option for the Tool View Mode
-		} else {
-			$details_hash = $self->get_basic_details_hash();
-		}
-
-		# and load it into $self->{json_results}
-		foreach $part (keys %$details_hash) {
-			$self->{json_results}{$part} = $$details_hash{$part};
-		}
-
-		# perhaps they want to load a network diagram in a few moments?
-		$self->{display_options}{load_network_diagram} = $self->{luggage}{params}{load_network_diagram};
+		$details_hash = $self->get_basic_details_hash();
 	}
-}
 
-# support for network diagrams within complex details --> load data only!
-sub network_diagram_data {
-	my $self = shift;
-
-	# the routine we used to generate the details_hash populated '$self->{display_options}{load_network_diagram}'
-
-	# load that diagram up
-	my $saved_network_diagram_object = $self->{luggage}{object_factory}->omniclass_object(
-		'dt' => 'saved_network_diagrams',
-		'data_codes' => [ $self->{display_options}{load_network_diagram} ],
-	);
-
-	# does this object want to 'overload' the diagram data?
-	if ($self->{omniclass_object}->can('overload_network_data')) {
-		# will really just munge $saved_diagram_object->{data}{diagram_data}
-		$self->{luggage}{saved_network_diagrams} = $saved_network_diagram_object;
-		$self->{json_results}{diagram_data} = $self->{omniclass_object}->overload_network_data();
-
-	} else { # just return our data
-		$self->{json_results}{diagram_data} = $saved_network_diagram_object->{data}{diagram_data};
+	# and load it into $self->{json_results}
+	foreach $part (keys %$details_hash) {
+		$self->{json_results}{$part} = $$details_hash{$part};
 	}
 
 }
+
 
 # method to build a basic, one-tab %$details_hash, working from the 'Fields to Include' option for the Tool View Mode
 sub get_basic_details_hash {

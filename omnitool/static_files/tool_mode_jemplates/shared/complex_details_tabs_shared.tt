@@ -61,7 +61,6 @@
 				<div class="tab-content">
 
 					[% SET n = 0 %]
-					[% SET diagram_num = 0 %]
 
 					[% FOREACH tab_key IN tab_info.sort %]
 						[% IF n == 0 %]
@@ -305,19 +304,6 @@
 									</div> <!-- /widget-box -->
 								</div>
 							[% END %]
-
-						[% ELSIF tabs.$tab_key.type == 'network_diagram'%]
-							<div class="row">
-								<div class="col-xs-6 align-center" id="network_diagram_instructions_[%the_tool_id%]-[%tabs.$tab_key.data.0%]"></div>
-								<div class="col-xs-6 align-right">
-									<button onclick="the_active_diagram_objects[[%diagram_num%]]['network_diagram'].fit();">Re-Center Diagram</button>
-								</div>
-							</div>
-							<center>
-							<div id="network_diagram_[%the_tool_id%]-[%tabs.$tab_key.data.0%]" class="network_diagram"></div>
-							</center>
-
-							[% SET diagram_num = diagram_num + 1 %]
 
 						[%# if they set 'has_subrecords' in pre_prep_jemplate(), include WidgetsV3.tt to support those records %]
 						[% ELSIF tabs.$tab_key.type == 'sub_records' %]

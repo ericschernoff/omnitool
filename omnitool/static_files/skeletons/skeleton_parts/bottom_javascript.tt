@@ -139,9 +139,6 @@
 <!-- omnitool bookmark manager -->
 <script src="/ui/load_javascript?javascript_file=omnitool_bookmarks.js[%uri_base_param_amp%]"></script>
 
-<!-- support for network diagrams via Vis.js -->
-<script src="/ui/load_javascript?javascript_file=omnitool_diagram_obj.js[%uri_base_param_amp%]"></script>
-
 <!-- the very-excting template engine -->
 <script src="/ui/load_javascript?javascript_file=Jemplate.js[%uri_base_param_amp%]"></script>
 
@@ -201,18 +198,6 @@
 			</div>
 		</div>
 	</div>
-</div>
-
-<!-- div for network diagram functions -->
-<div id="edge-popUp" class="network_edge_pop_up" style="z-index: 9990;">
-	<span id="edge-operation">edge</span> <br>
-	<table style="margin:auto;">
-	<tr>
-		<td>label</td><td><input id="edge-label" value="new value" /></td>
-	</tr>
-	</table>
-	<input type="button" value="Save Edge Connection" id="edge-saveButton" />
-	<input type="button" value="Cancel" id="edge-cancelButton" />
 </div>
 
 
