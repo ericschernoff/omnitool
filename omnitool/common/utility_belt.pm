@@ -812,6 +812,10 @@ sub mr_zebra {
 	# if in Plack, pack the response for delivery
 	if ($self->{response}) {
 		$self->{response}->content_type($content_type);
+		# is this an error?  Change from 200 to 500, if not done so already
+		if ($content =~ /^(ERROR|Execution failed)/ && $self->{response}->status() eq '200') {
+			$self->{response}->status(500);
+		}
 		if ($content_filename) {
 			$self->{response}->header('Content-Disposition' => 'attachment; filename="'.$content_filename.'"');
 		}

@@ -459,6 +459,13 @@ function post_data_fetch_operations (data) {
 	if (data.single_record_jemplate_block != undefined) {
 		tool_objects[data.the_tool_id]['single_record_jemplate_block'] = data.single_record_jemplate_block;
 
+		// auto-refreshing on a single-record basis?
+		if (data.single_record_refresh_mode != undefined) {
+			tool_objects[data.the_tool_id]['single_record_refresh_mode'] = data.single_record_refresh_mode;
+		} else { // make it No
+			tool_objects[data.the_tool_id]['single_record_refresh_mode'] = 'No';
+		}
+
 	// if that is missing, make sure to clear it out, if this request was in service to a tool
 	} else if (data.single_record_jemplate_block == undefined && data.the_tool_id != undefined) {
 		tool_objects[data.the_tool_id]['single_record_jemplate_block'] = 0;
@@ -896,6 +903,10 @@ function query_tool (tool_uri,post_data_object) {
 			// now return it
 			return response;
 		}
+	})
+	.fail(function (jqXHR, textStatus, errorThrown) {
+		var is_error = check_for_errors(jqXHR.responseText);
+		return false;
 	});
 
 	// return to caller

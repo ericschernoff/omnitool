@@ -31,8 +31,8 @@ class Client:
 			verify=False
 		)
 
-		# if it told us 'Error' throw up an Exception
-		if 'ERROR' in results.text:
+		# if we got an error throw up an Exception
+		if results.status_code != 200:
 			raise Exception('OT6 API Error: %s' % results.text)
 
 		# return our data structure

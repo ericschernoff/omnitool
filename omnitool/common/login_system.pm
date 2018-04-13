@@ -66,11 +66,13 @@ sub api_key_athentication {
 
 	# if user not found, we have an error
 	if (!$session_username) {
+		$self->{luggage}{belt}->{response}->status(401);
 		$self->{luggage}{belt}->mr_zebra('ERROR: '.$self->{luggage}{params}{api_key}.' is not a valid/active API key.',2);
 
 	# make sure it's tied to this IP address -- allow for multiple IPs
 	# allow for 'Any' option - available to admins only
 	} elsif ($tied_to_ip_address ne 'Any' && !$self->{luggage}{belt}->really_in_list($remote_ip, $tied_to_ip_address, "\n")) {
+		$self->{luggage}{belt}->{response}->status(403);
 		$self->{luggage}{belt}->mr_zebra('ERROR: '.$self->{luggage}{params}{api_key}.' is not tied to '.$remote_ip.'.',2);
 
 	# otherwise, we have a ticket to fly!

@@ -162,7 +162,7 @@ CREATE TABLE `datatype_fields` (
   `search_tool_heading` varchar(60) DEFAULT NULL,
   PRIMARY KEY (`code`,`server_id`),
   KEY `parent` (`parent`)
-) ENGINE=InnoDB AUTO_INCREMENT=175 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=176 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -347,7 +347,7 @@ CREATE TABLE `metainfo` (
   KEY `parent` (`parent`),
   KEY `altcode` (`altcode`),
   KEY `data_code` (`data_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=446 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=447 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -527,6 +527,7 @@ CREATE TABLE `tool_mode_configs` (
   `max_results` varchar(100) DEFAULT NULL,
   `single_record_jemplate_block` varchar(100) DEFAULT NULL,
   `display_a_chart` varchar(20) DEFAULT NULL,
+  `single_record_refresh_mode` varchar(3) DEFAULT NULL,
   PRIMARY KEY (`code`,`server_id`),
   KEY `parent` (`parent`)
 ) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8;
@@ -699,4 +700,4 @@ CREATE TABLE `user_api_keys_metainfo` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-02-08 20:50:18
+-- Dump completed on 2018-04-12 23:41:51

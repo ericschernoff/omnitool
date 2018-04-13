@@ -193,6 +193,8 @@ sub send_json_data {
 	# also, tell the UI if there is a 'Single-Record Jemplate Block' settings for this view mode
 	# if that is filled, closing subordinate modals and message tools will only reload the parent tool
 	$self->{json_results}{single_record_jemplate_block} = $self->{this_mode_config}{single_record_jemplate_block} if $self->{this_mode_config}{single_record_jemplate_block};
+	$self->{json_results}{single_record_refresh_mode} = $self->{this_mode_config}{single_record_refresh_mode} if $self->{this_mode_config}{single_record_refresh_mode};
+
 	# and tell the UI (post_data_fetch_operations
 	if ($self->{this_mode_config}{display_a_chart} =~ /Chart/) {
 		$self->{json_results}{display_a_chart} = $self->{this_mode_config}{display_a_chart};

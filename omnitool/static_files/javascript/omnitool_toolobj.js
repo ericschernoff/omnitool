@@ -299,10 +299,25 @@ function Tool (tool_attributes) {
 			// we will also skip if the search is paused or if there is 1 or more active queries
 			// for this tool's json uri in query_tool()
 			var _this = this;
+			var the_url = this['tool_uri'] + '/fetch_updated_keys';
+
 			if (this['search_paused'] == 'No' && last_mouse_move <= 120 && active_queries[my_json_uri] < 1) {
+
+				// allow a mode for single record-refresh search tools where just the updated record
+				// gets refreshed.  Has to be set on a view mode basis
+				if (this['single_record_jemplate_block'] != undefined && this['single_record_jemplate_block'] != 0 && this['records_keys'].length > 0 && this['single_record_refresh_mode'] == 'Yes') {
+					$.when( query_tool(the_url, { timestamp: this['response_epoch'], records_keys: this['records_keys'].join() }) ).done(function(json_data) {					
+						_this['response_epoch'] = json_data.response_epoch;
+						if (json_data.updated_keys[0]) {
+							// doing this silently, no loading modal
+							$.each(json_data.updated_keys, function( index, value ) {
+								_this.refresh_one_result(value);
+							}); 							
+						}
+					});
+
 				// support silent refreshing for action screens -- probably view details mostly
-				var the_url = this['tool_uri'] + '/fetch_updated_keys';
-				if (this['tool_type'].match(/Action/)) {
+				} else if (this['tool_type'].match(/Action/)) {
 					$.when( query_tool(the_url, { timestamp: this['response_epoch'], records_keys: this['current_data_code'] }) ).done(function(json_data) {					
 						_this['response_epoch'] = json_data.response_epoch;
 						if (json_data.updated_keys[0]) {
