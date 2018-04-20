@@ -359,7 +359,13 @@ function post_data_fetch_operations (data) {
 
 		// show the results and time took to load -- including transfer, as this was calcuated in query_tool
 		if (data.records_found_count) {
-			$('#above_tool_display_'+ data.the_tool_id).html('<i>Found ' + data.records_found_count + ' records in ' + data.response_time + ' seconds.</i>');
+			var records_word;
+			if (data.records_found_count == 1) {
+				records_word = 'record';			
+			} else {
+				records_word = 'records';			
+			}
+			$('#above_tool_display_'+ data.the_tool_id).html('<i>Found ' + data.records_found_count + ' ' + records_word + ' in ' + data.response_time + ' seconds.</i>');
 		} else {
 			$('#above_tool_display_'+ data.the_tool_id).html('');
 		}
@@ -916,7 +922,7 @@ function query_tool (tool_uri,post_data_object) {
 // function to check the results of a query to the server, and alert the user as needed
 function check_for_errors (response) {
 	// did it indicate they need to log in?
-	if (typeof response == 'string' &&  response == 'Authenication needed.') { // send them to login page
+	if (typeof response == 'string' &&  response == 'Authentication needed.') { // send them to login page
 		location.reload();
 		return 1; // indicate error is found
 
@@ -1016,6 +1022,12 @@ create_gritter_notice = function(data) {
 		fade_out_speed: 100, // how fast the notices fade out
 		time: 3000 // hang on the screen for...
 	});
+
+	// limit our open gritters 
+	if ($('.gritter-item-wrapper').length == 4) {
+		var delete_this_id = $('.gritter-item-wrapper').first().attr('id').replace('gritter-item-','');
+		$.gritter.remove( delete_this_id );
+	}
 
 	// show our message
 	$.gritter.add({

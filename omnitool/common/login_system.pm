@@ -184,7 +184,7 @@ sub web_authentication {
 		$self->{luggage}{params}{requested_uri} = $self->{luggage}{uri} if !$self->{luggage}{params}{requested_uri};
 		# if they are calling for main.pm (or another handler), then we can present the main login screen
 		if ($self->{luggage}{params}{requested_uri} =~ /^\/(ui|tool)/) {
-			$self->{luggage}{belt}->mr_zebra('Authenication needed.',2);
+			$self->{luggage}{belt}->mr_zebra('Authentication needed.',2);
 
 		} elsif ($self->{luggage}{no_access}) {
 

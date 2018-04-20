@@ -151,7 +151,11 @@ sub search {
 
 		# if the operator is one of the "like's", we wrap in %'s and single-quotes
 		if ($$so{operator} =~ /like/) {
-			$$so{match_value} = "%".$$so{match_value}."%";
+			if (ref($$so{match_value}) eq 'ARRAY') {
+				$$so{match_value}[0] = "%".$$so{match_value}[0]."%";
+			} else {
+				$$so{match_value} = "%".$$so{match_value}."%";
+			}
 		}
 
 		# IN/NOT-IN lists are tricky

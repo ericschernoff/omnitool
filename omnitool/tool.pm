@@ -100,7 +100,7 @@ sub new {
 
 	# you must send that 'client_connection_id' with every request
 	if (!$self->{client_connection_id}) {
-		$self->{belt}->mr_zebra("Cannot execute Tool without a proper 'client_connection_id'.",2);
+		$self->{belt}->mr_zebra("Cannot execute Tool without a proper 'client_connection_id'.",1);
 	}
 
 	# if we are setting up this Tool via object_factory, the 'altcode' atrribute
