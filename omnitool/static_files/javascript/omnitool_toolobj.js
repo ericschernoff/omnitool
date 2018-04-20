@@ -787,11 +787,11 @@ function Tool (tool_attributes) {
 
 			// make sure the advanced item badges are shown as needed -- use the class way
 			// because there may be a few in the DOM by now
-			if ($('#advanced_sort_features_'+tool_id).length && $('#advanced_sort_options_badge').html().length > 0) {
-				$('.advanced_sort_options_badge').show();
+			if ($('#advanced_sort_features_'+tool_id).length && $('#advanced_sort_options_badge_'+tool_id).html().length > 0) {
+				$('.advanced_sort_options_badge_'+tool_id).show();
 			}
-			if ($('#advanced_search_filters_badge').html().length > 0) {
-				$('.advanced_search_filters_badge').show();
+			if ($('#advanced_search_filters_badge_'+tool_id).html().length > 0) {
+				$('.advanced_search_filters_badge_'+tool_id).show();
 			}
 
 			// make note that the form is now closed

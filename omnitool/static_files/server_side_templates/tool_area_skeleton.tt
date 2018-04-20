@@ -33,7 +33,7 @@
 		[% END %]
 
 		[%# area for any notice put into json_results->top_notice %]
-		<div class="well well-sm" id="top_notice" style="display: none">
+		<div class="well well-sm" id="top_notice_[%tool_and_instance%]" style="display: none">
 		</div>
 
 		<div id="above_tool_display_[%tool_and_instance%]" class="pull-right"></div>

@@ -342,15 +342,15 @@ function post_data_fetch_operations (data) {
 		$('.previous_link').hide();
 		// use our little utility function to show and hide some indicator badges / text:
 		// 1. How many advanced search filters we are using
-		show_or_hide_element('advanced_search_filters_badge', data.advanced_search_filters);
+		show_or_hide_element('advanced_search_filters_badge_'+data.the_tool_id, data.advanced_search_filters);
 		// 2. and how many advanced sort options
 		if (data.advanced_sort_options != undefined) {
-			show_or_hide_element('advanced_sort_options_badge', data.advanced_sort_options.length);
+			show_or_hide_element('advanced_sort_options_badge_'+data.the_tool_id, data.advanced_sort_options.length);
 		} else {
-			show_or_hide_element('advanced_sort_options_badge', 0);
+			show_or_hide_element('advanced_sort_options_badge_'+data.the_tool_id, 0);
 		}
 		// 3. search-is-limited notice?
-		show_or_hide_element('top_notice', data.limit_notice);
+		show_or_hide_element('top_notice_'+data.the_tool_id, data.limit_notice);
 
 		if (data.breadcrumbs_notice) { // some filters used, show that number
 			$('#breadcrumbs_area').html( data.breadcrumbs_notice );
