@@ -166,8 +166,14 @@ function jemplate_binding (element_id, jemplate_uri, jemplate_name, json_data_ur
 
 	// method to load / reload the jemplate uri
 	this.load_jemplate = function () {
+		// append the needful to this.jemplate_uri
+		var params_connector = '?';
+		if (this.jemplate_uri.match('\\?')) {
+			params_connector = '&';
+		}
+
 		$.ajax({
-			url:this.jemplate_uri + '?client_connection_id='+client_connection_id + '&uri_base=' + uri_base,
+			url:this.jemplate_uri + params_connector + 'client_connection_id='+client_connection_id + '&uri_base=' + uri_base,
 			dataType: "script",
 			parent_obj: this, // pass in parent object; it is horrible that you have to do this
 			//async:false

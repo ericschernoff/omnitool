@@ -115,7 +115,7 @@ function Tool (tool_attributes) {
 			} else { // have to reload the tools controls no matter what
 				$.when( this.reload_tool_controls() ).done(function() {
 					loading_modal_display('hide');
-				});				
+				});
 			}
 
 		// not already there and a modal or screen: we must fetch the HTML skeleton for the tool,
@@ -201,12 +201,18 @@ function Tool (tool_attributes) {
 				if (data.altcode) {
 					tool_objects[data.the_tool_id]['current_altcode'] = data.altcode;
 				} else {
-					tool_objects[data.the_tool_id]['current_altcode'] = 'none';			
+					tool_objects[data.the_tool_id]['current_altcode'] = 'none';
 				}
 				if (data.data_code) {
 					tool_objects[data.the_tool_id]['current_data_code'] = data.data_code;
 				} else {
 					tool_objects[data.the_tool_id]['current_data_code'] = 'none';
+				}
+
+				// allow this message to call a JS function for more UI joy
+				if (data.execute_function_on_load != undefined) {
+					// will have a 'the_tool_id' attribute too, which the function will likely need
+					window[data.execute_function_on_load](data.the_tool_id);
 				}
 
 				// having popped up the messages, set the location.hash to the screen uri
@@ -237,10 +243,10 @@ function Tool (tool_attributes) {
 			$(document).attr("title", this['name']);
 			$('#ot_tool_title').text(this['name']);
 		}
-		
+
 		// remember how i got here (for keep-warm fun in omnitool_controller()
-		this['last_access_uri'] = location.hash;		
-		
+		this['last_access_uri'] = location.hash;
+
 	}
 
 	// easy function for making sure loading a screen closes a modal
@@ -306,27 +312,27 @@ function Tool (tool_attributes) {
 				// allow a mode for single record-refresh search tools where just the updated record
 				// gets refreshed.  Has to be set on a view mode basis
 				if (this['single_record_jemplate_block'] != undefined && this['single_record_jemplate_block'] != 0 && this['records_keys'].length > 0 && this['single_record_refresh_mode'] == 'Yes') {
-					$.when( query_tool(the_url, { timestamp: this['response_epoch'], records_keys: this['records_keys'].join() }) ).done(function(json_data) {					
+					$.when( query_tool(the_url, { timestamp: this['response_epoch'], records_keys: this['records_keys'].join() }) ).done(function(json_data) {
 						_this['response_epoch'] = json_data.response_epoch;
 						if (json_data.updated_keys[0]) {
 							// doing this silently, no loading modal
 							$.each(json_data.updated_keys, function( index, value ) {
 								_this.refresh_one_result(value);
-							}); 							
+							});
 						}
 					});
 
 				// support silent refreshing for action screens -- probably view details mostly
 				} else if (this['tool_type'].match(/Action/)) {
-					$.when( query_tool(the_url, { timestamp: this['response_epoch'], records_keys: this['current_data_code'] }) ).done(function(json_data) {					
+					$.when( query_tool(the_url, { timestamp: this['response_epoch'], records_keys: this['current_data_code'] }) ).done(function(json_data) {
 						_this['response_epoch'] = json_data.response_epoch;
 						if (json_data.updated_keys[0]) {
 							jemplate_bindings[ this_tool_display_div ].process_json_uri('none');
 						}
 					});
-					
+
 				// otherwise, refresh the whole thing, silently
-				} else {			
+				} else {
 					jemplate_bindings[ this_tool_display_div ].process_json_uri('none');
 				}
 			}
@@ -375,11 +381,11 @@ function Tool (tool_attributes) {
 				// enable chosen in the background
 				setTimeout(function () {
 					enable_chosen_menu('.tool-action-menu')
-				}, 0);		
+				}, 0);
 				// if the advanced search or sort is still open, then maintain the shrunken table
-				if ($('#advanced_search_' + tool_id).is(':visible') || $('#advanced_sort_' + tool_id).is(':visible')) { 
-					tool_objects[tool_id].shrink_or_grow_tool_display('shrink');		
-				}					
+				if ($('#advanced_search_' + tool_id).is(':visible') || $('#advanced_sort_' + tool_id).is(':visible')) {
+					tool_objects[tool_id].shrink_or_grow_tool_display('shrink');
+				}
 				// hide the loading modal
 				loading_modal_display('hide');
 			}
@@ -664,6 +670,12 @@ function Tool (tool_attributes) {
 					create_gritter_notice(json_data);
 					location.hash = json_data.return_link_uri;
 					loading_modal_display('hide');
+
+					// allow the returned data to call a JS function for more UI joy
+					if (json_data.execute_function_on_load != undefined) {
+						// will have a 'the_tool_id' attribute too, which the function will likely need
+						window[data.execute_function_on_load](json_data.the_tool_id);
+					}
 
 				} else { // omnitool wants you to see the form again, or maybe this is a multiple part form?
 					if (form_id.match('advanced_search')) { // reload the tools controls
