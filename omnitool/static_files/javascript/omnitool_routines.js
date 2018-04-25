@@ -420,7 +420,7 @@ function post_data_fetch_operations (data) {
 		}
 
 		// show a top notice?
-		show_or_hide_element('top_notice', data.top_notice);
+		show_or_hide_element('top_notice_'+data.the_tool_id, data.top_notice);
 
 	}
 
