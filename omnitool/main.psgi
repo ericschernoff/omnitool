@@ -75,10 +75,10 @@ builder {
 	enable "DBIx::DisconnectAll";
 	enable_if { $_[0]->{REMOTE_ADDR} eq '127.0.0.1' }
 	"Plack::Middleware::ReverseProxy";
-	enable 'Plack::Middleware::AccessLog::Timed',
-		format => "%P, %h  %t  %V  %r  %b  %D",
-		# the worker PID, the Remote Client IP, Local Time of Service, HTTP Type, URI, HTTP Ver, Response Length, Time to Serve Response
-		# separated by double spaces
+	enable 'Plack::Middleware::AccessLog',
+		format => '%P - %h - %t - %V - %r - %b - "%{User-agent}i"',
+		# the worker PID, the Remote Client IP, Local Time of Service, HTTP Type, URI, HTTP Ver,
+		# Response Length and client browser; separated by dashes
 		logger => sub { $rotatelogs->print(@_) };
 	$app;
 };
