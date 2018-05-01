@@ -323,7 +323,7 @@ sub tool_object {
 	my $self = shift;
 
 	# declare local vars
-	my (@uri_parts, $special_params, $end_part, $app_inst, $application_id, $class_name, $class_path, $app_code_directory, $the_class_name, $tool_datacode, $tool_object, @tool_args);
+	my (@uri_parts, $special_params, $end_part, $safe_end_part, $app_inst, $application_id, $class_name, $class_path, $app_code_directory, $the_class_name, $tool_datacode, $tool_object, @tool_args);
 
 	# our default is to figure out the tool to use based on $self->{luggage}{uri}
 	# however, they can override this by sending an argument
@@ -371,11 +371,15 @@ sub tool_object {
 		while ($tool_uri && !$tool_datacode) {
 			# work from the end backwards
 			$end_part = pop(@uri_parts);
-			$tool_uri =~ s/(^|\/)$end_part$//;
+
+			# if they snuck in parentheses, it will break our lookup
+			$safe_end_part = quotemeta($end_part);
+			# we want the $end_part intact for our @tool_args below
+			$tool_uri =~ s/(^|\/)$safe_end_part$//;
 
 			# maybe we snuck in a parameter?
-			if ($end_part =~ /^param/) {
-				($self->{luggage}{params}{special_param} = $end_part) =~ s/param//;
+			if ($safe_end_part =~ /^param/) {
+				($self->{luggage}{params}{special_param} = $safe_end_part) =~ s/param//;
 			}
 
 			# add what we removed to an arguments array; for now, we just care about
