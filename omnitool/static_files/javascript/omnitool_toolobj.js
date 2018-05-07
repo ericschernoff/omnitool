@@ -674,7 +674,7 @@ function Tool (tool_attributes) {
 					// allow the returned data to call a JS function for more UI joy
 					if (json_data.execute_function_on_load != undefined) {
 						// will have a 'the_tool_id' attribute too, which the function will likely need
-						window[data.execute_function_on_load](json_data.the_tool_id);
+						window[json_data.execute_function_on_load](json_data.the_tool_id);
 					}
 
 				} else { // omnitool wants you to see the form again, or maybe this is a multiple part form?
