@@ -103,18 +103,13 @@ function Tool (tool_attributes) {
 			// do they want to reload the jemplate?
 			if (reload_jemplate == 1) {
 				jemplate_bindings[ this['tool_display_div'] ].load_jemplate();
-			// now, we can try to just do a hot drop-in -- that means do not reload
-			// if they are coming from the same uri as before or from the tool's base uri
-			} else if ('#'+this['base_uri'] != location.hash && this['last_access_uri'] != location.hash) {
-				// reload the tools controls first
+
+			//  try the not-full-reload option
+			} else { // have to reload the tools controls no matter what
 				var this_tool_display_div = this['tool_display_div'];
 				$.when( this.reload_tool_controls() ).done(function() {
 					// then load the JSON in the middle
 					jemplate_bindings[ this_tool_display_div ].process_json_uri();
-				});
-			} else { // have to reload the tools controls no matter what
-				$.when( this.reload_tool_controls() ).done(function() {
-					loading_modal_display('hide');
 				});
 			}
 
