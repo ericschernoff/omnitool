@@ -103,8 +103,8 @@ sub search {
 			# if just blank, default to 'parent' and hope we are right
 			$$so{relationship_column} ||= 'parent';
 
-			# any query against 'parent' must start with this dt id
-			if ($$so{relationship_column} eq 'parent') {
+			# any query against 'parent' must start with this dt id, unless they are already matching parent=parent
+			if ($$so{relationship_column} eq 'parent'  && $$so{primary_table_column} ne 'parent') {
 				$$so{extra_logic} = 'parent like ? and ';
 				push(@bind_values,$self->{dt}.':%');
 				# note: you wouldn't pull the parent from metainfo, so the above 'extra_logic' is not needed here
