@@ -886,6 +886,9 @@ function query_tool (tool_uri,post_data_object) {
 	// let's time this transfer
 	var start = new Date();
 
+	// all ourselves to send arrays via the post object
+	jQuery.ajaxSettings.traditional = true;
+
 	// use a promise so that we can make sure to return the value
 	var post_promise = $.post(
 		tool_uri, post_data_object
