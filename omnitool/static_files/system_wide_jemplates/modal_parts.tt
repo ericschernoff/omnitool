@@ -26,7 +26,16 @@
 			[% IF modal_title_icon %]
 				<i class="fa [%modal_title_icon%] white bolder"></i>
 			[% END %]
+			
 			[% modal_title %]
+
+			[% IF terms_of_service %]
+				| <a class="white" onclick="$('#terms_of_service').printThis();">
+					<i class="fa fa-print"></i>
+					Print
+				</a>	
+			[% END %]
+
 			</div>
 		</div>
 	[% END %]

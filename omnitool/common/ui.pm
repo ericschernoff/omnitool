@@ -111,6 +111,12 @@ sub skeleton_html {
 	$self->{luggage}{session}{app_instance_info}{ui_ace_skin} = lc($self->{luggage}{session}{app_instance_info}{ui_ace_skin});
 	$self->{luggage}{session}{app_instance_info}{ui_ace_skin} =~ s/ /-/g;
 
+	# does this application have a terms-of-service configured?
+	if (-e $ENV{OTHOME}.'/code/omnitool/applications/'.$app_directory.'/jemplates/terms_of_service.tt') {
+		$self->{luggage}{has_terms_of_service} = 1;
+		# will instruct the template to display the link
+	}
+
 	# it will be a template toolkit file, which should be process and shipped ASAP:
 	$self->{luggage}{belt}->template_process(
 		'template_file' => $file,
@@ -398,6 +404,7 @@ sub get_instance_info {
 		# we will create that here and pass it back for use in omnitool_routines.ks
 		'client_connection_id' => $self->{luggage}{username}.time().$random_string,
 		# hard to imagine one user getting the same random 20-character strings in the same second
+		'skip_post_data_ops' => 1, # so it can be used without bothering post_fetch_operations() in JS-land
 	};
 
 	# figure out the default tool

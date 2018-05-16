@@ -224,7 +224,7 @@ function jemplate_binding (element_id, jemplate_uri, jemplate_name, json_data_ur
 				}
 				// we also need to call 'post_data_fetch_operations()' with this JSON
 				// data, as it may contain post-jemplate behavior instructions
-				if (data.one_record_mode == undefined) { // but not in one-data mode, as that's just very minimal JSON
+				if (data.one_record_mode == undefined && data.skip_post_data_ops == undefined) { // but not in one-data mode, as that's just very minimal JSON
 					post_data_fetch_operations(data);
 				}
 				if (my_element_id != '#breadcrumbs' && my_element_id != '#navbar_notification_area') {
@@ -968,7 +968,7 @@ function check_for_errors (response) {
 	}
 }
 
-// class-level method to load the system modals via jemplate - system_modals.tt under static_files
+// method to load the system modals via jemplate - system_modals.tt under static_files
 open_system_modal = function(data) {
 	// push the data into it
 	jemplate_bindings['system_modal'].process_json_data(data);
@@ -980,6 +980,30 @@ open_system_modal = function(data) {
 	});
 	loading_modal_display('hide');
 }
+
+// method to display the terms of service; accessed via username drop-down in UI
+// link should only be visible if terms_of_service.tt exists in $CODE_DIR/jemplates
+open_terms_of_service = function(data) {
+	
+	// open the modal
+	$.when( open_system_modal({
+		terms_of_service: 1,
+		modal_title: instance_title + ' Terms of Service',
+		modal_title_icon: 'fa-legal'
+	}) ).done(function() {
+		
+		// and then load and render the terms of service for this application instance
+		jemplate_bindings[ 'terms_of_service' ] = new jemplate_binding(
+			'terms_of_service',
+			'/ui/send_jemplate?jemplate=jemplates/terms_of_service.tt',
+			'terms_of_service.tt',
+			'/ui/get_instance_info'
+		);
+	
+	});
+		
+}
+
 
 // class-level method to call for gritter, since both load_tool and submit_form uses it
 // just pass the json_results in; outside of Tool to simplify calling from within callback

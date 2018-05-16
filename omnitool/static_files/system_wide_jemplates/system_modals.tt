@@ -28,6 +28,12 @@
 [% ELSIF searching_spinner %]
 	[% PROCESS searching_spinner %]
 
+[% ELSIF terms_of_service %]
+
+	<div id="terms_of_service" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+		Loading Terms of Service...
+	</div>
+
 [%# if they do this, they are likely going to cram existing HTML in there %]
 [% ELSIF modal_body_id %]
 	<div id="[%modal_body_id%]">

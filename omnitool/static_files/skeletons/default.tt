@@ -109,6 +109,16 @@
 								</a>
 
 								<ul class="dropdown-menu-right dropdown-navbar dropdown-menu dropdown-caret dropdown-close">
+
+									[% IF has_terms_of_service %]
+										<li>
+											<a href="javascript:open_terms_of_service();">
+												<i class="ace-icon fa fa-legal"></i>
+												Terms of Service
+											</a>
+										</li>
+									[% END %]
+
 									<li>
 										<a href="/[%system_uri_base%]#/tools/user_api_keys" target="_blank">
 											<i class="ace-icon fa fa-key"></i>

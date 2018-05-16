@@ -52,6 +52,14 @@
 							<img style="padding-right: 10px; border-right: white 1px solid" class="hidden-480" src="[%session.app_instance_info.ui_logo%]"/>
 						</a>
 						<ul class="dropdown-menu-left dropdown-navbar dropdown-menu dropdown-caret dropdown-close">
+							[% IF has_terms_of_service %]
+								<li>
+									<a href="javascript:open_terms_of_service();">
+										<i class="ace-icon fa fa-legal"></i>
+										Terms of Service
+									</a>
+								</li>
+							[% END %]
 							<li>
 								<a href="/[%system_uri_base%]#/tools/user_api_keys" target="_blank">
 									<i class="ace-icon fa fa-key"></i>
