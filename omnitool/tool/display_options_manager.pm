@@ -123,9 +123,13 @@ sub save_display_options_hash {
 
 	# pass an argument to reset the display_options altogether
 	my ($reset_display_options) = @_;
-	
+
 	if ($reset_display_options) { # they want to reset, see reset_search_options() in tool.pm
-		$self->{display_options} = {};
+		$self->{display_options} = {
+			'options_were_reset' => 1, # prevents defaulting to any default bookmark
+		};
+	} else { # clear that option in a regular save
+		$self->{display_options}{options_were_reset} = 0;
 	}
 
 	# removed all the bookmark / save-out code as the bookmark sub-system handles
@@ -174,9 +178,9 @@ sub clear_display_options_hash {
 # form fields based on selections above the current level
 sub get_parent_tools_display_options {
 	my $self = shift;
-	
+
 	my ($this_tool_data_code, $parent_tool_datacode, $display_options_obj_name, $display_options);
-	
+
 	# get my data_code
 	($this_tool_data_code = $self->{tool_and_instance}) =~ s/$self->{luggage}{app_instance}_//;
 
@@ -192,8 +196,8 @@ sub get_parent_tools_display_options {
 		'object_name' => $display_options_obj_name,
 		'db_table' => $self->{luggage}{database_name}.'.tools_display_options_cached',
 	);
-	
-	# ship them back 
+
+	# ship them back
 	return $display_options;
 }
 

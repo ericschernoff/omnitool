@@ -12,11 +12,6 @@ Expects all of $self for a Tool.pm class/sub-class.
 
 <!-- show print button -->
 <div class="btn-group">
-[% IF attributes.tool_type.match('Search') %]
-	<button class="btn btn-white" title="Reset Search Options" onclick="tool_objects['[%tool_and_instance%]'].reset_search_options()">
-		<i class="fa fa-search-minus red"></i>
-	</button>
-[% END %]
 <button class="btn btn-white" onclick="$('#tool_display_[%tool_and_instance%]').printThis();">
 	<i class="fa fa-print"></i>
 </button>
@@ -110,6 +105,11 @@ Expects all of $self for a Tool.pm class/sub-class.
 [% END %]
 
 [% IF attributes.tool_type.match('Search') %]
+	<div class="btn-group">
+		<button class="btn btn-white" title="Reset Search Options" onclick="tool_objects['[%tool_and_instance%]'].reset_search_options()">
+			<i class="fa fa-trash red"></i>
+		</button>
+	</div>
 	[% IF has_advanced_search %]
 		<div class="btn-group" id="advanced_search_features_[%tool_and_instance%]">
 			<button class="btn btn-white" onclick="tool_objects['[%tool_and_instance%]'].show_advanced_search()">
