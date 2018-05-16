@@ -1033,7 +1033,7 @@ create_gritter_notice = function(data) {
 	});
 
 	// limit our open gritters 
-	if ($('.gritter-item-wrapper').length == 4) {
+	if ($('.gritter-item-wrapper').length > 3) {
 		var delete_this_id = $('.gritter-item-wrapper').first().attr('id').replace('gritter-item-','');
 		$.gritter.remove( delete_this_id );
 	}

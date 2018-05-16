@@ -31,13 +31,13 @@
 
 	<body class="[%session.app_instance_info.ui_ace_skin%]">
 		<div id="navbar" class="navbar navbar-default">
+			<button type="button" class="navbar-toggle pull-right collapsed" data-toggle="collapse" data-target="#ot_menubar_div" aria-expanded="false" aria-controls="#ot_menubar_div">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
 			<div class="navbar-buttons pull-left navbar-header">
-				<button type="button" class="navbar-toggle pull-left collapsed" data-toggle="collapse" data-target="#ot_menubar_div" aria-expanded="false" aria-controls="#ot_menubar_div">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
 				<span class="navbar-brand">
 					<small>
 					[% IF username != 'public' %]
@@ -104,7 +104,7 @@
 				</span>
 			</div>
 
-			<div id="ot_menubar_div" class="navbar-buttons navbar-header collapse in pull-right" role="navigation">
+			<div id="ot_menubar_div" class="navbar-buttons navbar-header collapse navbar-collapse pull-right" role="navigation">
 				<!-- site navigation -->
 				<ul class="nav ace-nav" id="ot_menubar">
 					<!-- nav-list: loading via ui_menu.tt -->

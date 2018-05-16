@@ -308,7 +308,7 @@ sub test_their_credentials {
 			value => $random_string.'_'.$code,
 			domain  => $ENV{OT_COOKIE_DOMAIN},
 			path => '/',
-			expires => '+24h'
+			# expires => '+24h'
 		};
 		# useing the redirect with the cookie is the most reliable way to set it
 		$self->{luggage}{belt}->{response}->redirect($self->{luggage}{params}{requested_uri});
