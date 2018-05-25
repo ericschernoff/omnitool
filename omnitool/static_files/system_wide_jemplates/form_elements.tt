@@ -254,7 +254,7 @@
 	[% IF form.fields.$f.onchange %]
 		[% SET form.fields.$f.onchange = 'onchange="' _ form.fields.$f.onchange _ '"' %]
 	[% END %]
-	<select multiple="" id="form-field-[%f%]" data-placeholder="[%form.fields.$f.placeholder%]" name="[%form.fields.$f.name%]" class="[%class_name%] [% custom_class %]" [%form.fields.$f.onchange%]>
+	<select multiple="" id="form-field-[%f%]" data-placeholder="[%form.fields.$f.placeholder%]" name="[%form.fields.$f.name%]" style=" min-width: 144px;" class="[%class_name%] [% custom_class %]" [%form.fields.$f.onchange%]>
 		<option value="">  </option>
 		[% FOREACH opt IN form.fields.$f.options_keys %]
 			[% IF form.fields.$f.presets.$opt == 1 %]

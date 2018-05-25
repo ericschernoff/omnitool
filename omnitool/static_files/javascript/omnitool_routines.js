@@ -227,7 +227,7 @@ function jemplate_binding (element_id, jemplate_uri, jemplate_name, json_data_ur
 				if (data.one_record_mode == undefined && data.skip_post_data_ops == undefined) { // but not in one-data mode, as that's just very minimal JSON
 					post_data_fetch_operations(data);
 				}
-				if (my_element_id != '#breadcrumbs' && my_element_id != '#navbar_notification_area') {
+				if (my_element_id != '#breadcrumbs' && my_element_id != '#navbar_notification_area' && modal_text != 'none') { // only chose a modal if we opened one
 					loading_modal_display('hide');
 				} else {
 					if (upper_right_search_autocomplete != 0) {
