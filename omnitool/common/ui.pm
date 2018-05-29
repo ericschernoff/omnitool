@@ -390,10 +390,12 @@ sub get_instance_info {
 	# oh, if it could all be this easy
 	$info_hashref = {
 		'instance_title' => $self->{luggage}{session}->{app_instance_info}{inst_name},
+		'application_title' => $self->{luggage}{session}->{app_instance_info}{app_name},
 		'hostname' => $self->{luggage}{session}->{app_instance_info}{hostname},
 		'username' => $self->{luggage}{session}->{user},
 		'user_fullname' => $self->{luggage}{session}->{their_name},
 		'contact_email' => $self->{luggage}{session}{app_instance_info}{inst_contact},
+		'app_contact_email' => $self->{luggage}{session}{app_instance_info}{app_contact},
 		'instance_description' => $self->{luggage}{session}->{app_instance_info}{inst_description},
 		'appwide_search_function' => $self->{luggage}{session}->{app_instance_info}{appwide_search_function},
 		'session_created' => $self->{luggage}{session}->{created},

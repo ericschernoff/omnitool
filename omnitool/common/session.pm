@@ -91,7 +91,7 @@ sub new {
 		($app_instance_info,$appinst_keys) = $args{db}->sql_hash(qq{
 			select concat(i.code,'_',i.server_id), concat(a.code,'_',a.server_id), i.hostname, i.database_server_id,
 			ds.hostname, i.database_name, i.contact_email, a.contact_email, a.appwide_search_function, a.appwide_search_name,
-			a.appwide_quickstart_tool_uri, i.name, i.access_roles, i.switch_into_access_roles, i.file_storage_method, i.file_location,
+			a.appwide_quickstart_tool_uri, i.name, a.name, i.access_roles, i.switch_into_access_roles, i.file_storage_method, i.file_location,
 			a.ui_template, a.ui_navigation_placement, a.ui_ace_skin, i.ui_logo,
 			a.lock_lifetime, a.app_code_directory, a.description, i.description, i.uri_base_value
 			from instances i, applications a, database_servers ds
@@ -100,7 +100,7 @@ sub new {
 		},(
 			'names' => ['application_id','hostname','database_server','database_hostname','database_name','inst_contact',
 						'app_contact','appwide_search_function','appwide_search_name','appwide_quickstart_tool_uri','inst_name',
-						'access_roles','switch_into_access_roles','file_storage_method','file_location',
+						'app_name','access_roles','switch_into_access_roles','file_storage_method','file_location',
 						'ui_template','ui_navigation_placement','ui_ace_skin','ui_logo',
 						'lock_lifetime','app_code_directory','app_description','inst_description','uri_base_value'],
 			'bind_values' => ['Active','Active','Active']
