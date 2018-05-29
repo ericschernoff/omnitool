@@ -30,7 +30,7 @@
 			[% modal_title %]
 
 			[% IF terms_of_service %]
-				| <a class="white" onclick="$('#terms_of_service').printThis();">
+				-- <a class="white" onclick="$('#terms_of_service').printThis();">
 					<i class="fa fa-print"></i>
 					Print
 				</a>	
