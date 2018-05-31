@@ -991,7 +991,7 @@ function Tool (tool_attributes) {
 			// then reload the tools controls
 			$.when( tool_objects[this_tool_id].reload_tool_controls() ).done(function() {
 				// and finally, reload the search results
-				tool_objects[this_tool_id].refresh_json_data();
+				tool_objects[this_tool_id].refresh_json_data(1);
 			});
 		});
 
