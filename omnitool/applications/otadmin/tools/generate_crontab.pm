@@ -71,7 +71,11 @@ sub perform_action {
 			.'OMNITOOL_ADMIN_USERNAME='.$self->{luggage}{username}."\n"
 			.'# SWIFTSTACK_NO_HOSTNAME_VERIFY=1');
 
+		# dev machine flag
 		push(@{ $self->{json_results}{paragraphs} },'# uncomment to prevent email from going out'."\n".'# OT_DEVELOPER=1');
+
+		# tmp file maintenance
+		push(@{ $self->{json_results}{paragraphs} },'# need this on any/all OT6 workers an app servers:  delete temp files older than 7 days'."\n".qq{30 4 * * * find /opt/omnitool/tmp -type f -mtime +7 -execdir rm -- '{}' \;});
 
 		# cycle through each datatype and show X entries, where X = support_email_and_tasks-2 if support_email_and_tasks > 4
 		foreach $dt (@{$datatypes_object->{records_keys}}) {
