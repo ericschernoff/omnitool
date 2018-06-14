@@ -426,7 +426,7 @@ sub do_task {
 	if ($task_id =~ /\d/) {
 
 		($method,$data_code,$username,$args_hash, $auto_retried) = $self->{db}->quick_select(
-			'select method, data_code, username args_hash, auto_retried from '.$self->{database_name}.'.background_tasks'.
+			'select method, data_code, username, args_hash, auto_retried from '.$self->{database_name}.'.background_tasks'.
 			qq{ where concat(code,'_',server_id)=?},
 			[$task_id]
 		);
