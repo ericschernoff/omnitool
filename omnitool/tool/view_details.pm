@@ -39,6 +39,9 @@ sub perform_action {
 		$self->{json_results}{$part} = $$details_hash{$part};
 	}
 
+	# provide a more API-friendly collection of the details
+	$self->{json_results}{data} = $self->{omniclass_object}->{data};
+
 }
 
 
