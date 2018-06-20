@@ -56,7 +56,7 @@ sub add_outbound_email {
 						  # this gets put into $self->{email_vars} for the template
 	# 'attached_files' => 'list,of,file,ids', # optional; a comma-separted list of primary keys from the stored_files DB table for this app instance
 
-	my ($data_code, $include_path, $app_code_directory, $message_body, $logfile);
+	my ($data_code, $include_path, $app_code_directory, $message_body, $logfile, @to_addresses);
 
 	# target logging location
 	$logfile = 'email_errors_'.$self->{database_name};
@@ -154,7 +154,11 @@ sub add_outbound_email {
 
 	# clear out $self->{email_vars} to not pollute any other run-throughs
 	delete($self->{email_vars});
-
+	
+	# mak sure to_addresses is a unique list 
+	@to_addresses = split /,|\s/, $args{to_addresses};
+	$args{to_addresses} = $self->{belt}->comma_list(\@to_addresses);
+	
 	# now let's add the record to the 'email_outbound' table
 	$self->{db}->do_sql(
 		'insert into '.$self->{database_name}.'.email_outbound '.
@@ -181,7 +185,7 @@ sub send_outbound_email {
 	# if it's blank, we shall try to send the next 20 queued emails
 
 	# declare our vars
-	my ($target_recipients, $target_recipients_unique, $pause_background_tasks, @driver_options, $db_status, $default_domain, $driver_name, $email_ids_list, $email_ids, $email_key, $email_keys, $email_password, $email_sending_info_encrypted, $email_sending_info, $email_username, $emails_to_send, $error_logfile, $file_contents, $file_id, $file_info, $mailer, $now, $protocol, $q_marks_list, $recipient, $send_logfile, $server_hostname, $file_attachment);
+	my (%done, $target_recipients, $target_recipients_unique, $pause_background_tasks, @driver_options, $db_status, $default_domain, $driver_name, $email_ids_list, $email_ids, $email_key, $email_keys, $email_password, $email_sending_info_encrypted, $email_sending_info, $email_username, $emails_to_send, $error_logfile, $file_contents, $file_id, $file_info, $mailer, $now, $protocol, $q_marks_list, $recipient, $send_logfile, $server_hostname, $file_attachment);
 
 	# support multiple worker nodes, defaulting to 1
 	$ENV{WORKER_ID} ||= 1;
@@ -329,7 +333,12 @@ sub send_outbound_email {
 		@$target_recipients = split /,/, $$emails_to_send{$email_key}{to_addresses};
 		$target_recipients_unique = $self->{belt}->uniquify_list($target_recipients);
 		foreach $recipient (@$target_recipients_unique) {
-			next if $recipient eq 'none';
+			# try not to send to bad addresses
+			next if $recipient eq 'none' || $recipient eq 'com' || $recipient eq 'alias';
+			next if length($recipient) < 3;
+
+			# really, really avoid sending to the same person twice
+			next if $done{$recipient};
 
 			# do it oo style so that we can have multiple attachments
 			$mailer = Email::Stuff->new;
@@ -391,6 +400,9 @@ sub send_outbound_email {
 				$db_status = 'Success' if $db_status ne 'Error';
 
 			}
+
+			# really, really avoid sending to the same person twice
+			$done{$recipient} = 1;
 
 		# recipients done
 		}
