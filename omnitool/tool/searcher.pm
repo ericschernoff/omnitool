@@ -573,7 +573,7 @@ sub get_inline_actions {
 sub build_search {
 	my $self = shift;
 
-	my (@match_columns, @keyword_operators, @match_values, $match_value, $kw_search, $parent_string, $filter_menu, $keyword_key, $parent_datacode, $tool_datacode, $parent_tool_datatype, $keyword_operator_key, $n, $searches, $this_tool_filter_menu, $value_key, @apply_to_table_col_parts, @searches, $start_key, $end_key);
+	my ($kw_match_column, $kw_match_value, $kw_matches, $kw_operator, @match_columns, @keyword_operators, @match_values, $match_value, $kw_search, $parent_string, $filter_menu, $keyword_key, $parent_datacode, $tool_datacode, $parent_tool_datatype, $keyword_operator_key, $n, $searches, $this_tool_filter_menu, $value_key, @apply_to_table_col_parts, @searches, $start_key, $end_key);
 
 	# go through each filter menu
 	$n = 0;
@@ -600,6 +600,7 @@ sub build_search {
 		# keyword menus let you select the field-to-match with the menu and specify a keyword
 		# for special fun, the JS allows them to send an unlimited combination of searches for this field ;)
 		if ($$this_tool_filter_menu{menu_type} eq 'Keyword') {
+
 			(@match_columns) = split /,/, $self->{display_options}{$value_key};
 			(@keyword_operators) = split /,/, $self->{display_options}{$keyword_operator_key};
 			(@match_values) = split /,/, $self->{display_options}{$keyword_key};
@@ -607,27 +608,57 @@ sub build_search {
 			$kw_search = 0; # to keep the three arrays in sync
 			foreach $match_value (@match_values) {
 				if ($match_value && $match_value ne 'DO_CLEAR') {
+
+					# figure out the operator
 					# positive or negative match?
 					if ($keyword_operators[$kw_search] =~ /not/i) {
-						$$searches[$n]{operator} = 'not regexp';
+						$kw_operator = 'not regexp';
 					} else {
-						$$searches[$n]{operator} = 'regexp';
+						$kw_operator = 'regexp';
 					}
-					$$searches[$n]{match_column} = $match_columns[$kw_search];
-					$$searches[$n]{match_value} = $match_values[$kw_search];
-					# note that these are all regular expressions
-					# trim leading/trailing spaces from the keyword
-					$$searches[$n]{match_value} =~ s/^\s+|\s+$//g;
 
+					# we are going to combine the same-column/operator matches, so we have to build a 
+					# hash keyed by those values
+					$kw_match_column = $match_columns[$kw_search];
+					# trim leading/trailing spaces from the keyword
+					($kw_match_value = $match_value) =~ s/^\s+|\s+$//g;
+					
+					# skip if it's now empty without those spaces
+					if ($kw_match_value) {
+						# make the keyword-searching hash
+						$$kw_matches{$kw_match_column}{$kw_operator} .= '|'.$kw_match_value;
+					
+						# indicate the number of keyword filters		
+						$self->{advanced_search_filters}++
+					}
+				}
+				# track the number of keyword searches
+				$kw_search++;					
+			}
+			
+			# alright, if we have a set of keyword matches, turn those into omniclass search logic
+			foreach $kw_match_column (keys %$kw_matches) {
+				# exach type of test
+				foreach $kw_operator ('not regexp','regexp') {
+					# skip if no value stored here
+					next if !$$kw_matches{$kw_match_column}{$kw_operator};
+					# nix leading pipe '|'
+					$$kw_matches{$kw_match_column}{$kw_operator} =~ s/^\|//;
+					
+					# make the assignments
+					$$searches[$n]{match_column} = $kw_match_column;
 					# they may have put in a complex match_column for a foreign-table match
 					# in that case, it would be match_column::table_nam::primary_table_column::relationship_column
 					if ($$searches[$n]{match_column} =~ /::/) {
 						($$searches[$n]{match_column}, $$searches[$n]{table_name}, $$searches[$n]{primary_table_column}, $$searches[$n]{relationship_column}) = split /::/, $$searches[$n]{match_column};
 					}
-					$n++; # advance that @$searches array
-					$self->{advanced_search_filters}++
+					# rest is easy
+					$$searches[$n]{operator} = $kw_operator;
+					$$searches[$n]{match_value} = $$kw_matches{$kw_match_column}{$kw_operator};
+					
+					# advance the search count
+					$n++;
 				}
-				$kw_search++;
 			}
 
 		# date ranges are also kind of fun
