@@ -202,6 +202,10 @@ sub send_json_data {
 
 	# will need this for passing into the 'execute_function_on_load' function
 	$self->{json_results}{the_tool_id} = $self->{tool_and_instance};
+	
+	# maybe send out the search options
+	$self->{search_parameters}{quick_keyword} = $self->{display_options}{quick_keyword} if $self->{display_options}{quick_keyword};
+	$self->{json_results}{search_parameters} = $self->{search_parameters};
 
 	# send out; dispatcher.pm will throw to mr_zebra(), who will send out as json
 	return $self->{json_results};

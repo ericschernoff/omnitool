@@ -30,8 +30,14 @@ var the_current_active_tool_id = 'none';
 var instance_contact_email = '';
 var instance_title = '';
 
-// and a var to hold the search-refresh set-timeout, for searching tools with background refreshing
+// a var to hold the search-refresh set-timeout, for searching tools with background refreshing
 var background_refresher;
+
+// a var to let us know when we are in 'API Explorer Mode,' which shows the user the POST requests
+// for searching, form, and message tools.  
+var api_explorer_mode = 0;
+// for managing the view_details displays of the API explorer
+var post_data_fetch_do_api_explorer = 0;
 
 // variable to hold the bookmark manager code
 var bookmark_manager;
@@ -254,7 +260,7 @@ function jemplate_binding (element_id, jemplate_uri, jemplate_name, json_data_ur
 	// on create, grab the jemplate template script from the server & process it
 	// if not pre-loaded
 	if (this.jemplate_uri != 'preloaded') {
-		// use the method below
+		// use the method above
 		this.load_jemplate();
 
 	// otherwise, assume we already have it
@@ -422,6 +428,19 @@ function post_data_fetch_operations (data) {
 		// show a top notice?
 		show_or_hide_element('top_notice_'+data.the_tool_id, data.top_notice);
 
+	}
+	
+	// see Tool.load_tool(), but the short story is that we will need to allow for the
+	// API explorer for view_details tools
+	if (post_data_fetch_do_api_explorer == 1) {
+		open_api_explorer_modal({
+			'uri':tool_objects[data.the_tool_id]['called_via_uri']+'/send_json_data',
+			'post_parameters': {},
+			'results_data': data,
+			'tool_name': tool_objects[data.the_tool_id]['name'],
+		});
+		// one time per created Tool
+		post_data_fetch_do_api_explorer = 0;
 	}
 
 	// empower any tool quick/inline actions drop-down menus - do async for speed's sake
@@ -785,6 +804,9 @@ function omnitool_controller (event,target_tool_uri) {
 		} else if (tool_objects[the_tool_id] == undefined) { // no, need to create
 			// grab the attributes and create the object with them
 			$.when( query_tool(tool_uri + '/send_attributes',{}) ).done(function(tool_attributes) {
+				// we need to know the 'starting' uri for this tool for api_explorer_mode
+				tool_attributes.called_via_uri = tool_uri;
+				// construct the new Tool object and call load_tool() to trigger the message
 				tool_objects[the_tool_id] = new Tool(tool_attributes);
 				tool_objects[the_tool_id].load_tool();
 			});
@@ -969,7 +991,7 @@ function check_for_errors (response) {
 }
 
 // method to load the system modals via jemplate - system_modals.tt under static_files
-open_system_modal = function(data) {
+function open_system_modal (data) {
 	// push the data into it
 	jemplate_bindings['system_modal'].process_json_data(data);
 
@@ -983,7 +1005,7 @@ open_system_modal = function(data) {
 
 // method to display the terms of service; accessed via username drop-down in UI
 // link should only be visible if terms_of_service.tt exists in $CODE_DIR/jemplates
-open_terms_of_service = function(data) {
+function open_terms_of_service (data) {
 	
 	// open the modal
 	$.when( open_system_modal({
@@ -1002,6 +1024,68 @@ open_terms_of_service = function(data) {
 	
 	});
 		
+}
+
+// method to open up the API Information modal
+function open_api_info_modal (data) {
+	// open the modal
+	open_system_modal({
+		api_info: 1,
+		api_explorer_mode_on: api_explorer_mode,
+		modal_title: instance_title + ' API Information',
+		instance_contact_email: instance_contact_email,
+		system_uri_base: system_uri_base, // got that from bottom_javascript.tt
+		modal_title_icon: 'fa-code'
+	});
+}
+
+// support the toggling of api explorer mode
+function toggle_api_explorer_mode () {
+	if (api_explorer_mode > 0) {
+		api_explorer_mode = 0;
+	} else {
+		api_explorer_mode = 1;
+	}
+}
+
+// support for the actual API explorer; will get called if api_explorer_mode = 1, when
+// we (a) submit a tool's form, (b) access a Message Action Tool, (c) run process_quick_search()
+// for a Searching tool or (d) submit the Advanced Search form
+// relies on the api_explorer part of system_modals.tt
+function open_api_explorer_modal (data) {
+	// that data struct will have: 
+	// 	uri = the URI to post to
+	//	post_parameters = either an array of the form's data or the search_parameters from Tool::searcher()
+	// 	results_data = the json_data that was sent back from the OT6 server
+	//	tool_name = the name of the Tool that was just queried, for which this query will work
+	
+	// add in the instance's base URI
+	data.uri_base = uri_base;
+
+	// need the hostname for the uri
+	data.hostname = location.hostname;
+
+	// tell system_modals.tt to show this
+	data.api_explorer_mode = 1;
+	
+	// pass the title / icon info / instance contact
+	data.modal_title = 'API / POST Query Details for ' + data.tool_name;
+	data.modal_title_icon = 'fa-code';
+	data.instance_contact_email = instance_contact_email;
+	data.system_uri_base = system_uri_base;
+	
+	data.post_parameters_string = JSON.stringify(data.post_parameters, undefined, 2);
+	
+	// form submits will have post_parameters as a list of hash
+	if (Array.isArray(data.post_parameters)) {
+		data.form_submission = 1;
+	}
+	
+	// stringified version of the data sent back from the OT6 server
+	data.results_data_string = JSON.stringify(data.results_data, undefined, 2);
+	
+	// open the modal
+	open_system_modal(data);
 }
 
 

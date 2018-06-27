@@ -591,6 +591,8 @@ sub build_search {
 		$start_key = 'start_'.$filter_menu;
 		$end_key = 'end_'.$filter_menu;
 
+		$self->{search_parameters}{$value_key} = $self->{display_options}{$value_key};
+
 		# if it's 'Any', skip and don't search
 		next if $self->{display_options}{$value_key} eq 'Any' && $$this_tool_filter_menu{menu_type} ne 'Date Range';
 
@@ -604,6 +606,9 @@ sub build_search {
 			(@match_columns) = split /,/, $self->{display_options}{$value_key};
 			(@keyword_operators) = split /,/, $self->{display_options}{$keyword_operator_key};
 			(@match_values) = split /,/, $self->{display_options}{$keyword_key};
+
+			$self->{search_parameters}{$keyword_operator_key} = $self->{display_options}{$keyword_operator_key};
+			$self->{search_parameters}{$keyword_key} = $self->{display_options}{$keyword_key};
 
 			$kw_search = 0; # to keep the three arrays in sync
 			foreach $match_value (@match_values) {

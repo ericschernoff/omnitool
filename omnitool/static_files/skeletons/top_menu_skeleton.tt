@@ -61,9 +61,9 @@
 								</li>
 							[% END %]
 							<li>
-								<a href="/[%system_uri_base%]#/tools/user_api_keys" target="_blank">
-									<i class="ace-icon fa fa-key"></i>
-									Your API Keys
+								<a href="javascript:open_api_info_modal();">
+									<i class="ace-icon fa fa-code"></i>
+									API Info
 								</a>
 							</li>
 

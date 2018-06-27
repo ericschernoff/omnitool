@@ -56,9 +56,6 @@ sub load_display_options {
 		next if !$self->{luggage}{params}{$p} && !$self->{luggage}{params}{multi}{$p}[0]; # skip blanks
 		next if $p eq 'saved_name'; # skip the option to save the search
 		next if $p eq 'via_quick_search'; # skip the notice that a quick search menu was used
-		#if ($self->{luggage}{params}{multi}{$p}[0]) { # plug in array ref for multi-params
-		#	$self->{display_options}{$p} = $self->{luggage}{params}{multi}{$p};
-		#} els
 
 		if ($self->{luggage}{params}{$p} eq 'DO_CLEAR') { # clearing out the preset
 			delete($self->{display_options}{$p});

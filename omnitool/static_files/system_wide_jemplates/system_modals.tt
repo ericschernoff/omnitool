@@ -33,7 +33,80 @@
 	<div id="terms_of_service" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 		Loading Terms of Service...
 	</div>
+	
+[% ELSIF api_info %]
 
+	All of this systems's features are available via API calls.  Client programs must send
+	HTTPS requests with POST parameters and will receive JSON results.  Authentication is 
+	handled with user-managed API keys.
+
+	<br/><br/>
+	<a class="btn btn-sm btn-white" href="/[%system_uri_base%]#/tools/user_api_keys" target="_blank">Click to get more info, 
+	see example code, and to provision your API keys.</a>
+
+	<br/><br/>
+	Contact <a href="mailto:[%instance_contact_email%]">[%instance_contact_email%]</a> for access to the staging/dev systems, and to extend your API keys to multiple IP addresses.
+	<br/><br/>
+	
+	[% IF api_explorer_mode_on > 0 %]
+		[% SET checked='checked' %]
+	[% END %]
+	
+	<div class="form-group">
+		Enable API Explorer Mode
+		<label>
+			<input class="ace ace-switch ace-switch-5 ot-switch" type="checkbox" [%checked%] onchange="toggle_api_explorer_mode()" />
+			<span class="lbl"></span>
+		</label>
+		to see the HTTPS POST requests being sent for each search and form action you commit in this window.  
+		This should help you model the POST requests for your API client.
+		<u>NOTE:</u> All actions will still be sent and completed.
+	</div>
+
+[%# API explorer mode shows the POST query and resulting JSON from each action %]
+[% ELSIF api_explorer_mode %]
+
+	<div class="form-group align-right">
+		<a class="btn btn-sm btn-white" href="/[%system_uri_base%]#/tools/user_api_keys" target="_blank">
+			API Keys / Sample Code
+		</a>		
+		|
+		Keep API Explorer Mode Enabled:
+		<label>
+			<input class="ace ace-switch ace-switch-5 ot-switch" type="checkbox" checked onchange="toggle_api_explorer_mode()" />
+			<span class="lbl"></span>
+		</label>
+	</div>
+
+	<h4>POST Query Details</h4>
+
+	Posted to URL: https://[%hostname%]/[%uri%]
+	<br/>
+	Parameters sent:
+	<ul>
+		<li>api_key: YOUR_API_KEY_HERE</li>
+		[% IF uri_base %]
+			<li>uri_base: [%uri_base%]</li>
+		[% END %]
+		[% IF form_submission %]
+			[% FOREACH pair IN post_parameters %]
+				[% NEXT IF !pair.value %]
+				<li>[%pair.name%]: [%pair.value%]</li>
+			[% END %]
+		[% ELSE %]
+			[% FOREACH key IN post_parameters.keys.sort %]
+				[% NEXT IF !post_parameters.$key %]
+				<li>[%key%]: [%post_parameters.$key%]</li>
+			[% END %]
+		
+		[% END %]
+	</ul>
+	
+	<h4>JSON Results Returned</h4>
+
+	<pre>[% results_data_string %]</pre>
+
+	
 [%# if they do this, they are likely going to cram existing HTML in there %]
 [% ELSIF modal_body_id %]
 	<div id="[%modal_body_id%]">

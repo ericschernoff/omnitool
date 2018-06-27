@@ -136,6 +136,12 @@ function Tool (tool_attributes) {
 
 				// run the routines to enable the quick-search fields
 				tool_objects[this_tool_id].quick_search_enable();
+				
+				// if we are loading a 'view_details' tool in api_explorer mode, tell
+				// post_data_fetch_operations to open the modal
+				if (this_tool_uri.match(/view_details$/) && api_explorer_mode == 1) {
+					post_data_fetch_do_api_explorer = 1;
+				}
 
 				// now grab the Jemplate for the display area
 				if (jemplate_bindings[ this_tool_display_div ] == undefined || $.isEmptyObject(jemplate_bindings[ this_tool_display_div ])) {
@@ -212,6 +218,17 @@ function Tool (tool_attributes) {
 
 				// having popped up the messages, set the location.hash to the screen uri
 				omnitool_controller({message_tool:1}, data.return_link_uri );
+
+				// if they have API Explorer Mode turned on, open the modal to show them 
+				// how to do this via API
+				if (api_explorer_mode == 1) {
+					open_api_explorer_modal({
+						'uri':this['called_via_uri']+'/send_json_data',
+						'post_parameters': {},
+						'results_data': data,
+						'tool_name': this['name'],
+					});
+				}
 			});
 		}
 
@@ -429,6 +446,8 @@ function Tool (tool_attributes) {
 	// expects the field name / value for sending into query_tool
 	this.process_quick_search = function(field_name,field_value) {
 		var this_tool_display_div = this['tool_display_div']; // for use below
+		var this_tool_name = this['name']; // for use below, API explorer mode
+		
 		loading_modal_display('Running Search...');
 		var post_object = {};
 			post_object[field_name] = field_value;
@@ -441,6 +460,17 @@ function Tool (tool_attributes) {
 			// process the jemplate with any new information
 			jemplate_bindings[ this_tool_display_div ].process_json_data(json_data);
 			loading_modal_display('hide');
+	
+			// if they have turned on the API Explorer (via the API Info link & the functions in omnitool_routines.js)
+			// then we need to display the post options and results
+			if (api_explorer_mode == 1) {
+				open_api_explorer_modal({
+					'uri': jemplate_bindings[ this_tool_display_div ].json_data_uri,
+					'post_parameters': json_data.search_parameters,
+					'results_data': json_data,
+					'tool_name': this_tool_name,
+				});
+			}					
 		});
 	}
 
@@ -610,6 +640,8 @@ function Tool (tool_attributes) {
 		var this_tool_display_div = this['tool_display_div'];
 		var this_tool_uri = this['tool_uri'];
 		var this_tool_json_uri = this['tool_json_uri'];
+		// for API explorer mode
+		var this_tool_name = this['name'];
 
 		// submit the form and send the results data back into our display area's jemplate
 		loading_modal_display('Submitting Form...');
@@ -660,7 +692,29 @@ function Tool (tool_attributes) {
 					return false;
 				}
 
-				// how to display results
+				// if they have turned on the API Explorer (via the API Info link & the functions in omnitool_routines.js)
+				// then we need to display the post options and search results
+				if (api_explorer_mode == 1) {
+					// handle it differently if doing an Advanced Search
+					if (form_id.match('advanced_search')) {					
+						open_api_explorer_modal({
+							'uri':jemplate_bindings[ this_tool_display_div ].json_data_uri,
+							'post_parameters':  $('#'+form_id).serializeArray(),
+							'results_data': json_data,
+							'tool_name': this_tool_name,
+						});
+					// versus an action-form
+					} else {
+						open_api_explorer_modal({
+							'uri': $('#'+form_id).attr('action'),
+							'post_parameters': $('#'+form_id).serializeArray(),
+							'results_data': json_data,
+							'tool_name': this_tool_name,
+						});
+					}
+				}
+
+				// now figure out how to display results
 				if (json_data.show_gritter_notice) { // was successful, just pop it up and load the previous tool
 					create_gritter_notice(json_data);
 					location.hash = json_data.return_link_uri;
