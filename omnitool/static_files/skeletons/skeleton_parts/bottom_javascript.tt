@@ -124,7 +124,7 @@
 <script type="text/javascript">
 	var uri_base = '[%uri_base%]';
 
-	<!-- for the API info modal -->
+	// for the API info modal
 	var system_uri_base = '[%system_uri_base%]';
 </script>
 

@@ -137,9 +137,9 @@ function Tool (tool_attributes) {
 				// run the routines to enable the quick-search fields
 				tool_objects[this_tool_id].quick_search_enable();
 				
-				// if we are loading a 'view_details' tool in api_explorer mode, tell
+				// if we are loading a 'view_details' or searching tool in api_explorer mode, tell
 				// post_data_fetch_operations to open the modal
-				if (this_tool_uri.match(/view_details$/) && api_explorer_mode == 1) {
+				if ((this_tool_uri.match(/view.*details$/) || this_tool_type.match('Search')) && api_explorer_mode == 1) {
 					post_data_fetch_do_api_explorer = 1;
 				}
 

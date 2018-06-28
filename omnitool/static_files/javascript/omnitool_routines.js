@@ -435,7 +435,7 @@ function post_data_fetch_operations (data) {
 	if (post_data_fetch_do_api_explorer == 1) {
 		open_api_explorer_modal({
 			'uri':tool_objects[data.the_tool_id]['called_via_uri']+'/send_json_data',
-			'post_parameters': {},
+			'post_parameters': data.search_parameters,
 			'results_data': data,
 			'tool_name': tool_objects[data.the_tool_id]['name'],
 		});

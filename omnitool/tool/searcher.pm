@@ -591,6 +591,7 @@ sub build_search {
 		$start_key = 'start_'.$filter_menu;
 		$end_key = 'end_'.$filter_menu;
 
+		# for displaying in the API eplorer
 		$self->{search_parameters}{$value_key} = $self->{display_options}{$value_key};
 
 		# if it's 'Any', skip and don't search
@@ -607,6 +608,7 @@ sub build_search {
 			(@keyword_operators) = split /,/, $self->{display_options}{$keyword_operator_key};
 			(@match_values) = split /,/, $self->{display_options}{$keyword_key};
 
+			# for displaying in the API eplorer
 			$self->{search_parameters}{$keyword_operator_key} = $self->{display_options}{$keyword_operator_key};
 			$self->{search_parameters}{$keyword_key} = $self->{display_options}{$keyword_key};
 
