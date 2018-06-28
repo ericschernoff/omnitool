@@ -186,6 +186,9 @@ function Tool (tool_attributes) {
 				var active_screen_tool_id = the_active_tool_ids['screen'];
 				var active_screen_uri = tool_objects[active_screen_tool_id]['tool_uri'];
 			}
+			
+			// for the api explorer
+			var this_called_via_uri = this['called_via_uri'];
 
 			// fetch the data and see if we need to authenticate
 			// notice that these tools simply work on GET params, no POST, and those
@@ -223,7 +226,7 @@ function Tool (tool_attributes) {
 				// how to do this via API
 				if (api_explorer_mode == 1) {
 					open_api_explorer_modal({
-						'uri':this['called_via_uri']+'/send_json_data',
+						'uri':this_called_via_uri+'/send_json_data',
 						'post_parameters': {},
 						'results_data': data,
 						'tool_name': this['name'],

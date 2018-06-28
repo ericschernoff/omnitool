@@ -41,8 +41,9 @@
 	handled with user-managed API keys.
 
 	<br/><br/>
-	<a class="btn btn-sm btn-white" href="/[%system_uri_base%]#/tools/user_api_keys" target="_blank">Click to get more info, 
-	see example code, and to provision your API keys.</a>
+	<a class="btn btn-sm btn-white" href="/[%system_uri_base%]#/tools/user_api_keys" target="_blank">
+		Click to see sample code, and to provision your API keys.
+	</a>
 
 	<br/><br/>
 	Contact <a href="mailto:[%instance_contact_email%]">[%instance_contact_email%]</a> for access to the staging/dev systems, and to extend your API keys to multiple IP addresses.
