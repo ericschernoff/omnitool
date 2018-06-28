@@ -122,6 +122,7 @@ function Tool (tool_attributes) {
 			var this_tool_type_short = this['tool_type_short'];
 			var this_tool_div = this['tool_div'];
 			var this_tool_id = this['the_tool_id'];
+			var this_tool_type = this['tool_type'];
 			var this_javascript_class = this['javascript_class'];
 
 			$.when( query_tool(this['tool_uri'] + '/send_html',{}) ).done(function(tool_html) {
