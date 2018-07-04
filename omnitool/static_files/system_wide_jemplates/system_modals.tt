@@ -34,6 +34,9 @@
 		Loading Terms of Service...
 	</div>
 	
+[% ELSIF lock_timeout_warning %]
+	[% PROCESS lock_timeout_warning %]	
+	
 [% ELSIF api_info %]
 
 	All of this systems's features are available via API calls.  Client programs must send
@@ -106,7 +109,11 @@
 	
 	<h4>JSON Results Returned</h4>
 
-	<pre>[% results_data_string %]</pre>
+	<button class="clipboard_copier btn btn-sm btn-white" data-clipboard-target="#api_explorer_json_results">
+		Copy JSON to Clipboard
+	</button>
+
+	<pre id="api_explorer_json_results">[% results_data_string %]</pre>
 
 	
 [%# if they do this, they are likely going to cram existing HTML in there %]
@@ -351,3 +358,23 @@
 	<div class="clearfix"></div>
 [% END %]
 
+[%# warning / last-chance modal for an expired lock %]
+[% BLOCK lock_timeout_warning %]
+	[% IF altcode == '' %]
+		[% SET altcode = 'this record' %]
+	[% END %]
+	<div class="col-sm-8 col-sm-offset-2 align-center h4">
+		Your Lock for [%altcode%] is Expiring.
+		<br/><br/>
+		<button class="btn btn-success btn-md" onclick="tool_objects['[%this_tool_id%]'].extend_data_lock('[%parent_timer_element_id%]', [%parent_timer_original_seconds%], '[%return_link_uri%]')" data-dismiss="modal">
+			Click Here to Extend Your Lock and Continue Working
+		</button>
+		<br/><br/>
+		<button class="btn btn-white btn-md" onclick="location.hash='[%return_link_uri%]'" data-dismiss="modal">
+			Or Click Here to Discard Your Changes and Return
+		</button>
+		<br/><br/>
+		You Have <span id="[%parent_timer_element_id%]_final" class="bigger-120"></span> to choose before the lock expires.
+	</div>
+	<div class="clearfix"></div>
+[% END %]

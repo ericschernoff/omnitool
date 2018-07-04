@@ -323,13 +323,18 @@ function post_data_fetch_operations (data) {
 
 	// enable any pop-overs that were just loaded up
 	enable_popovers();
-
+	
 	// attach the sent altcode/data_code to the tool, for possible un-locking purposes -- and maybe refreshing that targeted record
- 	if (data.data_code) {
+	if (data.altcode) {
+		tool_objects[data.the_tool_id]['current_altcode'] = data.altcode;
+	} else {
+		tool_objects[data.the_tool_id]['current_altcode'] = 'none';
+	}
+	if (data.data_code) {
 		tool_objects[data.the_tool_id]['current_data_code'] = data.data_code;
 	} else {
 		tool_objects[data.the_tool_id]['current_data_code'] = 'none';
-	}
+	}	
  	
 	// reveal the 'return to tool' link, if one was provided
 	$('.return_link').hide();
@@ -554,7 +559,6 @@ function post_data_fetch_operations (data) {
 	var timer_home_element_id = data.the_tool_id + '_countdown_area';
 	// proceed if we are a locking tool, the countdown is there & we have a return link -- also, not 'create a tool' as that will have 'lock_lifetime' as form param
 	if (data.the_tool_id != '1_1_16_1' && data.lock_lifetime && $('#'+timer_element_id).length && data.return_link_uri != undefined) {
-		$('#'+timer_home_element_id).show(); // just in case it was hidden
 
 		// how many seconds to run? default to 'lock_lifetime'
 		if (data.lock_lifetime) {
@@ -562,14 +566,10 @@ function post_data_fetch_operations (data) {
 		} else { // default to five minutes
 			var countdown_seconds = 300;
 		}
+		
+		// use the countdown timer routines in the Tool object for this timer
+		tool_objects[data.the_tool_id].start_lock_countdown(countdown_seconds, data.return_link_uri);
 
-		// create the countdown with jquery.countdown.js
-		$('#'+timer_element_id).countdown(new Date(new Date().valueOf() + countdown_seconds * 1000), function(event) {
-			$(this).html(event.strftime('%M:%S'));
-			if (event.type == 'finish') {
-				location.hash = data.return_link_uri;
-			}
-		});
 
 	// otherwise, hide the countdown area if it exists
 	} else if ($('#'+timer_home_element_id).length) {
@@ -996,11 +996,21 @@ function open_system_modal (data) {
 	jemplate_bindings['system_modal'].process_json_data(data);
 
 	// then show it
-	$('#system_modal').modal({
+	$.when( $('#system_modal').modal({
 		backdrop: 'static',
 		keyboard: true
+	}) ).done(function() {
+		// if this is the extend-lock modal, don't let them close it with the Escape key
+		if (data.lock_timeout_warning == 1) {
+			$('#system_modal').data('bs.modal').options.keyboard = false;
+			$('#system_modal').off('keydown.dismiss.bs.modal');
+		} else {
+			$('#system_modal').data('bs.modal').options.keyboard = true;
+			$('#system_modal').data('bs.modal').escape();
+		}
+	
+		loading_modal_display('hide');
 	});
-	loading_modal_display('hide');
 }
 
 // method to display the terms of service; accessed via username drop-down in UI

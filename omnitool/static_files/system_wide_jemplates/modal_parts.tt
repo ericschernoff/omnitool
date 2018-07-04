@@ -15,7 +15,7 @@
 		<div class="modal-header">
 			<div class="table-header">
 			[% IF return_link_uri %]
-				<button type="button" class="close" onclick="location.hash='[%return_link_uri%]'" aria-hidden="true">
+				<button type="button" class="close" onclick="location.href='[%return_link_uri%]'" aria-hidden="true" data-dismiss="modal">
 			[% ELSIF the_tool_id %]
 				<button type="button" class="close" onclick="tool_objects['[%the_tool_id%]'].close_modal_for_screen(1);" aria-hidden="true">
 			[% ELSE %]
@@ -50,10 +50,10 @@
 	[% IF no_close_button == '' %]
 		<div class="modal-footer no-margin-top">
 			[% IF return_link_uri %]
-				<a class="btn btn-sm btn-danger pull-right" href="[%return_link_uri%]">
-					<i class="ace-icon fa fa-times"></i>
-					Close
-				</a>
+				<button class="btn btn-sm btn-danger pull-right" onclick="location.href='[%return_link_uri%]'" data-dismiss="modal">
+ 					<i class="ace-icon fa fa-times"></i>
+ 					Close
+				</button>
 			[% ELSIF the_tool_id %]
 				<button class="btn btn-sm btn-danger pull-right" onclick="tool_objects['[%the_tool_id%]'].close_modal_for_screen(1);">
 					<i class="ace-icon fa fa-times"></i>

@@ -816,7 +816,7 @@ sub mr_zebra {
 		if ($content =~ /^(ERROR|Execution failed)/ && $self->{response}->status() eq '200') {
 			$self->{response}->status(500);
 		}
-		if ($content_filename) {
+		if ($content_filename && $content_type !~ /^image/) {
 			$self->{response}->header('Content-Disposition' => 'attachment; filename="'.$content_filename.'"');
 		}
 		$self->{response}->body($content);

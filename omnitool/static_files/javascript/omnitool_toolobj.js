@@ -1164,4 +1164,89 @@ function Tool (tool_attributes) {
 			$( "#"+this['tool_div'] ).remove();
 		}
 	}
+
+	/* START LOCK COUNTDOWN TIMERS */
+	
+	// function to start the main countdown timer for their data lock; when this one expires, they get
+	// a two-minute warning before they lose their work
+	// must be called from post_data_fetch_operations with the number of seconds for the lock plus 
+	// the return_link_uri when/if the lock expires
+	this.start_lock_countdown = function (countdown_seconds,return_link_uri ) {
+		var timer_element_id = this['the_tool_id'] + '_countdown';
+		var timer_home_element_id = this['the_tool_id'] + '_countdown_area';
+
+		// show the countdown area in case it was hidden
+		$('#'+timer_home_element_id).show(); 
+		
+		// we need the object inside that callback
+		var _this = this;
+		
+		// create the countdown with jquery.countdown.js
+		$('#'+timer_element_id).countdown(new Date(new Date().valueOf() + countdown_seconds * 1000), function(event) {
+			$(this).html(event.strftime('%M:%S'));
+			if (event.type == 'finish') {
+				// location.hash = data.return_link_uri;
+				_this.lock_timeout_warning ({
+					timer_element_id: timer_element_id,	
+					timer_original_seconds: countdown_seconds,
+					return_link_uri: return_link_uri,
+				});
+			}
+		});
+	}
+
+	// method to handle lock-expiration timeout warning modal
+	// will open a modal giving them two minutes to extend the lock and continue
+	this.lock_timeout_warning = function (args) {
+		// args contains timer_element_id, timer_original_seconds, and return_uri
+		$.when(
+			open_system_modal({
+				lock_timeout_warning: 1,
+				modal_title_icon: 'fa-lock',
+				modal_title:  'Data Lock Expired',
+				parent_timer_element_id: args.timer_element_id,
+				parent_timer_original_seconds: args.timer_original_seconds,
+				return_link_uri: args.return_link_uri,
+				this_tool_id: this['the_tool_id'],
+				altcode: this['current_altcode'],
+			})
+		 ).done(function() {
+			// once that modal is open, set the two-minute timer before the page just expires
+			$('#'+args.timer_element_id+'_final').countdown(new Date(new Date().valueOf() + 120000), function(event) {
+				$(this).html(event.strftime('%M:%S'));
+				if (event.type == 'finish') {
+					$(this).closest('.modal').modal('hide');
+					location.href = args.return_link_uri;
+				}
+			});
+		});
+	 }
+
+	// routine to allow them to extend a data lock and continue working
+	this.extend_data_lock = function (timer_element_id, timer_original_seconds, return_link_uri) {
+		// tell tool::action_tool to extend the lock time for us
+		$.when( 
+			query_tool(
+				this['tool_uri'] + '/extend_lock',
+				{
+					altcode: this['current_altcode'],
+					extend_lock_seconds: timer_original_seconds
+				}
+			) 
+		).done(function() {
+			// then restart the timer
+			$('#'+timer_element_id).countdown(new Date(new Date().valueOf() + timer_original_seconds * 1000), function(event) {
+				$(this).html(event.strftime('%M:%S'));
+				if (event.type == 'finish') {
+					// location.hash = data.return_link_uri;
+					lock_timeout_warning ({
+						timer_element_id: timer_element_id,	
+						timer_original_seconds: timer_original_seconds,
+						return_uri: return_link_uri,
+					});
+				}
+			});
+		});
+	}
+
 } // end Tool()

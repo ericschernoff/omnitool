@@ -157,7 +157,7 @@ sub run_action {
 	if ($self->{attributes}{is_locking} eq 'Yes' && $data_code) {
 		$lock_result = $self->{omniclass_object}->lock_data(
 			'data_code' => $data_code,
-			'lifetime' => $self->{attributes}{lock_lifetime}
+			'lifetime' => $self->{attributes}{lock_lifetime} + 2
 		);
 		# if it failed to lock, we need to error-out with the problem message
 		if (!$lock_result) { # get the user who has it, and how long
@@ -403,6 +403,29 @@ sub unlock_data {
 		return qq{Error: No data ID / altcode sent.};
 	}
 }
+
+# uitlity method to extend the lock on this data, to allow them to continue their case updates forever
+sub extend_lock {
+	my $self = shift;
+	
+	# we need the omniclass object
+	$self->get_omniclass_object( 'dt' => $self->{target_datatype} );	
+	
+	# translate that altcode to a data-code
+	my $data_code = $self->{omniclass_object}->altcode_to_data_code( $self->{luggage}{params}{altcode} );
+	
+	# extend the lock out and pad the lock by three minutes to accomodate the transfer and the 'lock warning routine'
+	my $lock_result = $self->{omniclass_object}->lock_data(
+		'data_code' => $data_code,
+		'lifetime' => int($self->{luggage}{params}{extend_lock_seconds}/60) + 3,
+	);
+		
+	return {
+		'message' => 'Lock was extended.'
+	}
+
+}
+
 
 # utility method to retrieve and pack-up the inline actions information; please see notes towards
 # the end of run_action(); this is a two-step process right now, but no need to repeat ourselves
