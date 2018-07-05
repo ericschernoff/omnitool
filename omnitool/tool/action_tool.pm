@@ -270,9 +270,11 @@ sub run_action {
 	$self->{json_results}{title} ||= $self->{attributes}{name};
 
 	# this plays into all kinds of javascript, plus it's a comforting presence in the JSON results
-	$self->{json_results}{altcode} ||= $self->{display_options}{altcode};
-	$self->{json_results}{data_code} ||= $self->{omniclass_object}->{data_code};
-
+	if (!$self->{skip_primary_record}) { # some tools won't want this for the refreshes
+		$self->{json_results}{altcode} ||= $self->{display_options}{altcode};
+		$self->{json_results}{data_code} ||= $self->{omniclass_object}->{data_code};
+	}
+	
 	# support the modal mode by default
 	$self->{json_results}{modal_title} = $self->{json_results}{title};
 	$self->{json_results}{modal_title_icon} = $self->{attributes}{icon_fa_glyph};

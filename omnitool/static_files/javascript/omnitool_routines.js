@@ -750,9 +750,14 @@ function omnitool_controller (event,target_tool_uri) {
 			} else if (tool_uri.match('tool_mode')) { // changing tool mode; reload the jemplate
 				jemplate_bindings[ tool_objects[the_tool_id]['tool_display_div'] ].load_jemplate();
 
-			} else { // basically just need to re-load the JSON feed, since they almost certainly changed the data-id arg
+			// re-opening modals are fairly straight-forward
+			} else if (tool_objects[the_tool_id]['tool_type_short'] == 'modal') {
+				tool_objects[the_tool_id].load_tool();
+
+			// screens have a lot of caveats
+			} else if (tool_objects[the_tool_id]['tool_type_short'] == 'screen') { // basically just need to re-load the JSON feed, since they almost certainly changed the data-id arg
 				// if it's a screen tool, and has a setting for 'single_record_jemplate_block', then just refresh the target
-				if (tool_objects[the_tool_id]['tool_type_short'] == 'screen' && tool_objects[the_tool_id]['single_record_jemplate_block'] != undefined && tool_objects[the_tool_id]['single_record_jemplate_block'] != 0) {
+				if (tool_objects[the_tool_id]['single_record_jemplate_block'] != undefined && tool_objects[the_tool_id]['single_record_jemplate_block'] != 0) {
 
 					// if there was a current altcode for the outgoing tool, refresh that record
 					if (tool_objects[outgoing_tool_id] != undefined && tool_objects[outgoing_tool_id]['current_altcode'] != undefined && tool_objects[outgoing_tool_id]['current_altcode'] != 'none') {
@@ -774,7 +779,7 @@ function omnitool_controller (event,target_tool_uri) {
 						});
 					}
 
-				// and if it's not a screen with a single_record_jemplate_block, just reload all the displayed results for this tool
+				// and if it's a screen without a single_record_jemplate_block, just reload all the displayed results for this tool
 				} else {
 					// first reload the tool_controls, in case the keyword changed
 					$.when( tool_objects[the_tool_id].reload_tool_controls() ).done(function() {

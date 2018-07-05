@@ -339,7 +339,7 @@ function Tool (tool_attributes) {
 					});
 
 				// support silent refreshing for action screens -- probably view details mostly
-				} else if (this['tool_type'].match(/Action/)) {
+				} else if (this['tool_type'].match(/Action/) && this['current_data_code'] != undefined  && this['current_data_code'] != 'none') {
 					$.when( query_tool(the_url, { timestamp: this['response_epoch'], records_keys: this['current_data_code'] }) ).done(function(json_data) {
 						_this['response_epoch'] = json_data.response_epoch;
 						if (json_data.updated_keys[0]) {
