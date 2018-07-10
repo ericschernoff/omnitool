@@ -685,6 +685,10 @@ function Tool (tool_attributes) {
 				uri_base: uri_base,
 				client_connection_id: client_connection_id
 			},
+			error: function(xhr, status, error) {
+				var is_error = check_for_errors(xhr.responseText);
+				return false;
+			},
 			success: function(json_data, textStatus, jqXHR) {
 				// make the json uri no longer active
 				active_queries[this_tool_json_uri] -= 1;
@@ -1198,6 +1202,11 @@ function Tool (tool_attributes) {
 	// method to handle lock-expiration timeout warning modal
 	// will open a modal giving them two minutes to extend the lock and continue
 	this.lock_timeout_warning = function (args) {
+		// do not do this if the form was submitted and we are now in details mode
+		if ( $('#'+args.timer_element_id).is(':hidden') || $('#'+args.timer_element_id).length == undefined ) {
+			return;
+		}
+
 		// args contains timer_element_id, timer_original_seconds, and return_uri
 		$.when(
 			open_system_modal({

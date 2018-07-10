@@ -196,6 +196,11 @@ sub do_create {
 	# determine the new 'data_code' primary key
 	$data_code = $self->{db}->{last_insert_id}.'_'.$self->{server_id};
 
+	# fail out if there was a problem with the insert, rather than make a mess
+	if (!$self->{db}->{last_insert_id}) {
+		$self->{belt}->mr_zebra(qq{Data create failed.},1);
+	}
+
 	# constructing the metainfo record is a bit more dynamic, and probably confusing
 	# and we can skip it if the datatype does not want metainfo
 	if ($self->{datatype_info}{skip_metainfo} ne 'Yes') {

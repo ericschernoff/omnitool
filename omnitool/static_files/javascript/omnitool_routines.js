@@ -957,6 +957,10 @@ function query_tool (tool_uri,post_data_object) {
 
 // function to check the results of a query to the server, and alert the user as needed
 function check_for_errors (response) {
+	if (response == undefined) { // nothing to do here
+		return 0;
+	}	
+
 	// did it indicate they need to log in?
 	if (typeof response == 'string' &&  response == 'Authentication needed.') { // send them to login page
 		location.reload();
