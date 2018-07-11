@@ -4,7 +4,7 @@
 [% PROCESS modal_head %]
 
 [% IF fatal_error_message %]
-	OmniTool attempted to complete your request, but received the following
+	[%	instance_title %] attempted to complete your request, but received the following
 	message:
 	<div id="fatal_error_message" class="h5 red">
 		[% fatal_error_message %]
@@ -13,6 +13,10 @@
 		<a href="mailto:[%instance_contact_email%]?subject=OmniTool%20Fatal%20Error%20Report&body=[%fatal_error_message_encoded%]" id="fatal_error_report_link">Please report this error,</a>
 		especially if it persists.  You can close this notice and attempt another action,
 		though we do recommend reloading the page prior to proceeding.
+	[% ELSIF timeout_error %]
+		If this timeout persists for more than a few minutes, 
+		<a href="mailto:[%instance_contact_email%]?subject=OmniTool%20Timeout%20Report" id="fatal_error_report_link">please report this error.</a>
+		You can close this notice and attempt another action.
 	[% END %]
 
 [% ELSIF bookmark_mode %]

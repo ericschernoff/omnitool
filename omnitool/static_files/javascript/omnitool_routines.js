@@ -966,12 +966,28 @@ function check_for_errors (response) {
 		location.reload();
 		return 1; // indicate error is found
 
+	// did the request timeout?
+	} else if ( typeof response == 'string' && response.match(/Execution failed due to timeout/) ) { // show the error
+		var data = {
+			modal_title_icon: 'fa-clock',
+			modal_title:  'Request Timed Out',
+			instance_contact_email: instance_contact_email,
+			instance_title: instance_title,
+			fatal_error_message: 'Your request has timed-out.  Please adjust your parameters and re-submit.',
+			simple_error: 1,
+			timeout_error: 1,
+			is_maintenance: response.match(/Execution/), // this works the opposite of how you'd expect
+		};
+		open_system_modal(data);
+		return 1; // indicate error is found
+
 	// did it receive a fatal error notice?  or maybe a 'undergoing maintenance' notice
 	} else if ( typeof response == 'string' && response.match(/Execution failed|undergoing maintenance/) ) { // show the error
 		var data = {
 			modal_title_icon: 'fa-exclamation-circle',
 			modal_title:  'Action Could Not Be Completed',
 			instance_contact_email: instance_contact_email,
+			instance_title: instance_title,
 			fatal_error_message: response,
 			fatal_error_message_encoded: encodeURIComponent(response),
 			is_maintenance: response.match(/Execution/), // this works the opposite of how you'd expect
