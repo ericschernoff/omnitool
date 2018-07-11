@@ -624,10 +624,10 @@ sub json_to_perl {
 sub logger {
 	my $self = shift;
 
-	# takes two args: the message itself (required), the log_type (optional, one word),
-	my ($log_message,$log_type) = @_;
-	# maybe in the future, we will offer an optional logs directory, but for now, let's keep it simple
-
+	# takes three args: the message itself (required), the log_type (optional, one word),
+	# and an optional logs location/directory
+	my ($log_message,$log_type,$log_directory) = @_;
+	
 	# return if no message sent; no point
 	return if !$log_message;
 
@@ -646,8 +646,12 @@ sub logger {
 	$current_time = $self->time_to_date($now,'to_datetime_iso','utc');
 		$current_time =~ s/\s//g; # no spaces
 
-	# target log file
-	$log_file = $ENV{OTHOME}.'/log/'.$log_type.'-'.$todays_date.'.log';
+	# target log file - did they provide a target log_directory?
+	if ($log_directory && -d $log_directory) { # yes
+		$log_file = $log_directory.'/'.$log_type.'-'.$todays_date.'.log';
+	} else { # nope, take default
+		$log_file = $ENV{OTHOME}.'/log/'.$log_type.'-'.$todays_date.'.log';
+	}
 
 	# sometimes time() adds a \n
 	$log_message =~ s/\n//;
@@ -1546,6 +1550,9 @@ If $log_type is left blank, it will default to 'errors'.
 
 Bonus: If you send a hashref or arrayref, it will be logged-out via Data::Dumper(), but please
 just use that for testing your apps, not in real-world logging.
+
+You can send a third argument, a target logs directory if you want to send this log somewhere 
+other than $ENV{OTHOME}/logs.  This new directory must exist in the system.
 
 =head2 month_name_list()
 
