@@ -88,7 +88,7 @@ sub add_task {
 
 	# in most cases, we need to avoid duplicate tasks scheduled in the future for the same record
 	# pass a 'duplicates_are_ok' argument to avoid this
-	if ($args{data_code} && !$args{duplicates_are_ok}) {	
+	if ($args{data_code} && !$args{duplicates_are_ok}) {
 		my ($tasks,$tkeys) = $self->retrieve_task_details(
 			'target_datatype' => $self->{dt},
 			'altcode' => $this_altcode,
@@ -100,7 +100,7 @@ sub add_task {
 		}
 	}
 
-		
+
 	# now add it in to our background_tasks table
 	$self->{db}->do_sql(
 		'insert into '.$self->{database_name}.'.background_tasks'.
@@ -126,12 +126,14 @@ sub cancel_task {
 		$self->{belt}->logger('ERROR: No task sent to cancel_task()','task_errors');
 		return;
 	}
+	
 
 	# do the update
+	my ($code,$server_id) = split /_/, $cancel_task_id;
 	$self->{db}->do_sql(
 		'update '.$self->{database_name}.'.background_tasks'.
-		qq{ set status='Cancelled' where concat(code,'_',server_id)=?},
-		[$cancel_task_id]
+		qq{ set status='Cancelled' where code=? and server_id=?},
+		[$code, $server_id]
 	);
 
 	# success!
@@ -220,7 +222,7 @@ sub retrieve_task_details {
 	#	'altcode' => $record_altcode, # optional: use to limit to tasks for one record
 	#	'method' => $method_name, # optional: use to limit to tasks by name of method to run
 	#	'run_status' => 'will_run', 'will_be_run', 'has_run', 'running', or 'error'
-	# 						# leave blank for all; 'will_run' indicates running or future tasks, 
+	# 						# leave blank for all; 'will_run' indicates running or future tasks,
 	#						# 'will_be_run' for only future tasks
 	#						# 'has_run' indicates Completed/Cancelled/Error tasks
 	#	'update_time_age' => $number_of_seconds, # optional, use to find tasks that have been (attempted to)
@@ -324,10 +326,11 @@ sub task_status {
 	}
 
 	# get the current status either way
+	my ($code,$server_id) = split /_/, $task_id;
 	($current_task_status) = $self->{db}->quick_select(
 		'select status from '.$self->{database_name}.'.background_tasks'.
-		qq{ where concat(code,'_',server_id)=?},
-		[$task_id]
+		qq{ where code=? and server_id=?},
+		[$code,$server_id]
 	);
 
 	# new status?
@@ -338,9 +341,9 @@ sub task_status {
 				'update '.$self->{database_name}.'.background_tasks'.
 				qq{
 					set run_seconds=(unix_timestamp() - update_time)
-					where concat(code,'_',server_id)=?
+					where code=? and server_id=?
 				},
-				[$task_id]
+				[$code,$server_id]
 			);
 		}
 
@@ -349,9 +352,9 @@ sub task_status {
 			'update '.$self->{database_name}.'.background_tasks'.
 			qq{
 				set status=?, error_message=?, update_time=unix_timestamp()
-				where concat(code,'_',server_id)=?
+				where code=? and server_id=?
 			},
-			[$new_status, $error_message, $task_id]
+			[$new_status, $error_message, $code, $server_id]
 		);
 
 		# if setting to 'Running,' mark down the worker_id and process pid
@@ -361,9 +364,9 @@ sub task_status {
 				'update '.$self->{database_name}.'.background_tasks'.
 				qq{
 					set worker_id=?, process_pid=?
-					where concat(code,'_',server_id)=?
+					where code=? and server_id=?
 				},
-				[$ENV{WORKER_ID}, $$, $task_id]
+				[$ENV{WORKER_ID}, $$, $code, $server_id]
 			);
 		}
 
@@ -391,13 +394,14 @@ sub start_now {
 	}
 
 	# very straight-forward
+	my ($code,$server_id) = split /_/, $task_id;
 	$self->{db}->do_sql(
 		'update '.$self->{database_name}.'.background_tasks'.
 		qq{
 			set not_before_time=unix_timestamp(), update_time=unix_timestamp()
-			where concat(code,'_',server_id)=?
+			where code=? and server_id=?
 		},
-		[$task_id]
+		[$code,$server_id]
 	);
 
 	# done, not real need to return
@@ -413,7 +417,7 @@ sub do_task {
 	my ($task_id) = @_;
 
 	# declare our vars
-	my ($status_change, $auto_retried, $human_time, $result, $method, $now, $data_code, $args_hash, $arguments, $status_message, $pause_background_tasks, $username);
+	my ($code,$server_id, $status_change, $auto_retried, $human_time, $result, $method, $now, $data_code, $args_hash, $arguments, $status_message, $pause_background_tasks, $username);
 
 	# first things first, make sure that background tasks are not paused for this instance
 	($pause_background_tasks) = $self->{db}->quick_select(qq{
@@ -424,11 +428,11 @@ sub do_task {
 
 	# if they sent a task ID, pull out that one
 	if ($task_id =~ /\d/) {
-
-		($method,$data_code,$username,$args_hash, $auto_retried) = $self->{db}->quick_select(
+		($code,$server_id) = split /_/, $task_id;
+		($method,$data_code,$username, $args_hash, $auto_retried) = $self->{db}->quick_select(
 			'select method, data_code, username, args_hash, auto_retried from '.$self->{database_name}.'.background_tasks'.
-			qq{ where concat(code,'_',server_id)=?},
-			[$task_id]
+			qq{ where code=? and server_id=?},
+			[$code,$server_id]
 		);
 
 		# exit out if none found
@@ -465,7 +469,7 @@ sub do_task {
 			},
 			[$$, $ENV{WORKER_ID}, $self->{dt}]
 		);
-				
+
 		# see if that update matched any logic
 		#($task_id) = $self->{db}->quick_select('select @found_task_id');
 		($task_id) = $self->{db}->quick_select(qq{
@@ -478,10 +482,11 @@ sub do_task {
 		return 'None found' if !$task_id;
 
 		# now we should be safe to get the details for that task
+		($code,$server_id) = split /_/, $task_id;
 		($method,$data_code,$username,$args_hash,$auto_retried) = $self->{db}->quick_select(
 			qq{select method, data_code, username, args_hash, auto_retried from }.$self->{database_name}.'.background_tasks'.
-				qq{ where concat(code,'_',server_id)=?},
-			[$task_id]
+				qq{ where code=? and server_id=?},
+			[$code,$server_id]
 		);
 	}
 
@@ -573,7 +578,9 @@ sub do_task {
 		# noodle out the meaningful status message
 		($status_message = $result) =~ s/^ERROR: //;
 		$result = 'Error';
-		$do_auto_retry = 0; # no reason to try this
+		# i used to not re-try these, but sometimes you deploy broken code, and maybe
+		# this will start working again in an hour
+		$do_auto_retry = 1; # no reason to try this
 	}
 
 	# print "$result - $status_message - $task_id\n";
@@ -605,9 +612,9 @@ sub do_task {
 				'update '.$self->{database_name}.'.background_tasks '.
 				qq{
 					set status='Retry', auto_retried=1, not_before_time=?
-					where concat(code,'_',server_id)=?
+					where code=? and server_id=?
 				},
-				[$not_before_time, $task_id]
+				[$not_before_time, $code, $server_id]
 			);
 
 		# otherwise, let's mark the item as error
@@ -626,12 +633,12 @@ sub do_task {
 	$self->clear_records();
 
 	# little house-keeping: no more than every 100 seconds, clear any tasks
-	# in this database which are completed for longer than 30 days
+	# in this database which are older than 45 days; leave the errors in case we need to exaimine them
 	$now = time();
 	if ($now =~ /10$/) {
 		$self->{db}->do_sql(
 			'delete from '.$self->{database_name}.'.background_tasks '.
-			qq{where update_time < (unix_timestamp()-2592000) and status='Completed'}
+			qq{where update_time < (unix_timestamp()-3888000) and status !='Error'}
 		);
 	}
 

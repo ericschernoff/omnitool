@@ -124,7 +124,10 @@ sub execute_method {
 	my ($the_output, $run_method);
 
 	# load-up, set-up, and re-save the display options
-	$self->load_display_options();
+	# but only if we have a valid / true / ot6-generated client_connectio_id
+	if ($self->{display_options_key} =~ /$self->{luggage}{username}/ && length($self->{display_options_key}) > 20) {
+		$self->load_display_options();
+	}
 
 	# run the desired method, if it exists
 	$run_method = $self->{run_method};
@@ -140,8 +143,10 @@ sub execute_method {
 		$self->clear_display_options_hash();
 	# otherwise, re-save the display config for future executes, in case we modified those during the run_method
 	} else {
-
-		$self->save_display_options_hash($self->{luggage}{params}{saved_name});
+		# again, only if we have a valid / true / ot6-generated client_connectio_id
+		if ($self->{display_options_key} =~ /$self->{luggage}{username}/ && length($self->{display_options_key}) > 20) {
+			$self->save_display_options_hash($self->{luggage}{params}{saved_name});
+		}
 	}
 
 	# return our work product to the dispatcher

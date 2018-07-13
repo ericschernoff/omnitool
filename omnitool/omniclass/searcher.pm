@@ -370,18 +370,9 @@ sub search {
 
 	# OK, do they want to auto-load the search results
 	if ($args{auto_load} || $args{simple_query_mode}) { # yep, proceed
-		$self->load(
-			'data_codes' => $self->{search_results},
-			'do_clear' => $args{do_clear},
-			'skip_hooks' => $args{skip_hooks},
-			'sort_column' => $args{sort_column},
-			'sort_direction' => $args{sort_direction},
-			'complex_sorting' => $args{complex_sorting},
-			'skip_metainfo' => $args{skip_metainfo},
-			'load_fields' => $args{load_fields},
-			'simple_query_mode' => $args{simple_query_mode},
-			'load_records_limit' => $args{load_records_limit},
-		);
+		# have to transfer in all the args they sent
+		$args{data_codes} = $self->{search_results};
+		$self->load(%args);
 		$args{already_loaded} = 1; # for below
 
 		# $self->{belt}->benchmarker('OmniClass AutoLoad Done for '.$self->{table_name});
