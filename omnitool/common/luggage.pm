@@ -77,7 +77,7 @@ sub pack_luggage {
 	if ($args{uri}) { # sent via args
 		$$luggage{uri} = $args{uri};
 	} elsif ($args{request}) { # in PSGI world
-		$$luggage{uri} = $args{request}->request_uri();
+		$$luggage{uri} = $args{request}->path_info();
 
 		# handy to have the whole url
 		$$luggage{complete_url} = 'https://'.$args{request}->env->{HTTP_HOST}.$args{request}->request_uri();
@@ -475,7 +475,7 @@ When returned, %$luggage data-structure will contain:
 	- $$luggage{params} -> the 'arguments' provided by the client.  Will generally be
 		the PSGI params and env info provided by Plack.
 
-	- $$luggage{uri} = The REQUEST_URI value from Plack
+	- $$luggage{uri} = The PATH_INFO value from Plack
 
 	- $$luggage{url} = The full URL, with hostname, from Plack
 

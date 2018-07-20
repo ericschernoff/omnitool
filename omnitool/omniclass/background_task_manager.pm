@@ -514,8 +514,9 @@ sub do_task {
 	if ($data_code) {
 		$$arguments{data_code} = $data_code;
 
-		# and load up the target record
-		$self->load( 'data_codes' => [$data_code] );
+		# and load up the target record as the primary record
+		$self->set_primary_record($data_code);
+
 	}
 
 	# if there is a for-username (which is likely if triggered via the web) and it's
