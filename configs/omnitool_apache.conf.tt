@@ -45,7 +45,7 @@ DocumentRoot "[%options.othome%]/htdocs"
 </Files>
 
 # get ready to run SSL, which for some dumbass reason, has to be invoked in the vhost
-Listen 443
+Listen 443  # you may need to take this out for Ubuntu 18.04
 SSLPassPhraseDialog builtin
 SSLSessionCache shmcb:[%options.othome%]/logs/ssl_cache_shmcb
 SSLSessionCacheTimeout 600
@@ -53,7 +53,7 @@ SSLVerifyClient none
 SSLProxyEngine off
 
 ####
-# OMNITOOL 6.0 VIRTUAL HOST
+# OMNITOOL 6.x VIRTUAL HOST
 ###
 
 <VirtualHost *:443>
