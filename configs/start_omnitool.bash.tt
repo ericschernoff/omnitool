@@ -1,16 +1,16 @@
 #!/bin/bash
-# Script to control the OmniTool 6 application server via Plack / Starman
+# Script to control the OmniTool 6 application server via Plack / Gazelle
 #
 # Usage:
 #	start_omnitool.bash start
-#		- Starts the Starman / Plack server against main.psgi
+#		- Starts the Gazelle / Plack server against main.psgi
 #
 #	start_omnitool.bash restart
-#		- Gracefully starts and stops the Starman / Plack server
+#		- Gracefully starts and stops the Gazelle / Plack server
 #		- Used to load in new code changes
 #
 #	start_omnitool.bash stop
-#		- Stops the Starman / Plack server
+#		- Stops the Gazelle / Plack server
 #		- OmniTool will stop working
 #
 # 	Add 'prod' as a second argument to start 100 worker threads
@@ -65,17 +65,17 @@ esac
 case "$1" in
 	start)
 		echo "Starting OT6"
-		/usr/local/bin/start_server --enable-auto-restart --auto-restart-interval=300 --port=$HOSTPORT --dir=$OTHOME/code/omnitool --log-file="| /usr/bin/rotatelogs $OTHOME/log/starman.log 86400" --daemonize --pid-file=$OTHOME/log/starman.pid -- /usr/local/bin/plackup -s Starman --max-workers=$WORKERS -E deployment main.psgi
+		/usr/local/bin/start_server --enable-auto-restart --auto-restart-interval=300 --port=$HOSTPORT --dir=$OTHOME/code/omnitool --log-file="| /usr/bin/rotatelogs $OTHOME/log/omnitool.log 86400" --daemonize --pid-file=$OTHOME/log/omnitool.pid -- /usr/local/bin/plackup -s Gazelle --max-workers=$WORKERS -E deployment main.psgi
 	;;
 	stop)
-		OT_PID=$(<$OTHOME/log/starman.pid)
+		OT_PID=$(<$OTHOME/log/omnitool.pid)
 		kill -s TERM $OT_PID
-		echo "Stopped OmniTool App Server (Starman)"
+		echo "Stopped OmniTool App Server (Gazelle)"
 	;;
 	restart)
-		OT_PID=$(<$OTHOME/log/starman.pid)
+		OT_PID=$(<$OTHOME/log/omnitool.pid)
 		kill -s HUP $OT_PID
-		echo "Restarted OmniTool App Server (Starman)"
+		echo "Restarted OmniTool App Server (Gazelle)"
 	;;
 	*)
 		echo "Usage: start_omnitool.bash start|stop|restart"
