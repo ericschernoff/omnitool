@@ -112,7 +112,7 @@
 				</span>
 			</div>
 
-			<div id="ot_menubar_div" class="navbar-buttons navbar-header collapse navbar-collapse pull-right" role="navigation">
+			<div id="ot_menubar_div" class="navbar-buttons nav-collapse collapse pull-right" role="navigation">
 				<!-- site navigation -->
 				<ul class="nav ace-nav" id="ot_menubar">
 					<!-- nav-list: loading via ui_menu.tt -->
