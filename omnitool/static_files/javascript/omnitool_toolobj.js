@@ -1233,6 +1233,12 @@ function Tool (tool_attributes) {
 
 	// routine to allow them to extend a data lock and continue working
 	this.extend_data_lock = function (timer_element_id, timer_original_seconds, return_link_uri) {
+		// kill the warning timer
+		var final_timer_element_id = timer_element_id+'_final';
+		if ( $('#'+final_timer_element_id).is(':visible') && $('#'+final_timer_element_id).length) {
+			$('#'+final_timer_element_id).countdown("stop");
+		}
+
 		// tell tool::action_tool to extend the lock time for us
 		$.when( 
 			query_tool(
