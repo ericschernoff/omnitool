@@ -119,7 +119,7 @@
 				</ul><!-- /.nav-list -->
 			</div>
 
-			<div class="navbar-buttons pull-right navbar-header" role="navigation">
+			<div class="navbar-buttons pull-right navbar-header hidden-768" role="navigation">
 				<ul class="nav ace-nav">
 					<li class="transparent user-min" id="navbar_notification_area"></li>
 				</ul><!-- /.nav-list -->
