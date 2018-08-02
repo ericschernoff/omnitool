@@ -1206,6 +1206,9 @@ sub uniquify_list {
 	# grab arg
 	$list = $_[0];	# reference to un-sorted array full of duplicates
 
+	# back out if not an array
+	return [] if ref($list) ne 'ARRAY';
+
 	# stolen from perl cookbook, page 124
 	%seen = ();
 	@u_list = grep { ! $seen{$_} ++ } @$list;

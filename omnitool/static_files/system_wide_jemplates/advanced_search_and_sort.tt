@@ -125,7 +125,7 @@
 	<div class="widget-main">
 
 	This form allows you configure up to four fields and directions to sort your results.
-	Tip: Be sure to use the 'Bookmark / Share' menu to save your Search &amp; Sort options!
+	Tip: Be sure to use the 'Bookmarks' menu to save your Search &amp; Sort options!
 
 	<form class="form-horizontal" id="[%tool_and_instance%]_advanced_sort_form" action="[%form.target_url%]" method="post" role="form">
 

@@ -360,22 +360,33 @@ sub send_outbound_email {
 			$$emails_to_send{$email_key}{attached_files} =~ s/\s//gi; # no spaces
 
 			foreach $file_id (split /,/, $$emails_to_send{$email_key}{attached_files}) {
-				# they may be attaching files from another datatype, so make sure we have
-				# a file_manager object
-				if (!$self->{file_manager}) {
-					$self->{file_manager} = omnitool::common::file_manager->new(
-						'luggage' => $self->{luggage},
-						'db' => $self->{db},
-					);
-				}
+				# it could be a filename or an ID from our files database
+				if ($file_id =~ /[a-z]/i && -e "$file_id") { # live filename
+				
+					# very easy
+					$file_attachment = $file_id;
+				
+				# otherwise, we have retrieve via the file_manager
+				} else {
+					# they may be attaching files from another datatype, so make sure we have
+					# a file_manager object
+					if (!$self->{file_manager}) {
+						$self->{file_manager} = omnitool::common::file_manager->new(
+							'luggage' => $self->{luggage},
+							'db' => $self->{db},
+						);
+					}
 
-				# load file and its info; would prefer to do this just once above,
-				# but a bit afraid about making that work reliably
-				$file_contents = $self->{file_manager}->retrieve_file($file_id);
-				$file_info = $self->{file_manager}->load_file_info($file_id);
-				# save the file to temp
-				$file_attachment = $ENV{OTHOME}.'/tmp/'.$$file_info{filename};
-				write_file($file_attachment, ${$file_contents});
+					# load file and its info; would prefer to do this just once above,
+					# but a bit afraid about making that work reliably
+					$file_contents = $self->{file_manager}->retrieve_file($file_id);
+					$file_info = $self->{file_manager}->load_file_info($file_id);
+					# save the file to temp
+					$file_attachment = $ENV{OTHOME}.'/tmp/'.$$file_info{filename};
+					write_file($file_attachment, ${$file_contents});
+				}
+				
+				# attach the file
 				$mailer->attach_file($file_attachment);
 			}
 

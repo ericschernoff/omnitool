@@ -1632,9 +1632,12 @@ Here is how you queue a new outgoing email to send in the background:
 		'email_vars' => {}, # optional/recommended; extra variables to send into your email template.  If you are using the plain /
 			# pass-through non_template.tt, then put a glob of HTML into the 'message_body' key under here;
 			# this gets put into $self->{email_vars} for the template
-		'attached_files' => 'list,of,file,ids', # optional; a comma-separted list of primary keys from the stored_files DB table for
+		'attached_files' => 'list,of,file,ids,or,filepaths', # optional; a comma-separted list of either 
+			# (a) primary keys from the stored_files DB table for
 			# this app instance; those files get loaded up automatically
-	);
+			# or (b) full filepaths that already exist in the filesystem, such as Excel
+			# files that you already dropped into /opt/omnitool/tmp
+		);
 
 So if you want to make the very sad and disappointing decision to send in the message body already prepared,
 place that into email_vars => { message_body => 'your body HTML' } } and leave 'template_filename' blank.

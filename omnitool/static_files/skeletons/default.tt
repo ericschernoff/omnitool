@@ -91,7 +91,7 @@
 							<li class="transparent user-min">
 								<a data-toggle="dropdown" class="dropdown-toggle" href="#">
 									<i class="fa fa-bookmark white"></i>
-									Bookmark / Share
+									Bookmarks
 									<i class="ace-icon fa fa-caret-down"></i>
 								</a>
 								<ul class="dropdown-menu-right dropdown-navbar dropdown-menu dropdown-caret dropdown-close">
