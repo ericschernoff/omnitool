@@ -62,7 +62,7 @@ sub new {
 	}, $class;
 }
 
-# method to log benchmarks for execution times; useful for debugging and finding chokepoints
+# method to log benchmarks for execution times and memory; useful for debugging and finding chokepoints
 sub benchmarker {
 	my $self = shift;
 	my ($log_message,$log_type) = @_;
@@ -73,13 +73,22 @@ sub benchmarker {
 	# default log_type to 'benchmarks'
 	$log_type ||= 'benchmarks';
 
+	my ($right_now, $benchmark, $pt, %info, $memory_size);
+
 	# figure the benchmark for this checkpoint / log-message
 	# will be from the creation of $self, which is practically the start of the execution
-	my $right_now = Benchmark->new;
-	my $benchmark = timediff($right_now, $self->{start_benchmark});
+	$right_now = Benchmark->new;
+	$benchmark = timediff($right_now, $self->{start_benchmark});
+
+	# figure out the current memory usage for this process - stolen from https://blog.celogeek.com/201312/394/perl-universal-way-to-get-memory-usage-of-a-process/
+	$pt = Proc::ProcessTable->new;
+	%info = map { $_->pid => $_ } @{$pt->table};
+	$memory_size = $info{$$}->rss;
+	# we care about megs
+	$memory_size = sprintf("%.2f", ( $memory_size / 1048576));
 
 	# now log out the benchmark
-	$self->logger($log_message.' at '.timestr($benchmark), $log_type);
+	$self->logger($log_message.' at '.timestr($benchmark). ' / Memory Size: '.$memory_size.' mb / Process ID: '.$$, $log_type);
 
 	# all done
 }
@@ -1284,6 +1293,8 @@ And if today is 09/04/2016, you could look in $OTHOME/log/benchmarks-2016-09-04.
 
 You can use this for permanent logging of execution times for various routines.  In that case, please pass the
 second argument to create a specialized log file.
+
+Updated:  Now, it includes the memory footprint plus the process ID in the logging, which can be hanky for finding leaks.
 
 =head2 comma_list()
 
