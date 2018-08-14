@@ -52,7 +52,7 @@
 <script src="/ace/assets/js/date-time/bootstrap-datetimepicker.js"></script>
 <script src="/non_ace_assets/fullcalendar.min.js"></script>
 <script src="/ace/assets/js/jquery.maskedinput.js"></script>
-<script src="/non_ace_assets/chosen-1.8.2/chosen.jquery.js"></script>
+<script src="/non_ace_assets/chosen-1.8.7/chosen.jquery.js"></script>
 <script src="/ace/assets/js/jquery.hotkeys.js"></script>
 <script src="/ace/assets/js/bootstrap-wysiwyg.js"></script>
 <script src="/ace/assets/js/ace/elements.wysiwyg.js"></script>
