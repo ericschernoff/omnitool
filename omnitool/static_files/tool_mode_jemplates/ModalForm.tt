@@ -136,7 +136,7 @@
 	[% END %]
 
 	[% FOREACH f IN form.field_keys %]
-		[% IF form.fields.$f.is_required %]
+		[% IF form.fields.$f.is_required && !form.fields.$f.field_error%]
 			[% SET form.fields.$f.title = '* ' _ form.fields.$f.title %]
 		[% END %]
 
@@ -151,6 +151,7 @@
 				<label class="col-sm-3 control-label no-padding-right" for="form-field-[%f%]">
 					[% IF form.fields.$f.field_error %]
 						<span class="bold red">
+							Error: 
 							[% form.fields.$f.title %]
 							<i class="ace-icon fa fa-exclamation-circle red"></i>
 						</span>

@@ -1320,33 +1320,91 @@ function interactive_form_elements (tool_id,form_type) {
 		$('#'+tool_id+'_wyiswig').ace_wysiwyg({
 			speech_button: true,
 			toolbar: [
-				'font',
-				'fontSize',
-				'bold',
-				'italic',
-				'strikethrough',
-				'underline',
+				{
+					name: 'font',
+					title: 'Change Font',
+				},
+				{
+					name: 'fontSize',
+					title: 'Change Font Size',
+				},
+				{
+					name: 'bold',
+					title: 'Toggle Bold Style',
+				},		
+				{
+					name: 'italic',
+					title: 'Toggle Italic Style',
+				},
+				{
+					name: 'underline',
+					title: 'Toggle Underline Style',
+				},		
+				{
+					name: 'strikethrough',
+					title: 'Toggle Strike-Through Style',
+				},		
 				null,
-				'insertunorderedlist',
-				'insertorderedlist',
-				'outdent',
-				'indent',
-				'justifyleft',
-				'justifycenter',
-				'justifyright',
-				'justifyfull',
+				{
+					name: 'foreColor',
+					title: 'Change Text Color',
+				},		
 				null,
-				'createLink',
-				'unlink',
+				{
+					name: 'insertunorderedlist',
+					title: 'Inset Unordered List',
+				},		
+				{
+					name: 'insertorderedlist',
+					title: 'Inset Ordered List',
+				},		
+				{
+					name: 'outdent',
+					title: 'Add outdent',
+				},		
+				{
+					name: 'indent',
+					title: 'Add indent',
+				},		
+				{
+					name: 'justifyleft',
+					title: 'Justify Left',
+				},		
+				{
+					name: 'justifycenter',
+					title: 'Justify Center',
+				},		
+				{
+					name: 'justifyright',
+					title: 'Justify Right',
+				},		
 				null,
-				'insertImage',
+				{
+					name: 'createLink',
+					title: 'Create Link',
+				},		
+				{
+					name: 'unlink',
+					title: 'Unlink',
+				},		
+				{
+					name: 'insertImage',
+					title: 'Inset Image',
+				},		
 				null,
-				'foreColor',
+				{
+					name: 'undo',
+					title: 'Undo Last Change',
+				},		
+				{
+					name: 'redo',
+					title: 'Redo Last Change',
+				},		
 				null,
-				'undo',
-				'redo',
-				null,
-				'viewSource'
+				{
+					name: 'viewSource',
+					title: 'View Source',
+				},		
 			],
 			wysiwyg: {
 				hotKeys: {
