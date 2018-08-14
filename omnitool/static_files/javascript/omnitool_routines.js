@@ -1094,6 +1094,11 @@ function open_api_explorer_modal (data) {
 	// 	results_data = the json_data that was sent back from the OT6 server
 	//	tool_name = the name of the Tool that was just queried, for which this query will work
 	
+	// do not do this if the explorer modal is already open, i.e. when a message tool fires and then underlying search tool right behind it
+	if ($("#system_modal").hasClass('in')) {
+		return;
+	}
+
 	// add in the instance's base URI
 	data.uri_base = uri_base;
 
