@@ -102,7 +102,7 @@ sub connect_to_database {
 	}
 
 	# make the connection - fail and log if cannot connect
-	$dsn = 'DBI:mysql:database='.$self->{current_database}.';host='.$self->{hostname}.';port=3306;mysql_socket=/tmp/mysql.sock';
+	$dsn = 'DBI:mysql:database='.$self->{current_database}.';host='.$self->{hostname}.';port=3306';
 	$self->{dbh} = DBI->connect($dsn, $username, $password,{ PrintError => 0, RaiseError=>0, mysql_enable_utf8=>8 }) or $self->log_errors('Cannot connect to '.$self->{hostname});
 
 	# Set Long to 1000000 for long text...may need to adjust this
