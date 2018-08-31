@@ -393,10 +393,10 @@ sub tool_object {
 
 	# if we couldn't find a tool to load, they sent an invalid URL or tried to
 	# access a tool which is not available in application / instance
-	# send back a 'TOOL_NOT_FOUND' to tell omnitool_controller() to use the default tool
+	# send back 'TOOL_NOT_FOUND' to tell omnitool_controller() to use the default tool
 	if (!$tool_datacode) {
 		$self->{luggage}{belt}->logger("ERROR: No tool definition found for ".$self->{luggage}{uri},'fatals');
-		$self->{luggage}{belt}->mr_zebra("TOOL_NOT_FOUND",2);
+		$self->{luggage}{belt}->mr_zebra({'the_tool_id' => 'TOOL_NOT_FOUND'},2);
 	}
 
 	# still here?  good, we can figure out the class to use

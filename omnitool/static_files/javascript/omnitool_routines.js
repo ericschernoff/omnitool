@@ -721,8 +721,10 @@ function omnitool_controller (event,target_tool_uri) {
 	// first step is to resolve that uri to a tool ID (app-inst + tool_id)
 	// we do it this way because a specific tool may have multiple uri's, and
 	// we don't want to build objects on a per-uri basis, but rather per-tool_id
-	$.when( get_tool_id_for_uri(tool_uri) ).done(function(the_tool_id) {
-
+	$.when( get_tool_id_for_uri(tool_uri) ).done(function(tool_attributes) {
+		
+		var the_tool_id = tool_attributes.the_tool_id;
+		
 		// if the tool was not found, jump to the default
 		if (the_tool_id == 'TOOL_NOT_FOUND') {
 			location.hash = '#' + default_tool;
@@ -820,14 +822,13 @@ function omnitool_controller (event,target_tool_uri) {
 
 		// do we already have a tool object?
 		} else if (tool_objects[the_tool_id] == undefined) { // no, need to create
-			// grab the attributes and create the object with them
-			$.when( query_tool(tool_uri + '/send_attributes',{}) ).done(function(tool_attributes) {
-				// we need to know the 'starting' uri for this tool for api_explorer_mode
-				tool_attributes.called_via_uri = tool_uri;
-				// construct the new Tool object and call load_tool() to trigger the message
-				tool_objects[the_tool_id] = new Tool(tool_attributes);
-				tool_objects[the_tool_id].load_tool();
-			});
+			// create the object with the attributes we already have
+			
+			// we need to know the 'starting' uri for this tool for api_explorer_mode
+			tool_attributes.called_via_uri = tool_uri;
+			// construct the new Tool object and call load_tool() to trigger the message
+			tool_objects[the_tool_id] = new Tool(tool_attributes);
+			tool_objects[the_tool_id].load_tool();
 
 		} else { // yes, just load it up
 			// if keep-warm = Never, we need to always start fresh
@@ -868,11 +869,12 @@ function get_tool_id_for_uri (tool_uri) {
 
 	// can't cache it because you may be changing back and forth between data-id bits,
 	// such as how the tools_mgr does or when opening update forms over and over
-	return $.when( query_tool(tool_uri + '/send_tool_id',{return_tool_id: return_tool_id}) ).done(function(the_tool_id) {
+	// so instead of boring 'send_tool_id', grab the attributes in hopes of skipping a step
+	return $.when( query_tool(tool_uri + '/send_attributes',{return_tool_id: return_tool_id}) ).done(function(tool_attributes) {
 
-		check_for_errors (the_tool_id);
+		check_for_errors (tool_attributes);
 
-		return the_tool_id;
+		return tool_attributes;
 	});
 }
 
