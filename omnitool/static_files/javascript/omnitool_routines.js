@@ -138,14 +138,26 @@ $( document ).ready(function() {
 	// we want to bind the menu bar to our JSON feed and jemplate
 	jemplate_bindings['ot_menubar'] = new jemplate_binding('ot_menubar', '/ui/menubar_template', 'ui_menu.tt', '/ui/build_navigation');
 
-	// set up the notifications binding in the navbar - this will get refreshed each time omnitool_controller() runs
-	jemplate_bindings['ot_navbar_notifications'] = new jemplate_binding('navbar_notification_area', '/ui/navbar_notifications_template', 'navbar_notifications.tt', '/ui/notifications');
-
 	// bind event to track latest mouse movement time, to make sure the search-refreshing
 	// does not happen if the mouse has not moved in two minutes
 	$( "#main-container" ).mousemove(function( event ) {
 		mouse_move_time = Math.floor(Date.now() / 1000);
 	});
+
+	// set up the notifications binding in the navbar
+	jemplate_bindings['ot_navbar_notifications'] = new jemplate_binding('navbar_notification_area', '/ui/navbar_notifications_template', 'navbar_notifications.tt', '/ui/notifications');
+	// refresh those notifications every 90 seconds
+	var ot_navbar_notifications_refresh = setInterval(
+		function() { 
+			// refresh these notifications if the mouse has moved in the past two minutes
+			var last_mouse_move = ( Math.floor(Date.now() / 1000) ) - mouse_move_time;
+			if (last_mouse_move < 120) {
+				jemplate_bindings['ot_navbar_notifications'].process_json_uri();
+			}
+		},
+		90000
+	);
+	
 
 	// close the modal
 	loading_modal_display('hide');
@@ -619,6 +631,7 @@ function post_data_fetch_operations (data) {
 
 		}
 	}
+	
 }
 
 // utility function to either show an element with html or hide it
@@ -838,14 +851,6 @@ function omnitool_controller (event,target_tool_uri) {
 		// set the actual current active tool id
 		the_current_active_tool_id = the_tool_id;
 
-		// close the loading modal now that we are done - commented out, as we need to
-		// let jemplate_bindings['xx'].process_json_uri() handle this part, since it is
-		// probably still running
-		//loading_modal_display('hide');
-
-		// also update the notification area in the navbar
-		jemplate_bindings['ot_navbar_notifications'].process_json_uri();
-
 	});
 	// we will rely on the Tool object from here on
 
@@ -957,12 +962,13 @@ function query_tool (tool_uri,post_data_object) {
 
 // function to check the results of a query to the server, and alert the user as needed
 function check_for_errors (response) {
+	
 	if (response == undefined) { // nothing to do here
 		return 0;
 	}	
 
 	// did it indicate they need to log in?
-	if (typeof response == 'string' &&  response == 'Authentication needed.') { // send them to login page
+	if (typeof response == 'string' && response == 'Authentication needed.') { // send them to login page
 		location.reload();
 		return 1; // indicate error is found
 
