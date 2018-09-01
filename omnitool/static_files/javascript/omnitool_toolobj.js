@@ -148,9 +148,9 @@ function Tool (tool_attributes) {
 				if (jemplate_bindings[ this_tool_display_div ] == undefined || $.isEmptyObject(jemplate_bindings[ this_tool_display_div ])) {
 					jemplate_bindings[ this_tool_display_div ] = new jemplate_binding(
 						this_tool_display_div,
-						this_tool_uri + '/send_jemplate', //?client_connection_id='+client_connection_id,
+						this_tool_uri + '/send_jemplate', 
 						this_tool_display_div+'.tt',
-						this_tool_uri + '/send_json_data' // ?client_connection_id='+client_connection_id
+						this_tool_uri + '/send_json_data'
 					);
 
 
@@ -874,7 +874,6 @@ function Tool (tool_attributes) {
 			}
 
 			// query for the advanced search form and send into the modal
-			loading_modal_display('Opening Advanced Search...');
 			$.when( query_tool(adv_search_url,{}) ).done(function(json_data) {
 				json_data.modal_title_icon = 'fa-binoculars';
 				json_data.modal_title = adv_search_name;

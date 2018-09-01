@@ -224,8 +224,8 @@ function jemplate_binding (element_id, jemplate_uri, jemplate_name, json_data_ur
 			} else if (modal_text != undefined && modal_text != 'none') {
 				loading_modal_display(modal_text + '...');
 			// do not show a modal for breadcrumbs / navbar_notification_area
-			} else if (my_element_id != '#breadcrumbs' && my_element_id != '#navbar_notification_area' && modal_text != 'none') {
-				loading_modal_display('Retrieving Data...');
+			// } else if (my_element_id != '#breadcrumbs' && my_element_id != '#navbar_notification_area' && modal_text != 'none') {
+			//	loading_modal_display('Retrieving Data...');
 			}
 
 			$.when( query_tool(this.json_data_uri,{}) ).done(function(data) {
@@ -712,11 +712,6 @@ function omnitool_controller (event,target_tool_uri) {
 
 	// no double slashes
 	var tool_uri = tool_uri.replace( /\/\//, '/' );
-
-	// tell the user we are loading
-	if (event == undefined || event.message_tool == undefined) {
-		loading_modal_display('Loading the Tool...');
-	}
 
 	// first step is to resolve that uri to a tool ID (app-inst + tool_id)
 	// we do it this way because a specific tool may have multiple uri's, and
