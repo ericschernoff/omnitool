@@ -28,7 +28,7 @@ sub search {
 	# need myself and my args
 	my $self = shift;
 	my (%args) = @_;
-	my (@table_keys, $querying_primary_table, $key, $foreign_results, $did, $primary_table, $actual_queries_run, $sql_statement_logic, $table_key, $sql_query_plans, $actual_results, $search_result, $limit_count, @match_values, $question_marks, $args_ref, @bind_values, $math_operator_list, $operator_list, $r, $results, $search_count, $so, %found, $dt,$order_by, $conjunction);
+	my ($dc_negative,$dc_bind_values, @table_keys, $querying_primary_table, $key, $foreign_results, $did, $primary_table, $actual_queries_run, $sql_statement_logic, $table_key, $sql_query_plans, $actual_results, $search_result, $limit_count, @match_values, $question_marks, $args_ref, @bind_values, $math_operator_list, $operator_list, $r, $results, $search_count, $so, %found, $dt,$order_by, $conjunction);
 
 	# for this method, we want to save the search_options and other arguments so that search()
 	# could be called again with no arguments and execute the same search
@@ -167,12 +167,21 @@ sub search {
 				(@match_values) = split /\,/, $$so{match_value};
 			}
 
-			# get the question marks
-			$question_marks = $self->{belt}->q_mark_list(scalar(@match_values));
+			# if it's on the primary key, use the primary key
+			if ($$so{match_column} eq "concat(code,'_',server_id)}") {
+				$dc_negative = $$so{operator} =~ /not/i;
+				($$so{main_logic}, $dc_bind_values) = $self->{belt}->datacode_query(\@match_values, $dc_negative );
+				push(@bind_values,@$dc_bind_values);
+			
+			# otherwise, regular column	
+			} else {
+				# get the question marks
+				$question_marks = $self->{belt}->q_mark_list(scalar(@match_values));
 
-			# put it together
-			$$so{main_logic} = $$so{match_column}.' '.$$so{operator}.' ('.$question_marks.')';
-			push(@bind_values,@match_values);
+				# put it together
+				$$so{main_logic} = $$so{match_column}.' '.$$so{operator}.' ('.$question_marks.')';
+				push(@bind_values,@match_values);
+			}
 
 		# 'between' is for date ranges
 		} elsif ($$so{operator} eq 'between') {
