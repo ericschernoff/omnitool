@@ -710,6 +710,11 @@ function omnitool_controller (event,target_tool_uri) {
 		var tool_uri = target_tool_uri.replace( /^#/, '' );
 	}
 
+	// tell the user we are loading -- take this out later
+	if (event == undefined || event.message_tool == undefined) {
+		loading_modal_display('Loading...');
+	}
+	
 	// no double slashes
 	var tool_uri = tool_uri.replace( /\/\//, '/' );
 

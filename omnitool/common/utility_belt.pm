@@ -138,35 +138,26 @@ sub datacode_query {
 
 	return '' if !$$data_codes[0]; # stop if empty
 
-	# this way might be faster, although it doesn't make any sense
-	# use it when there is more than 2500 entries (for now)
-	if (!$negative && scalar(@$data_codes) > 2500) {
-		my $q_marks = $self->q_mark_list(scalar(@$data_codes));
-		return (qq{concat(code,'_',server_id) in ($q_marks)},$data_codes);
-	}
-
 	# this way uses the primary key:
 
-	my ($dc, $code, $server_id, $searches, $search_logic, $q_marks, $bind_values);
+	my ($dc, $code, $server_id, $searches, $search_logic, $q_marks, $bind_values, $operator);
 
 	foreach $dc (@{$data_codes}) {
 		($code,$server_id) = split /_/, $dc;
-		push(@$searches,qq{(code=? and server_id=?)});
+		push(@$searches,qq{(?, ?)});
 		push(@$bind_values,$code,$server_id);
-	}
-	if ($$searches[1]) { # combine them
-		$search_logic =  join(' or ', @$searches); # comma_list likes to uniquify lists, and that don't work
-		$search_logic = '('.$search_logic.')';
-	} else {
-		$search_logic = $$searches[0];
 	}
 
 	if ($negative) { # they want this to be a 'not in' type of query
-		$search_logic = '(0 = '.$search_logic.')';
+		$operator = 'NOT IN';
+	} else {
+		$operator = 'IN';
 	}
 
-	return ($search_logic,$bind_values);
+	$search_logic = qq{(code, server_id) $operator (}.join(',',@$searches).')';
 
+	return ($search_logic,$bind_values);
+	
 }
 
 # start the dateFix subroutine, where we humanify database dates
