@@ -125,40 +125,15 @@
 	[* END *]
 	[% IF found_inline_actions %]
 	<td>
-		[%# more than five actions --> chosen drop-down menu %]
-		[% IF max_actions_per_record > 6 %]
-			<div class="btn-group dropdown" style="background-color: silver">
-				<select onchange="tool_objects['[*tool_and_instance*]'].quick_action_link($(this));" class="tool-action-menu" style="min-width: 144px">
-				[% IF metainfo.$record_key.lock_user %]
-					<option value="">
-						LOCKED ([%metainfo.$record_key.lock_user%])
-					</option>
-				[% ELSE %]
-					<option value="">
-						Actions
-					</option>
-				[% END %]
-				[% FOREACH action IN records.$record_key.inline_actions %]
-					[% IF action.tool_type == 'Action - Message Display' %]
-						<option value="message_tool:[%action.uri.replace('#','')%]">
-					[% ELSE %]
-						<option value="[%action.uri%]">
-					[% END %]
-						[% action.button_name %]
-					</option>
-
-				[% END %]
-				</select>
-			</div>
-		[%# more than five actions --> bootstrap drop-down menu %]
-		[% ELSIF records.$record_key.inline_actions.1 %]
+		[%# more than one action - nice drop-down %]
+		[% IF records.$record_key.inline_actions.1 %]
 			<div class="btn-group dropdown">
-			<button data-toggle="dropdown" type="button" class="btn btn-white btn-sm dropdown-toggle">
+			<button data-toggle="dropdown" data-position="auto" type="button" class="btn btn-white btn-sm dropdown-toggle">
 				<i class="ace-icon fa fa-bolt"></i>
 				Actions
 				<i class="ace-icon fa fa-caret-down"></i>
 			</button>
-			<ul class="dropdown-menu dropdown-caret dropdown-close dropdown-menu-right"> <!-- style="height: auto; max-height: 144px; overflow-y: auto; overflow-x: hidden" -->
+			<ul class="dropdown-menu dropdown-caret dropdown-close dropdown-menu-right" style="height: auto; max-height: 200px; overflow-x: hidden;"> <!-- style="height: auto; max-height: 144px; overflow-y: auto; overflow-x: hidden" -->
 			[% IF metainfo.$record_key.lock_user %]
 				<li>
 					<a name="lock_[%$record_key%]" class="bolder">

@@ -51,7 +51,7 @@ function Tool (tool_attributes) {
 	}
 
 	// function to make a tool active and load it up
-	this.load_tool = function (reload_jemplate) { // reload_jemplate is set in omnitool_controller when the tool mode changes
+	this.load_tool = function (reload_jemplate, skip_json_reload) { // reload_jemplate/skip_json_reload are set in omnitool_controller when the tool mode changes
 
 		// close / hide any previously-active screen or modal
 		if (this['tool_type_short'] == 'screen' && the_active_tool_ids['screen'] != this['the_tool_id'] && the_active_tool_ids['screen'] != 'none') {
@@ -108,8 +108,10 @@ function Tool (tool_attributes) {
 			} else { // have to reload the tools controls no matter what
 				var this_tool_display_div = this['tool_display_div'];
 				$.when( this.reload_tool_controls() ).done(function() {
-					// then load the JSON in the middle
-					jemplate_bindings[ this_tool_display_div ].process_json_uri();
+					// unless there is a single-row reload, re-load the JSON in the middle
+					if (skip_json_reload == undefined) {
+						jemplate_bindings[ this_tool_display_div ].process_json_uri();
+					}
 				});
 			}
 
