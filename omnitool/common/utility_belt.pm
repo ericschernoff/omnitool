@@ -44,6 +44,7 @@ use WWW::Mechanize;
 
 # for benchmarker routine
 use Benchmark ':hireswallclock';
+use Proc::ProcessTable;
 
 # time to grow up
 use strict;
@@ -132,20 +133,23 @@ sub commaify_number {
 }
 
 # prepare SQL logic to search against standard data_code values
+# NOTE:  For the sake of speed, we are NOT using the 'server_id' here, as
+# that part of the primary key is for the VERY RARE and MAYBE IMPOSSIBLE
+# scenario where there is a collision between two master DB servers.
+# since I am not yet using multiple-master clustering, we are going to just
+# use the 'code' part of the primary key
 sub datacode_query {
 	my $self = shift;
 	my ($data_codes,$negative) = @_;
 
 	return '' if !$$data_codes[0]; # stop if empty
 
-	# this way uses the primary key:
-
-	my ($dc, $code, $server_id, $searches, $search_logic, $q_marks, $bind_values, $operator);
+	my ($dc, $code,$server_id, $searches, $bind_values, $operator, $search_logic);
 
 	foreach $dc (@{$data_codes}) {
 		($code,$server_id) = split /_/, $dc;
-		push(@$searches,qq{(?, ?)});
-		push(@$bind_values,$code,$server_id);
+		push(@$searches,'?');
+		push(@$bind_values,$code);
 	}
 
 	if ($negative) { # they want this to be a 'not in' type of query
@@ -154,7 +158,7 @@ sub datacode_query {
 		$operator = 'IN';
 	}
 
-	$search_logic = qq{(code, server_id) $operator (}.join(',',@$searches).')';
+	$search_logic = qq{code $operator (}.join(',',@$searches).')';
 
 	return ($search_logic,$bind_values);
 	
