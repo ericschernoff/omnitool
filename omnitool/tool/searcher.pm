@@ -100,7 +100,7 @@ sub search {
 	} else {
 		$load_records_limit = 10000;
 	}
-
+	
 	# finally, run the search
 	$self->{omniclass_object}->search(
 		'log_search' => $self->{log_search}, # set this in your tool's init() to log the search
@@ -113,7 +113,6 @@ sub search {
 	);
 
 	# debug code
-	# $self->{belt}->benchmarker('Search run');
 
 	# if they want tree-mode, give it to them
 	if ($self->{omniclass_object}->{search_found_count} && $self->{attributes}{load_trees} eq 'Yes') {
@@ -153,7 +152,6 @@ sub search {
 	if ($self->{omniclass_object}->{search_found_count}) {
 		$self->get_inline_actions();
 	}
-
 	# let's allow for a post_search_execute() hook; for modifying the records list
 	if ($self->can('post_search_execute')) {
 		$self->post_search_execute();
@@ -218,11 +216,7 @@ sub search {
 	# how many were ultimately found and in how long?
 	$self->{json_results}{records_found_count} = scalar(@{$self->{json_results}{records_keys}}); # search_found_count can get polluted by all these actions
 
-	# and how long did it take?
-	# $self->{belt}->benchmarker('search ran');
-
 	# debug code
-	# $self->{belt}->benchmarker('Search all done and ready.');
 
 }
 

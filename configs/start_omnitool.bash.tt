@@ -65,7 +65,7 @@ esac
 case "$1" in
 	start)
 		echo "Starting OT6"
-		/usr/local/bin/start_server --enable-auto-restart --auto-restart-interval=300 --port=$HOSTPORT --dir=$OTHOME/code/omnitool --log-file="| /usr/bin/rotatelogs $OTHOME/log/omnitool.log 86400" --daemonize --pid-file=$OTHOME/log/omnitool.pid -- /usr/local/bin/plackup -s Gazelle --max-workers=$WORKERS -E deployment main.psgi
+		/usr/local/bin/start_server --port=$HOSTPORT --dir=$OTHOME/code/omnitool --log-file="| /usr/bin/rotatelogs $OTHOME/log/omnitool.log 86400" --daemonize --pid-file=$OTHOME/log/omnitool.pid -- /usr/local/bin/plackup -s Gazelle  --timeout=20 --max-workers=$WORKERS --max-keepalive-reqs=10 --max-reqs-per-child=5000 -E deployment main.psgi
 	;;
 	stop)
 		OT_PID=$(<$OTHOME/log/omnitool.pid)

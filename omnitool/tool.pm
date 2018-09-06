@@ -136,7 +136,7 @@ sub execute_method {
 	} else { # otherwise, output an error
 		$self->{luggage}{belt}->mr_zebra("Unable to execute $run_method Tool method.",1);
 	}
-
+	
 	# handle the saved display options appropriately.  if they are to be deleted following
 	# this execution, this 'run_method' will set $self->{clear_display_options}
 	if ($self->{clear_display_options}) { # clear it out
@@ -148,6 +148,7 @@ sub execute_method {
 			$self->save_display_options_hash($self->{luggage}{params}{saved_name});
 		}
 	}
+
 
 	# return our work product to the dispatcher
 	return $the_output;

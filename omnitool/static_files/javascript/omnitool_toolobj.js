@@ -111,6 +111,8 @@ function Tool (tool_attributes) {
 					// unless there is a single-row reload, re-load the JSON in the middle
 					if (skip_json_reload == undefined) {
 						jemplate_bindings[ this_tool_display_div ].process_json_uri();
+					} else { // hide the loading modal
+						loading_modal_display('hide');					
 					}
 				});
 			}
@@ -136,7 +138,7 @@ function Tool (tool_attributes) {
 
 				// empower the tool search drop-down menus
 				enable_chosen_menu('.tool-search-menu');
-
+				
 				// run the routines to enable the quick-search fields
 				tool_objects[this_tool_id].quick_search_enable();
 				
@@ -397,9 +399,7 @@ function Tool (tool_attributes) {
 				// re-enable any pop-overs
 				enable_popovers();
 				// enable chosen in the background
-				setTimeout(function () {
-					enable_chosen_menu('.tool-action-menu')
-				}, 0);
+				enable_chosen_menu('.tool-action-menu');
 				// if the advanced search or sort is still open, then maintain the shrunken table
 				if ($('#advanced_search_' + tool_id).is(':visible') || $('#advanced_sort_' + tool_id).is(':visible')) {
 					tool_objects[tool_id].shrink_or_grow_tool_display('shrink');
@@ -847,26 +847,28 @@ function Tool (tool_attributes) {
 		goToTop();
 
 		if (form_display_div.is(':visible')) { // already visible, disappear it
-			form_display_div.html('');
-			form_display_div.hide();
 
 			// re-expand the tool main display area to full size on large screens
-			tool_objects[tool_id].shrink_or_grow_tool_display('grow');
+			$.when( tool_objects[tool_id].reload_tool_controls() ).done(function() {
+				form_display_div.html('');
+				form_display_div.hide();
+				tool_objects[tool_id].shrink_or_grow_tool_display('grow');
+				$('#search-controls_'+tool_id).show();
+				$('#quick_keyword_controls_'+tool_id).show();
+				enable_chosen_menu('.tool-search-menu');
 
-			$('#search-controls_'+tool_id).show();
-			$('#quick_keyword_controls_'+tool_id).show();
+				// make sure the advanced item badges are shown as needed -- use the class way
+				// because there may be a few in the DOM by now
+				if ($('#advanced_sort_features_'+tool_id).length && $('#advanced_sort_options_badge_'+tool_id).html().length > 0) {
+					$('.advanced_sort_options_badge_'+tool_id).show();
+				}
+				if ($('#advanced_search_filters_badge_'+tool_id).html().length > 0) {
+					$('.advanced_search_filters_badge_'+tool_id).show();
+				}
 
-			// make sure the advanced item badges are shown as needed -- use the class way
-			// because there may be a few in the DOM by now
-			if ($('#advanced_sort_features_'+tool_id).length && $('#advanced_sort_options_badge_'+tool_id).html().length > 0) {
-				$('.advanced_sort_options_badge_'+tool_id).show();
-			}
-			if ($('#advanced_search_filters_badge_'+tool_id).html().length > 0) {
-				$('.advanced_search_filters_badge_'+tool_id).show();
-			}
-
-			// make note that the form is now closed
-			tool_objects[tool_id].advanced_search_open = 0;
+				// make note that the form is now closed
+				tool_objects[tool_id].advanced_search_open = 0;
+			});
 
 		} else { // otherwise, load and show!
 

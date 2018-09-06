@@ -224,15 +224,13 @@ function jemplate_binding (element_id, jemplate_uri, jemplate_name, json_data_ur
 			} else if (modal_text != undefined && modal_text != 'none') {
 				loading_modal_display(modal_text + '...');
 			// do not show a modal for breadcrumbs / navbar_notification_area
-			// } else if (my_element_id != '#breadcrumbs' && my_element_id != '#navbar_notification_area' && modal_text != 'none') {
-			//	loading_modal_display('Retrieving Data...');
+			} else if (my_element_id != '#breadcrumbs' && my_element_id != '#navbar_notification_area' && modal_text != 'none') {
+				loading_modal_display('Retrieving Data...');
 			}
 
 			$.when( query_tool(this.json_data_uri,{}) ).done(function(data) {
-				if (my_element_id != '#breadcrumbs' && my_element_id != '#navbar_notification_area') {
-					if (modal_text != 'none') { // they may not want to see this
-						loading_modal_display('Processing Data...');
-					}
+				if (my_element_id != '#breadcrumbs' && my_element_id != '#navbar_notification_area' && modal_text != 'none') { // they may not want to see this
+					loading_modal_display('Processing Data...');
 				}
 
 				// process the jemplate
@@ -461,9 +459,7 @@ function post_data_fetch_operations (data) {
 	}
 
 	// empower any tool quick/inline actions drop-down menus - do async for speed's sake
-	setTimeout(function () {
-		enable_chosen_menu('.tool-action-menu')
-	}, 0);
+	enable_chosen_menu('.tool-action-menu');
 
 	// if their session was flushed since we last checked
 	// reload the menubar, clear the backgrounded tools,
@@ -1808,18 +1804,24 @@ function enable_chosen_menu (jquery_identifier, custom_width) {
 		return;
 	}
 
-	// set up our options object
-	var chosen_options = new Array;
-	if (custom_width != undefined) { // make sure to send it with percent sign at the end
-		chosen_options.width = custom_width;
-	}
 
-	// show search if there are 4+ options
-	chosen_options.search_contains = true;
-	chosen_options.disable_search_threshold = 4;
+	// chosen is slow, so let's go async on this
+	setTimeout(function () {
 
-	// alright enable the menu(s)
-	$(jquery_identifier).chosen(chosen_options);
+		// set up our options object
+		var chosen_options = new Array;
+		if (custom_width != undefined) { // make sure to send it with percent sign at the end
+			chosen_options.width = custom_width;
+		}
+
+		// show search if there are 4+ options
+		chosen_options.search_contains = true;
+		chosen_options.disable_search_threshold = 4;
+
+		// alright enable the menu(s)
+		$(jquery_identifier).chosen(chosen_options);
+
+	}, 0);
 }
 
 // small ui function to support the 'Search Controls' button to reveal the search controls in XS mode
