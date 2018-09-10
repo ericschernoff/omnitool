@@ -1023,6 +1023,17 @@ Usage:
 
 $altcode will be empty if nothing found.  This is also not fancy ;)
 
+=head2 find_previous_child_create_time()
+
+Small utility method to get the create_time epoch and data_code for the latest record of this 
+type saved under a certain parent.  Useful if you are working on the 'next' record under that parent
+and want to do some comparison stuffs with the previous record.
+
+Usage:
+
+	($previous_record_create_time, $previous_record_data_code) = $dt_obj->find_previous_child_create_time($parent_string);
+
+
 =head2 get_omniclass_object()
 
 This method helps you load up other OmniClass objects, sparing you the trouble of having to type out

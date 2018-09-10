@@ -619,6 +619,27 @@ sub check_for_loaded_record {
 	}
 }
 
+# utility method to get the create_time epoch for the latest record of this type saved under a certain parent
+sub find_previous_child_create_time {
+	my $self = shift;
+	
+	# required argument is the target parent
+	my ($parent) = @_;
+	return if !$parent && $parent !~ /\d\_\d/;
+	
+	# proceed with our search
+	my ($create_time, $data_code) = $self->{db}->quick_select(
+		'select create_time, data_code from '.
+		$self->{database_name}.'.'.$self->{metainfo_table}.
+		' where parent=? order by create_time desc limit 1',
+		[$parent]
+	);
+	
+	# send out the create time and data_code
+	return ($create_time, $data_code);
+
+}
+
 # utility method to generate %$options and @$options_keys for use in a single-select form
 # very simple, just uses the data_code for the keys and one field for the option text
 # written on 4/28/16 - and i should have written this 15 months ago!

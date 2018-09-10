@@ -835,14 +835,32 @@ function omnitool_controller (event,target_tool_uri) {
 			// load it up at last
 			if (tool_uri.match('tool_mode')) { // force the jemplate to reload
 				tool_objects[the_tool_id].load_tool(1);
-			} else { // normal reload
+
+			} else { // normal re-load of previous-inactive tool
+
 				$.when( tool_objects[the_tool_id].load_tool(0,1) ).done(function() {
+
+					// does it qualify for a single-item reload?  if so, just do that
 					if (tool_objects[the_tool_id]['tool_type_short'] == 'screen' && tool_objects[the_tool_id]['single_record_jemplate_block'] != undefined && tool_objects[the_tool_id]['single_record_jemplate_block'] != 0
 					&& tool_objects[outgoing_tool_id] != undefined && tool_objects[outgoing_tool_id]['current_data_code'] != undefined && tool_objects[outgoing_tool_id]['current_data_code'] != 'none') {
 						tool_objects[the_tool_id].refresh_one_result( tool_objects[outgoing_tool_id]['current_data_code'] );
+
+					// otherwise, reload the tool controls and the json
+					} else {
+						// also reload the tool_controls, in case the keyword changed
+						$.when( tool_objects[the_tool_id].reload_tool_controls() ).done(function() {
+							// then re-run the process_json_uri
+							jemplate_bindings[ tool_objects[the_tool_id]['tool_display_div'] ].process_json_uri();
+							// hide the advanced search?
+							if ($('#advanced_search_' + the_tool_id).is(':visible')) {
+								tool_objects[the_tool_id].show_advanced_search();
+							}
+						});
 					}
-				});									
+				});
+
 			}
+
 		}
 
 		// set the actual current active tool id
