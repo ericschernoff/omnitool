@@ -856,13 +856,15 @@ function omnitool_controller (event,target_tool_uri) {
 			if (tool_uri.match('tool_mode')) { // force the jemplate to reload
 				tool_objects[the_tool_id].load_tool(1);
 
-			} else { // normal re-load of previous-inactive tool
+			} else { // normal re-load of previously-inactive tool
 
 				$.when( tool_objects[the_tool_id].load_tool(0,1) ).done(function() {
 
-					// does it qualify for a single-item reload?  if so, just do that
-					if (tool_objects[the_tool_id]['tool_type_short'] == 'screen' && tool_objects[the_tool_id]['single_record_jemplate_block'] != undefined && tool_objects[the_tool_id]['single_record_jemplate_block'] != 0
+					// does it qualify for a single-item reload?  basically, only if we are moving from a modal/message to a screen.
+					// if going from one screen to another, we want a full reload
+					if (tool_objects[outgoing_tool_id]['tool_type_short'] != 'screen' && tool_objects[the_tool_id]['tool_type_short'] == 'screen' && tool_objects[the_tool_id]['single_record_jemplate_block'] != undefined && tool_objects[the_tool_id]['single_record_jemplate_block'] != 0
 					&& tool_objects[outgoing_tool_id] != undefined && tool_objects[outgoing_tool_id]['current_data_code'] != undefined && tool_objects[outgoing_tool_id]['current_data_code'] != 'none') {
+					
 						tool_objects[the_tool_id].refresh_one_result( tool_objects[outgoing_tool_id]['current_data_code'] );
 						loading_content_area('show');
 						
