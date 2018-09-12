@@ -480,14 +480,6 @@ function post_data_fetch_operations (data) {
 			}
 		}
 
-		// notify them that things might get weird and they may want to reload
-		if (data.session_dev_mode == undefined) { // suppress this in dev mode
-			create_gritter_notice({
-				title: 'Session Refreshed - Consider Reloading',
-				message: 'Your OmniTool session has been refreshed, most likely due to changes deployed by the developers.  Please reload the page if you encounter strange behavior.'
-			});
-		}
-
 		// update session_created with the new value
 		session_created = data.session_created;
 	}

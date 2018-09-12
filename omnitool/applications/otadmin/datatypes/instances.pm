@@ -73,23 +73,18 @@ sub field_database_info {
 	}
 }
 
-# build options for selecting instance logo
-# not using any more; switching to a text field
-=cut
-sub options_ui_logo {
+# determine if this can be deployed into production
+sub build_tool_access_strings {
 	my $self = shift;
-	my ($options,$options_keys);
+	my ($args) = @_; # args passed to load()
 
-	# where the icons live
-	my $icons_path = $ENV{OTHOME}.'/htdocs/omnitool/ui_icons/';
-
-	# use our utility method for reading in files from form_maker
-	($options,$options_keys) = $self->options_from_directory($icons_path,'png');
-
-    # return results
-    return ($options,$options_keys);
+	# can ony deploy from dev DB's
+	foreach my $r (@{$self->{records_keys}}) {
+		if ($self->{records}{$r}{database_info} =~ /dev.*: omnitool/i) {
+			$self->{records}{$r}{tool_access_strings}{can_deploy_db} = 1;
+		}
+	}
 }
-=cut
 
 # build options for database server chooser
 sub options_database_server_id {

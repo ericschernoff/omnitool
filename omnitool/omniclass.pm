@@ -1823,6 +1823,19 @@ Here is a brief discussion of the hook methods you can create:
 
 		This method receives a reference to the arguments hash passed into the load() method.
 
+	- build_tool_access_strings:  Use your own logic to build out a 'tool_access_strings' sub-hash 
+		under the records, like so:
+			$self->{records}{$r}{tool_access_strings}{not_cleared_bank} = 1;
+		Notice that 'tool_access_strings' exists under each item's entry in {records}, and it 
+		will have 1 (or 0 or none) values set for keys.  Those will be used to allow Tool access for
+		that data if said Tool has a 'link_match_string' defined.  
+		
+		This is very useful for testingTool access based on the data's condition rather than the user's 
+		access roles.  For example, if a checkbook entry has already cleared the bank, there is no reason 
+		to use 'Mark Item Cleared'.
+		
+		This runs after all the virtual fields, so you have all the data to analyze.  Go nuts!			
+
 	- post_load(%$args): Called at the end of load(), after loading records from the database and
 		executing any virtual fields' methods.	Useful to alter or trim the loaded data, or for actions
 		which can only occur when all records are loaded. Receives a reference to the arguments hash passed

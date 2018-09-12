@@ -170,7 +170,9 @@ sub load {
 		$self->{records_keys} = $r_keys;
 	}
 
-	# Here is where we run the hooks to generate the virtual fields
+	# Here is where we run the hooks to generate the virtual fields as well as 
+	# building the 'tool_access_strings' sub-hash (for tool gate-keeping based on the data and not
+	# access roles)
 	# hint: anything at all can happen in one of these, so be creative;
 	if (!$self->{skip_hooks} && !$args{skip_hooks}) {
 
@@ -209,6 +211,14 @@ sub load {
 				$self->$method($args_ref);
 			}
 
+		}
+
+		# if they have a 'build_tool_access_strings' hook defined for building the 'tool_access_strings'
+		# sub-hashes under the records, run that here
+		if ($self->can('build_tool_access_strings')) {
+			$self->build_tool_access_strings($args_ref);
+			# that puts 1's and 0's into $self->{records}{$r}{tool_access_strings}{$string}
+			# and is used in tool::searcher::get_inline_actions
 		}
 
 	}

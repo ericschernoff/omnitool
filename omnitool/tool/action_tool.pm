@@ -26,7 +26,7 @@ sub run_action {
 	my $self = shift;
 
 	# declare vars
-	my ($data_code, $parent_tool_type, $lock_result, $parent_type, $lock_user,$lock_remaining_minutes,$record_name, $parent_altcode, $parent_tool_datacode, $parent_tool_datatype, $match_col, $match_col_name, $no_access, $this_match);
+	my ($link_match_string, $data_code, $parent_tool_type, $lock_result, $parent_type, $lock_user,$lock_remaining_minutes,$record_name, $parent_altcode, $parent_tool_datacode, $parent_tool_datatype, $match_col, $match_col_name, $no_access, $this_match);
 
 	# we need provide the title and uri for jemplate to show a return link, and we should do that first
 
@@ -102,40 +102,22 @@ sub run_action {
 			# just send the user for now
 			$self->{json_results}{lock_user} = $lock_user;
 
-			# test if they have defined a 'link_match_string' / 'link_match_field'
-			if ($self->{attributes}{link_match_string} && $self->{attributes}{link_match_field}) {
-				# resolve down the $match_col for sanity; two-step process
-				$match_col = $self->{attributes}{link_match_field};
-				$match_col_name = $self->{omniclass_object}->{datatype_info}{fields}{$match_col}{name};
-				$match_col = $self->{omniclass_object}->{datatype_info}{fields}{$match_col}{table_column};
-				# test to see that they can use this tool; if no match, return an error
-				# do the match - positive or negative
+			# test if they have defined a 'link_match_string' value for this tool, and make sure this data still qualifies
+			$no_access = 0;
+			if ($self->{attributes}{link_match_string}) {
+				$link_match_string = $self->{attributes}{link_match_string};
+				$no_access = 1 if !$self->{omniclass_object}->{data}{tool_access_strings}{$link_match_string};
+			}
 
-				# if it start with a !, it's a negative match
-				$no_access = 0;
-				if ($match_col) { # skip if cross-datatype (for now)
-					if ($self->{attributes}{link_match_string} =~ /^\!/) {
-						($this_match = $self->{attributes}{link_match_string}) =~ s/^\!//;
-						if (Dumper($self->{omniclass_object}->{data}{$match_col}) =~ /$this_match/i) {
-							$no_access = 1;
-						}
-					# otherwise, require positive match
-					} elsif (Dumper($self->{omniclass_object}->{data}{$match_col}) !~ /$self->{attributes}{link_match_string}/i) {
-						$no_access = 1;
-					}
-				}
-
-				# if they failed the test, block them
-				if ($no_access) {
-					$self->{json_results}{error_title} = $self->{attributes}{name}.' Unavailable for '.$self->{display_options}{altcode};
-					$self->{json_results}{error_message} = qq{Condition test failed for "}.$match_col_name.'" field.';
-					$self->{json_results}{show_error_modal} = 1;
-					$self->{json_results}{form_was_submitted} = 1; # blocks the form from showing
-					# load any inline actions before we short-circuit (utility method below)
-					$self->get_inline_actions_for_action_tool();
-					# short-circuit
-					return;
-				}
+			# if they failed the test, block them
+			if ($no_access) {
+				$self->{json_results}{error_title} = $self->{attributes}{name}.' Unavailable for '.$self->{display_options}{altcode};
+				$self->{json_results}{show_error_modal} = 1;
+				$self->{json_results}{form_was_submitted} = 1; # blocks the form from showing
+				# load any inline actions before we short-circuit (utility method below)
+				$self->get_inline_actions_for_action_tool();
+				# short-circuit
+				return;
 			}
 
 		# otherwise, we need to register an error for the jemplate

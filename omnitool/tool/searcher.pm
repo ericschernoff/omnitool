@@ -453,7 +453,7 @@ sub record_coloring_rules {
 sub get_inline_actions {
 	my $self = shift;
 
-	my ($this_record_id, $this_match, $record, $tool_datacode, $child_tool_key, $match_col, $lock_user,$lock_remaining_minutes, $parent_tool_datatype, $parent_tool_datacode, $actions_found_count);
+	my ($link_match_string, $this_record_id, $this_match, $record, $tool_datacode, $child_tool_key, $match_col, $lock_user,$lock_remaining_minutes, $parent_tool_datatype, $parent_tool_datacode, $actions_found_count);
 
 	# in 99.9% of cases, the inline actions are Action Tools linked directly below the current tool...
 	$tool_datacode = $self->{tool_datacode};
@@ -495,19 +495,11 @@ sub get_inline_actions {
 		foreach $child_tool_key (@{ $self->{luggage}{session}{tools}{$tool_datacode}{child_tools_keys} }) {
 			next if $self->{luggage}{session}{tools}{$child_tool_key}{link_type} ne 'Inline / Data Row';
 
-			# test if they have defined a 'link_match_string' / 'link_match_field'
-			if ($self->{luggage}{session}{tools}{$child_tool_key}{link_match_string} && $self->{luggage}{session}{tools}{$child_tool_key}{link_match_field}) {
-				# resolve down the $match_col for sanity; two-step process
-				$match_col = $self->{luggage}{session}{tools}{$child_tool_key}{link_match_field};
-					$match_col = $self->{omniclass_object}->{datatype_info}{fields}{$match_col}{table_column};
-
-				# do the match - positive or negative
-				if ($self->{luggage}{session}{tools}{$child_tool_key}{link_match_string} =~ /^\!/) { # negative match
-					($this_match = $self->{luggage}{session}{tools}{$child_tool_key}{link_match_string}) =~ s/^\!//;
-					next if Dumper($self->{omniclass_object}->{records}{$record}{$match_col}) =~ /$this_match/i;
-				} else { # positive match
-					next if Dumper($self->{omniclass_object}->{records}{$record}{$match_col}) !~ /$self->{luggage}{session}{tools}{$child_tool_key}{link_match_string}/i;
-				}
+			# test if they have defined a 'link_match_string' and then apply that to the 'tool_access_strings' sub-hashes
+			# and do not allow this tool if we don't have that string
+			if ($self->{luggage}{session}{tools}{$child_tool_key}{link_match_string}) {
+				$link_match_string = $self->{luggage}{session}{tools}{$child_tool_key}{link_match_string}; # sanity
+				next if !$self->{omniclass_object}->{records}{$record}{tool_access_strings}{$link_match_string};				
 			}
 
 			# if this is a locking action, do not allow it if someone else has it locked

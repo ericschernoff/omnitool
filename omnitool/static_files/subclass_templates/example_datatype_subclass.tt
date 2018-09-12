@@ -50,7 +50,7 @@ sub field_XYZ {
 	my ($args) = @_; # args passed to load()
 
 =cut
-	Quick example - not for real use.
+	# Quick example - not for real use.
 	foreach my $r (@{$self->{records_keys}}) {
 		$self->{records}{$r}{enhanced_name}[0] = {
 			'text' => $self->{records}{$r}{name},
@@ -60,6 +60,23 @@ sub field_XYZ {
 	}
 =cut
 
+}
+
+# routine to build access-checking subhash to be used by tool::searcher::get_inline_actions
+sub build_tool_access_strings {
+	my $self = shift;
+	my ($args) = @_; # args passed to load()
+
+=cut
+	# Quick example - not for real use.
+	foreach my $r (@{$self->{records_keys}}) {
+		
+		# add string to access-subhash based on some logic
+		if ($ginger eq 'Perfect') {
+			$self->{records}{$r}{tool_access_strings}{ThisIsGingersWorld} = 1;
+		}
+	}
+=cut
 }
 
 # routine to run at the end of load(), after loading records from the database.
