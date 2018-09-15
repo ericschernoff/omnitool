@@ -70,6 +70,7 @@ sub perform_action {
 		($tasks, $tasks_keys) = $self->{omniclass_object}->retrieve_task_details(
 			'target_datatype' => $dt,
 			'run_status' =>  'has_run',
+                        'limit' => 100000,
 			'update_time_age' => 3600,
 		);
 		foreach $task (@$tasks_keys) {
@@ -84,6 +85,7 @@ sub perform_action {
 		($tasks, $tasks_keys) = $self->{omniclass_object}->retrieve_task_details(
 			'target_datatype' => $dt,
 			'run_status' =>  'will_run',
+			'limit' => 100000,
 			'not_before_time' => time(),
 		);
 		$self->{json_results}{results}{$dt}{task_backlog} = scalar(@$tasks_keys);
