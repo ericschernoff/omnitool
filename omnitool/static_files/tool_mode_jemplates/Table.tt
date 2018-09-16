@@ -69,18 +69,11 @@
 	[*# cycle through the records key on the client side *]
 	[% FOREACH record_key IN records_keys %]
 
-		[*# background color from record-coloring rules *]
-		[% IF metainfo.$record_key.record_color %]
-			[% SET row_bgcolor = metainfo.$record_key.record_color %]
-		[% ELSE %]
-			[% SET row_bgcolor = 'ffffff' %]
-		[% END %]
-
 		[%#
 			Let's try to have each result row handled separately, in hopes that we could process just
 			one at a time. So the 'the_result_table_row' block is below.
 		%]
-		<tr bgcolor="#[%row_bgcolor%]" style="background-color: #[%row_bgcolor%]" id="[%record_key%]_result">
+		<tr id="[%record_key%]_result">
 
 			[% PROCESS the_result_table_row_[*tool_and_instance*] %]
 
@@ -98,16 +91,23 @@
 [%# Let's try to have each result row handled separately, in hopes that we could process just one at a time. %]
 [% BLOCK the_result_table_row_[*tool_and_instance*] %]
 
+	[*# background color from record-coloring rules *]
+	[% IF metainfo.$record_key.record_color %]
+		[% SET row_bgcolor = metainfo.$record_key.record_color %]
+	[% ELSE %]
+		[% SET row_bgcolor = 'ffffff' %]
+	[% END %]
+
 	[*# load fields on server side, and fill those on client *]
 	[*# call in the complex_field jemplate block for generated fields with multiple lines *]
 	[* SET field_count = 1 *]
 	[* FOREACH field IN included_records_fields *]
 		[* IF field_count > 4 *]
-			<td class="hidden-1025 hidden-advanced-search-[*tool_and_instance*] omnitool-data">
+			<td class="hidden-1025 hidden-advanced-search-[*tool_and_instance*] omnitool-data" bgcolor="#[%row_bgcolor%]" style="background-color: #[%row_bgcolor%]">
 		[* ELSIF field_count > 2 *]
-			<td class="hidden-480 hidden-advanced-search-[*tool_and_instance*] omnitool-data">
+			<td class="hidden-480 hidden-advanced-search-[*tool_and_instance*] omnitool-data" bgcolor="#[%row_bgcolor%]" style="background-color: #[%row_bgcolor%]">
 		[* ELSE *]
-			<td class="omnitool-data">
+			<td class="omnitool-data" bgcolor="#[%row_bgcolor%]" style="background-color: #[%row_bgcolor%]">
 
 		[* END *]
 			[% IF records.$record_key.[*field*].0.text|| records.$record_key.[*field*].0.image || records.$record_key.[*field*].0.glyph %]
@@ -124,7 +124,7 @@
 		[* SET field_count = field_count + 1 *]
 	[* END *]
 	[% IF found_inline_actions %]
-	<td>
+	<td bgcolor="#[%row_bgcolor%]" style="background-color: #[%row_bgcolor%]">
 		[%# more than one action - nice drop-down %]
 		[% IF records.$record_key.inline_actions.1 %]
 			<div class="btn-group dropdown">
@@ -133,7 +133,7 @@
 				Actions
 				<i class="ace-icon fa fa-caret-down"></i>
 			</button>
-			<ul class="dropdown-menu dropdown-caret dropdown-close dropdown-menu-right" style="height: auto; max-height: 200px; overflow-x: hidden;"> <!-- style="height: auto; max-height: 144px; overflow-y: auto; overflow-x: hidden" -->
+			<ul class="dropdown-menu dropdown-caret dropdown-close dropdown-menu-right" style="height: auto; max-height: 200px; overflow-x: hidden; z-index:9999"> <!-- style="height: auto; max-height: 144px; overflow-y: auto; overflow-x: hidden" -->
 			[% IF metainfo.$record_key.lock_user %]
 				<li>
 					<a name="lock_[%$record_key%]" class="bolder">
