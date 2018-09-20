@@ -417,14 +417,13 @@ function post_data_fetch_operations (data) {
 
 		// default is to hide these next / previous buttons
 		$('.next_link').hide();
-		$('.previous_link').show();
-		$('.previous_link').css('visibility','hidden');
+		$('.previous_link').hide();
 
 		// if there's a previous record, link to this action for that record
 		if (previous_altcode != undefined) {
 			$('.previous_link').html('<i class="fa fa-fast-backward blue"></i> Previous ' + data.datatype_name);
 			$('.previous_link').attr("onclick", "tool_objects['" + data.the_tool_id + "'].prev_next_links('" + previous_altcode + "')");
-			$('.previous_link').css('visibility','visible');
+			$('.previous_link').show();
 		}
 		// same deal for the next records
 		if (next_altcode != undefined) {
@@ -432,7 +431,7 @@ function post_data_fetch_operations (data) {
 			$('.next_link').attr("onclick", "tool_objects['" + data.the_tool_id + "'].prev_next_links('" + next_altcode + "')");
 			$('.next_link').show();
 		}
-
+		
 		// if there are inline actions, show the secondary 'quick actions' drop-down
 		if (data['inline_actions'] != undefined && data['inline_actions'][0]['button_name']) {
 			Jemplate.process('inline_action_menu.tt', data, '#quick_inline_actions_menu_' + data.the_tool_id);

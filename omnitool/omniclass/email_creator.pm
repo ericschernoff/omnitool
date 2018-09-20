@@ -228,11 +228,12 @@ sub send_outbound_email {
 		# marker later.
 		$self->{db}->do_sql(
 			'update '.$self->{database_name}.qq{.email_outbound set status='Running', worker_id=?, process_pid=?
-				where status in ('Pending','Retry') and target_datatype=?
+				where status in ('Pending','Retry','') and target_datatype=?
 				order by create_timestamp limit 20
 			},
 			[$ENV{WORKER_ID}, $$, $self->{dt}]
 		);
+		# Notice the '' option there; not sure how some of them (1%) get set to a blank status.  Try to fix below.
 
 		# retrieve any found outgoing email ids
 		$email_ids = $self->{db}->list_select(qq{
@@ -419,6 +420,7 @@ sub send_outbound_email {
 		}
 
 		# update email record status
+		$db_status ||= 'Retry'; # cannot be blank!  Do a retry if blank
 		$self->{db}->do_sql('update '.$self->{database_name}.qq{.email_outbound set status='$db_status',
 			send_timestamp=unix_timestamp() where concat(code,'_',server_id)='$email_key'});
 	}

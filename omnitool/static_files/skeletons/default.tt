@@ -216,7 +216,7 @@
 					</div><!-- /.page-content -->
 
 					<!-- support for loading_content_area() in omnitool_routines.js -->
-					<div id="page-content-loading" class="h3" style="margin-top: 10px; visbility: hidden">
+					<div id="page-content-loading" class="h3" style="margin-top: 10px; visibility: hidden">
 						<center>Loading...</center>
 					</div>
 
