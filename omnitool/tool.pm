@@ -167,6 +167,10 @@ sub send_attributes {
 	# get the base_uri in there too for keep-warm tools
 	$self->{attributes}{base_uri} = $self->{my_base_uri};
 
+	# since the is the first method which is called when a tool is visited via the Web UI,
+	# this is a great spot to log the loading of the tool
+	$self->{luggage}{belt}->logger($self->{attributes}{name}.' accessed by '.$self->{luggage}{username},'tool_accesses');
+
 	# ship it out
 	return $self->{attributes};
 }
@@ -175,10 +179,6 @@ sub send_attributes {
 # maintain the associative array of tools / tools display data
 sub send_tool_id {
 	my $self = shift;
-
-	# since the is the first method which is called when a tool is visited via the Web UI,
-	# this is a great spot to log the loading of the tool
-	$self->{luggage}{belt}->logger($self->{attributes}{name}.' accessed by '.$self->{luggage}{username},'tool_accesses');
 
 	# send the tool ID
 	return $self->{tool_and_instance};
