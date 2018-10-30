@@ -225,7 +225,7 @@ function jemplate_binding (element_id, jemplate_uri, jemplate_name, json_data_ur
 				loading_modal_display(modal_text + '...');
 			// do not show a modal for breadcrumbs / navbar_notification_area
 			} else if (my_element_id != '#breadcrumbs' && my_element_id != '#navbar_notification_area' && modal_text != 'none') {
-				// disable, since loading_content_area() has hidden the main tool area
+				// disable, since loading_overlay_effect() has hidden the main tool area
 				// loading_modal_display('Retrieving Data...');
 			}
 
@@ -680,22 +680,23 @@ function loading_modal_display (display_text) {
 	} else if ($("#modal-loading").hasClass('in')) {
 		$("#modal-loading").modal('hide');
 		// and open up the content area as well, since that's probably going on
-		loading_content_area('show');
+		loading_overlay_effect('show');
 	}
 }
 
 // alternative function to show/hide the contents of the screen,
 // so as to emulate an old-skool page loading CGI.pm experience
-// maybe makes the page feel faster than the modal
-function loading_content_area (hide_or_show) { // arg would be blank or 'show' to hide the content area
+// maybe makes the page feel faster than the old 'loading...' modal
+function loading_overlay_effect (hide_or_show) { // arg would be blank or 'show' to hide the content area
+	// we are doing a lazy way to throw up an overlay, just having a blank modal DIV
 	if (hide_or_show != undefined && hide_or_show != 'show') {
-	
-		$('#page-content').css('visibility', 'hidden');
-		
+		$('#blank_modal').modal({
+			backdrop: 'static',
+			keyboard: true
+		});
+	// page is ready, release			
 	} else {
-	
-		$('#page-content').css('visibility', 'visible');
-	
+		$("#blank_modal").modal('hide');
 	}
 }
 
@@ -717,8 +718,9 @@ function omnitool_controller (event,target_tool_uri) {
 
 	// tell the user we are loading -- take this out later
 	if (event == undefined || event.message_tool == undefined) {
-		// loading_modal_display('Loading...');
-		loading_content_area('hide');
+		loading_overlay_effect('hide');
+	} else if (event.message_tool != undefined) {
+		loading_modal_display('Processing...');		
 	}
 	
 	// no double slashes
@@ -786,7 +788,7 @@ function omnitool_controller (event,target_tool_uri) {
  						// and make sure it is the active tool
 						the_active_tool_ids['screen'] = the_tool_id;
 						tool_objects[the_tool_id]['search_paused'] = 'No';
-						loading_content_area('show');
+						loading_overlay_effect('show');
 
 					// otherwise, refresh all the records
 					} else {
@@ -857,7 +859,7 @@ function omnitool_controller (event,target_tool_uri) {
 					&& tool_objects[outgoing_tool_id] != undefined && tool_objects[outgoing_tool_id]['current_data_code'] != undefined && tool_objects[outgoing_tool_id]['current_data_code'] != 'none') {
 					
 						tool_objects[the_tool_id].refresh_one_result( tool_objects[outgoing_tool_id]['current_data_code'] );
-						loading_content_area('show');
+						loading_overlay_effect('show');
 						
 					// otherwise, reload the tool controls and the json
 					} else {
