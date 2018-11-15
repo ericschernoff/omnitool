@@ -95,6 +95,7 @@ function Tool (tool_attributes) {
 					backdrop: 'static',
 					keyboard: false // can't use escape key for these, as URI needs to change
 				});
+				loading_modal_display('Updating data...');
 			// otherwise, show the div
 			} else {
 				$("#"+this['tool_div']).show();
@@ -262,6 +263,7 @@ function Tool (tool_attributes) {
 		if (this['tool_type_short'] == 'screen') {
 			$(document).attr("title", this['name']);
 			$('#ot_tool_title').text(this['name']);
+			$('#ot_tool_title_short').text(this['button_name']);
 		}
 
 		// remember how i got here (for keep-warm fun in omnitool_controller()

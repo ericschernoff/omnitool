@@ -78,13 +78,7 @@
 
 [% IF form_was_submitted %]
 
-	[%IF error_title %]
-		<div class="page-header">
-			<h3 class="red">
-				[% error_title %]
-			</h3>
-		</div>
-
+	[%IF error_message %]
 		<div>
 			[% error_message %]
 		<div>

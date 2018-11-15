@@ -111,8 +111,25 @@ sub run_action {
 
 			# if they failed the test, block them
 			if ($no_access) {
-				$self->{json_results}{error_title} = $self->{attributes}{name}.' Unavailable for '.$self->{display_options}{altcode};
-				$self->{json_results}{show_error_modal} = 1;
+				# let their init() provide a nice error title
+				$self->{json_results}{error_title} = $self->{json_results}{use_error_title};
+				$self->{json_results}{error_message} = $self->{json_results}{use_error_message};
+
+				# otherwise, use our default error title / message
+				$self->{json_results}{error_title} = 'Action Unavailable';
+				$self->{json_results}{error_message} ||= $self->{attributes}{name}.' Not Available for '.$self->{display_options}{altcode};
+
+				# if this is a modal tool, we shall replace the modal
+				if ($self->{attributes}{tool_type} =~ /Modal/) {
+					$self->{json_results}{modal_title} = $self->{json_results}{error_title};
+					$self->{json_results}{no_close_button} = '';
+
+				# otherwise, pop-up the system error modal
+				} else {
+					$self->{json_results}{show_error_modal} = 1;
+				}
+				
+				# flow control
 				$self->{json_results}{form_was_submitted} = 1; # blocks the form from showing
 				# load any inline actions before we short-circuit (utility method below)
 				$self->get_inline_actions_for_action_tool();

@@ -107,7 +107,8 @@
 						<img style="padding-right: 10px; border-right: white 1px solid" class="hidden-480" src="[%session.app_instance_info.ui_logo%]"/>
 					[% END %]
 
-						<span class="h3 align-middle" id="ot_tool_title" ></span>
+						<span class="h3 align-middle hidden-xs hidden-sm hidden-md" id="ot_tool_title" ></span>
+						<span class="h3 align-middle hidden-lg" id="ot_tool_title_short" ></span>
 					</small>
 				</span>
 			</div>
