@@ -86,9 +86,23 @@ sub pack_luggage {
 	# no double //'s at the front
 	$$luggage{uri} =~ s/^\/*/\//;
 
-	# step four, pack the PSGI environment into a simple hashref; will need add other
-	# ways to pull in user-arguments for other venues later on
+	# step four, pack the PSGI environment into a simple hashref
+	# allow for params to be sent in via JSON or POST/GET or both
+	# JSON params take precedence, and the JSON must be a hash at the top level.
 	if ($$luggage{belt}->{request}) { # would not have this outside of Plack/PSGI
+		# accept JSON data structures
+		my ($request_body_type, $request_body_content, $json_params);
+		$request_body_type = $$luggage{belt}->{request}->content_type;
+		$request_body_content = $$luggage{belt}->{request}->content;
+		if ($request_body_content && $request_body_type eq 'application/json') {
+			$json_params = $$luggage{belt}->json_to_perl($request_body_content);
+			if (ref($json_params) eq 'HASH') {
+				$$luggage{params} = $json_params;
+			}
+		}
+		
+		# rest is for POST/GET params
+
 		# create a hash of the CGI params they've sent
 		@vars = $$luggage{belt}->{request}->parameters->keys;
 		foreach $v (@vars) {
@@ -476,7 +490,9 @@ When returned, %$luggage data-structure will contain:
 		also extends OmniClass by allowing for 'trees' of OmniClass's based on complex data
 
 	- $$luggage{params} -> the 'arguments' provided by the client.  Will generally be
-		the PSGI params and env info provided by Plack.
+		the PSGI params and env info provided by Plack.  Accepts POST and GET params, as
+		well as JSON request bodies, so long as that JSON is a hash (associative array)
+		at its top level.
 
 	- $$luggage{uri} = The PATH_INFO value from Plack
 

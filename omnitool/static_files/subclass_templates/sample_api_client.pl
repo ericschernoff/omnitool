@@ -24,7 +24,7 @@ my $api_client = omnitool::sample_api_client->new($api_key, $hostname, $uri_path
 # example action to lookup a part's price in an imaginary store
 my $part = 'gingers-love-080199';
 my $returned_data = $api_client->perform_requests(
-	'tools/store/price_lookup/send_json_data',
+	'/tools/store/price_lookup/send_json_data',
 	[
 		'form_submitted' => 1,
 		'part_numbers' => $part,
@@ -181,6 +181,9 @@ Tools open, and studying the data sent via 'send_json_data' as you interact with
 you load up a form, 'send_json_data' will include a 'form' structure describing precisely the inputs and options
 required, within the 'fields' and 'hidden_fields' structures.  From that, you can easily devise a post response
 back to that 'send_json_data' URI.  When submitting forms, be sure to pass a 'form_submitted' value.
+
+Update:  POST parameters are preferred, and this sample client reflects that, but you can now send params
+via a JSON request body.  The JSON structure needs to be a hash / associative array at the top level.
 
 When querying Searching Tools, the 'records' and 'records_keys' strctures will contain the matching data for
 your search. The 'metainfo' structure contains info about those records, and probably the age/update-time bits
