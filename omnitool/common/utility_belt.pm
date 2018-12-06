@@ -1036,6 +1036,11 @@ sub template_process {
 	# default tag_style to regular, [% %]
 	$args{tag_style} ||= 'template';
 
+	# make sure the template know if they have screen reader mode enabled
+	# this matters for the skeletons (default.tt, top_menu_skeleton.tt) as well as tools_controls.tt
+	# this attribute is set in pack_luggage after their session is created / revived
+	$args{template_vars}{screen_reader_mode} = $self->{screen_reader_mode};
+
 	# crank up the template toolkit object, and set it up to save to the $output variable
 	$output = '';
 	$tt = Template->new({

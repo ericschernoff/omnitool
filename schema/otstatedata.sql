@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.19, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.24, for Linux (x86_64)
 --
 -- Host: localhost    Database: otstatedata
 -- ------------------------------------------------------
--- Server version	5.7.19-0ubuntu0.16.04.1-log
+-- Server version	5.7.24-0ubuntu0.18.04.1-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -33,7 +33,7 @@ CREATE TABLE `authenticated_users` (
   PRIMARY KEY (`code`),
   KEY `code_hostname` (`rand_string`,`code`),
   KEY `user_info` (`username`,`login_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=1526 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=524 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -117,7 +117,21 @@ CREATE TABLE `omnitool_sessions` (
   PRIMARY KEY (`code`),
   KEY `session_lookup` (`username`,`app_instance`,`hostname`),
   KEY `session_ageout` (`username`,`app_instance`,`hostname`,`last_access`)
-) ENGINE=InnoDB AUTO_INCREMENT=3082 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=594 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `screen_reader_users`
+--
+
+DROP TABLE IF EXISTS `screen_reader_users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `screen_reader_users` (
+  `username` varchar(20) NOT NULL,
+  `screen_reader_mode` enum('Enabled','Disabled') DEFAULT 'Enabled',
+  PRIMARY KEY (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -129,4 +143,4 @@ CREATE TABLE `omnitool_sessions` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-07-30 22:27:27
+-- Dump completed on 2018-12-06 16:26:47

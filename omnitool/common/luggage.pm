@@ -262,6 +262,9 @@ sub pack_luggage {
 
 	}
 
+	# also save their screen reader preference to the utility belt, for template processing
+	$$luggage{belt}->{screen_reader_mode} = $$luggage{session}->screen_reader_mode( $$luggage{db} );
+
 	# if we are using a $uri_base in the actual URI, revert the URI to index.html
 	# We need to do this after the authentication step, to make sure the login form gets the
 	# proper URI

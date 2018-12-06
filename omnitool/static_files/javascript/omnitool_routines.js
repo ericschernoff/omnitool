@@ -42,7 +42,8 @@ var post_data_fetch_do_api_explorer = 0;
 // variable to hold the bookmark manager code
 var bookmark_manager;
 
-// variable to hold mobile device status
+// variables to hold screen reader, mobile device statuses
+var screen_reader_mode;
 var mobile_device;
 
 // default for whethere or not to run upper_right_autocomplete() / set in your application_wide_functions.js file
@@ -98,6 +99,9 @@ $( document ).ready(function() {
 		} else {
 			mobile_device = 0;
 		}
+
+		// screen reader mode?
+		screen_reader_mode = json.screen_reader_mode;
 
 		// set up binding for tools breadcrumbs area, but set the feed URL to 'none' so it won't fire
 		jemplate_bindings['breadcrumbs'] = new jemplate_binding('breadcrumbs', '/ui/breadcrumbs_template', 'breadcrumbs.tt', 'none');
@@ -236,6 +240,9 @@ function jemplate_binding (element_id, jemplate_uri, jemplate_name, json_data_ur
 
 				// process the jemplate
 				if ($.isEmptyObject(data) == false) {
+					// include screen reader mode status
+					data.screen_reader_mode = screen_reader_mode;
+
 					// do the actual process
 					Jemplate.process(my_jemplate_name, data, my_element_id);
 				}
@@ -258,6 +265,10 @@ function jemplate_binding (element_id, jemplate_uri, jemplate_name, json_data_ur
 	// special function to pass in JSON data to render rather than pull the JSON uri
 	this.process_json_data = function (json_data) {
 		if (this.jemplate_loaded == 1 && $.isEmptyObject(json_data) == false) {
+			// include screen reader mode status
+			json_data.screen_reader_mode = screen_reader_mode;
+			
+			// now do the processing
 			Jemplate.process(this.jemplate_name, json_data, this.element_id);
 			// we also need to call 'post_data_fetch_operations()' with this JSON
 			// data, as it may contain post-jemplate behavior instructions
@@ -1166,6 +1177,16 @@ function open_api_explorer_modal (data) {
 	open_system_modal(data);
 }
 
+// support to turn on or off the screen reader mode
+function toggle_screen_reader_mode () {
+	// preference is saved on the server in the state DB
+	// that way, it can be handled in both server and client side templates
+	$.when( query_tool('/ui/toggle_screen_reader_mode',{}) ).done(function() {
+		// reload with new setting intact
+		location.reload();
+	});
+	// doing it this way should (hopefully) not mess up the URI
+}
 
 // class-level method to call for gritter, since both load_tool and submit_form uses it
 // just pass the json_results in; outside of Tool to simplify calling from within callback
@@ -1354,111 +1375,116 @@ function interactive_form_elements (tool_id,form_type) {
 			thumbnail:false //| true | large
 		});
 
+
 		// enable rich-text editors
-		$('#'+tool_id+'_wyiswig').ace_wysiwyg({
-			speech_button: true,
-			toolbar: [
-				{
-					name: 'font',
-					title: 'Change Font',
-				},
-				{
-					name: 'fontSize',
-					title: 'Change Font Size',
-				},
-				{
-					name: 'bold',
-					title: 'Toggle Bold Style',
-				},		
-				{
-					name: 'italic',
-					title: 'Toggle Italic Style',
-				},
-				{
-					name: 'underline',
-					title: 'Toggle Underline Style',
-				},		
-				{
-					name: 'strikethrough',
-					title: 'Toggle Strike-Through Style',
-				},		
-				null,
-				{
-					name: 'foreColor',
-					title: 'Change Text Color',
-				},		
-				null,
-				{
-					name: 'insertunorderedlist',
-					title: 'Inset Unordered List',
-				},		
-				{
-					name: 'insertorderedlist',
-					title: 'Inset Ordered List',
-				},		
-				{
-					name: 'outdent',
-					title: 'Add outdent',
-				},		
-				{
-					name: 'indent',
-					title: 'Add indent',
-				},		
-				{
-					name: 'justifyleft',
-					title: 'Justify Left',
-				},		
-				{
-					name: 'justifycenter',
-					title: 'Justify Center',
-				},		
-				{
-					name: 'justifyright',
-					title: 'Justify Right',
-				},		
-				null,
-				{
-					name: 'createLink',
-					title: 'Create Link',
-				},		
-				{
-					name: 'unlink',
-					title: 'Unlink',
-				},		
-				{
-					name: 'insertImage',
-					title: 'Inset Image',
-				},		
-				null,
-				{
-					name: 'undo',
-					title: 'Undo Last Change',
-				},		
-				{
-					name: 'redo',
-					title: 'Redo Last Change',
-				},		
-				null,
-				{
-					name: 'viewSource',
-					title: 'View Source',
-				},		
-			],
-			wysiwyg: {
-				hotKeys: {
-					'ctrl+b meta+b': 'bold',
-					'ctrl+i meta+i': 'italic',
-					'ctrl+u meta+u': 'underline',
-					'ctrl+z meta+z': 'undo',
-					'ctrl+y meta+y meta+shift+z': 'redo',
-					'ctrl+l meta+l': 'justifyleft',
-					'ctrl+r meta+r': 'justifyright',
-					'ctrl+e meta+e': 'justifycenter',
-					'ctrl+j meta+j': 'justifyfull',
+		if (screen_reader_mode == 'Enabled') { // screen readers do not like the toolbars
+			$('#'+tool_id+'_wyiswig').ace_wysiwyg({ toolbar: [] });
+
+		} else { // standard users get the full button set
+			$('#'+tool_id+'_wyiswig').ace_wysiwyg({
+				speech_button: true,
+				toolbar: [
+					{
+						name: 'font',
+						title: 'Change Font',
+					},
+					{
+						name: 'fontSize',
+						title: 'Change Font Size',
+					},
+					{
+						name: 'bold',
+						title: 'Toggle Bold Style',
+					},		
+					{
+						name: 'italic',
+						title: 'Toggle Italic Style',
+					},
+					{
+						name: 'underline',
+						title: 'Toggle Underline Style',
+					},		
+					{
+						name: 'strikethrough',
+						title: 'Toggle Strike-Through Style',
+					},		
+					null,
+					{
+						name: 'foreColor',
+						title: 'Change Text Color',
+					},		
+					null,
+					{
+						name: 'insertunorderedlist',
+						title: 'Inset Unordered List',
+					},		
+					{
+						name: 'insertorderedlist',
+						title: 'Inset Ordered List',
+					},		
+					{
+						name: 'outdent',
+						title: 'Add outdent',
+					},		
+					{
+						name: 'indent',
+						title: 'Add indent',
+					},		
+					{
+						name: 'justifyleft',
+						title: 'Justify Left',
+					},		
+					{
+						name: 'justifycenter',
+						title: 'Justify Center',
+					},		
+					{
+						name: 'justifyright',
+						title: 'Justify Right',
+					},		
+					null,
+					{
+						name: 'createLink',
+						title: 'Create Link',
+					},		
+					{
+						name: 'unlink',
+						title: 'Unlink',
+					},		
+					{
+						name: 'insertImage',
+						title: 'Inset Image',
+					},		
+					null,
+					{
+						name: 'undo',
+						title: 'Undo Last Change',
+					},		
+					{
+						name: 'redo',
+						title: 'Redo Last Change',
+					},		
+					null,
+					{
+						name: 'viewSource',
+						title: 'View Source',
+					},		
+				],
+				wysiwyg: {
+					hotKeys: {
+						'ctrl+b meta+b': 'bold',
+						'ctrl+i meta+i': 'italic',
+						'ctrl+u meta+u': 'underline',
+						'ctrl+z meta+z': 'undo',
+						'ctrl+y meta+y meta+shift+z': 'redo',
+						'ctrl+l meta+l': 'justifyleft',
+						'ctrl+r meta+r': 'justifyright',
+						'ctrl+e meta+e': 'justifycenter',
+						'ctrl+j meta+j': 'justifyfull',
+					}
 				}
-			}
-		});
-		//$('#'+tool_id+'_wyiswig').addClass('wysiwyg-style2');
+			});
+		}
 
 		// enable color-choosing, if they have such a field (only supports one per form)
 		if ($('#'+tool_id+'_color_picker').length > 0) {
@@ -1833,11 +1859,10 @@ function enable_chosen_menu (jquery_identifier, custom_width) {
 		return;
 	}
 
-	// chosen is un-supported on a mobile browser
-	if (mobile_device == 1) {
+	// chosen is un-supported on a mobile browser as well as screen readers
+	if (mobile_device == 1 || screen_reader_mode == 'Enabled') {
 		return;
 	}
-
 
 	// chosen is slow, so let's go async on this
 	setTimeout(function () {

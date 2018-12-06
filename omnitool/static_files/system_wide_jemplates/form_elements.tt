@@ -182,16 +182,35 @@
 
 [% BLOCK active_status_select %]
 	[% IF form.fields.$f.preset == 'Active' %]
+		[% SET checked = 'checked' %]
 		[% SET active_selected = 'SELECTED' %]
 		[% SET inactive_selected = '' %]
 	[% ELSE %]
+		[% SET checked = '' %]
 		[% SET active_selected = '' %]
 		[% SET inactive_selected = 'SELECTED' %]
 	[% END %]
-	<select name="[%form.fields.$f.name%]" id="[%form.fields.$f.name%]" class="form-control" [%form.fields.$f.onchange%]>
-		<option [%active_selected%] value="Active">Active</option>
-		<option [%inactive_selected%] value="Inactive">Inactive</option>
-	</select>
+	
+	
+	[% IF screen_reader_mode == 'Enabled' %]
+	
+		<select name="[%form.fields.$f.name%]" id="[%form.fields.$f.name%]" class="form-control" [%form.fields.$f.onchange%]>
+			<option [%active_selected%] value="Active">Active</option>
+			<option [%inactive_selected%] value="Inactive">Inactive</option>
+		</select>
+	
+	[% ELSE %]
+		
+		<div>
+			<label class="col-xs-10 col-sm-5">
+				<input id="form-field-[%f%]" name="[%form.fields.$f.name%]_switch" class="ace ace-switch ace-switch-4 ot-switch" type="checkbox" [%checked%] />
+				<span class="lbl" data-lbl="Active Inactive"></span>
+			</label>
+			<input type="hidden" name="[%form.fields.$f.name%]" class="ot-switch-transporter" value="[%form.fields.$f.preset%]"/>
+		</div>	
+		
+	[% END %]
+	
 [% END %]
 
 [% BLOCK access_roles_select %]
@@ -349,16 +368,33 @@
 
 [% BLOCK yes_no_select %]
 	[% IF form.fields.$f.preset == 'Yes' %]
+		[% SET checked = 'checked' %]
 		[% SET yes_selected = 'SELECTED' %]
 		[% SET no_selected = '' %]
 	[% ELSE %]
+		[% SET checked = '' %]
 		[% SET yes_selected = '' %]
 		[% SET no_selected = 'SELECTED' %]
 	[% END %]
-	<select name="[%form.fields.$f.name%]" id="[%form.fields.$f.name%]" class="form-control" [%form.fields.$f.onchange%]>
-		<option [%no_selected%] value="No">No</option>
-		<option [%yes_selected%] value="Yes">Yes</option>
-	</select>
+	
+	[% IF screen_reader_mode == 'Enabled' %]
+		<select name="[%form.fields.$f.name%]" id="[%form.fields.$f.name%]" class="form-control" [%form.fields.$f.onchange%]>
+			<option [%no_selected%] value="No">No</option>
+			<option [%yes_selected%] value="Yes">Yes</option>
+		</select>
+		
+	[% ELSE %]
+
+		<div>
+			<label class="col-xs-10 col-sm-5">
+				<input id="form-field-[%f%]" name="[%form.fields.$f.name%]_switch" class="ace ace-switch ace-switch-5 ot-switch" type="checkbox" [%checked%] />
+				<span class="lbl"></span>
+			</label>
+			<input type="hidden" name="[%form.fields.$f.name%]" class="ot-switch-transporter" value="[%form.fields.$f.preset%]"/>
+		</div>
+	
+	[% END %]
+
 [% END %]
 
 [% BLOCK font_awesome_select %]

@@ -167,7 +167,12 @@ Expects all of $self for a Tool.pm class/sub-class.
 		[% IF is_trigger_menu %]
 			[% SET menu_onchange = menu_onchange _ "tool_objects['" _ tool_and_instance _ "'].trigger_menu('quick_menu_" _ tool_configs.tool_filter_menus.$search_menu.trigger_menu _ "',this.options[this.selectedIndex].value);" %]
 		[% END %]
-		<select id="quick_[%this_menu%]" style="padding: 20px; min-width: 144px;" data-placeholder="[% tool_configs.tool_filter_menus.$search_menu.name %]" class="tool-search-menu" tabindex="2" onchange="[%menu_onchange%]">
+
+		[% IF screen_reader_mode == 'Enabled' %]
+			<select id="quick_[%this_menu%]" [% multiple_tag %] style="min-width: 144px;" data-placeholder="[% tool_configs.tool_filter_menus.$search_menu.name %]" tabindex="2" onchange="[%menu_onchange%]">
+		[% ELSE %]
+			<select id="quick_[%this_menu%]" [% multiple_tag %] style="padding: 20px; min-width: 144px;" data-placeholder="[% tool_configs.tool_filter_menus.$search_menu.name %]" class="tool-search-menu" tabindex="2" onchange="[%menu_onchange%]">
+		[% END %]
 			<!-- <option value="[%tool_configs.tool_filter_menus.$search_menu.options_keys.0%]">[% tool_configs.tool_filter_menus.$search_menu.name %]</option> -->
 			[% FOREACH option_value IN tool_configs.tool_filter_menus.$search_menu.options_keys %]
 				[% IF display_options.$this_menu == option_value %]

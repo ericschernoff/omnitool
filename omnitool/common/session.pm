@@ -250,6 +250,63 @@ sub get_instance_db_object {
 	return $correct_db;
 }
 
+# centralized method to handle interacting with otstatedata.screen_reader_users
+# this is where we store the option to enable that screen_reader_mode, which
+# tells our templates (skeletons, tool_controls.tt, form_elments.tt mainly) 
+# and omnitool_routines.js (enable_chosen)
+# to disable certain features so that the UI is friendlier to screen reader software
+sub screen_reader_mode {
+	my $self = shift;
+	
+	# required arg is the db connection, because we may not have it in $self due to
+	# re-blessing of earlier session (see new())
+	# optional arg is the task (get or toggle, default is 'get')
+	my ($db,$task) = @_;
+	
+	return 'Disabled' if !$db;
+	
+	$task ||= 'get';
+	# sanity
+	my $username = $self->{username};
+	my $screen_reader_mode;
+
+	# get = is screen reader mode enabled?
+	if ($task eq 'get') {
+		
+		# do the lookup
+		($screen_reader_mode) = $db->quick_select(qq{
+			select screen_reader_mode from otstatedata.screen_reader_users
+			where username=?
+		},[$username]);
+		
+		# no record?  default mode is Disabled
+		$screen_reader_mode ||= 'Disabled';
+	
+	# toggle = change the mode
+	} else {
+		# what is the current mode?
+		$screen_reader_mode = $self->screen_reader_mode($db);
+		# change it to the opposite
+		if ($screen_reader_mode eq 'Enabled') {
+			$screen_reader_mode = 'Disabled';
+		} else {
+			$screen_reader_mode = 'Enabled';
+		}
+
+		# basic table, primary key is the username, they may not have a 
+		# record yet, so replace is our friend
+		$db->do_sql(qq{
+			replace into otstatedata.screen_reader_users
+			(username, screen_reader_mode) values (?,?)
+		},[$username, $screen_reader_mode]);		
+		
+	}
+	
+	# return our current screen_reader_mode
+	return $screen_reader_mode;
+
+}
+
 # method to serialize this object and save to our database / data store
 # supports update now, for possibly keeping tools' search states here too ;)
 sub save {

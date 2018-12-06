@@ -422,7 +422,22 @@ sub get_instance_info {
 		$$info_hashref{default_tool} = '/tools/'.$self->{luggage}{session}{tools}{$default_tool}{uri_path_base};
 	}
 
+	# tell omnitool_routines about their screen reader mode preference
+	$$info_hashref{screen_reader_mode} = $self->{luggage}{belt}->{screen_reader_mode};
+	
 	return $info_hashref;
+}
+
+# endpoint method for setting a new screen reader mode preference
+# please see toggle_screen_reader_mode() in omnitool_routines.js
+sub toggle_screen_reader_mode {
+	my $self = shift;
+	
+	# easy call to the method in the session object
+	my $new_screen_reader_mode = $self->{luggage}{session}->screen_reader_mode( $self->{luggage}{db}, 'toggle');
+	
+	$self->{luggage}{belt}->mr_zebra('Accessibility mode set to '.$new_screen_reader_mode,2);
+	
 }
 
 # method to load all the javascript classes used by this application

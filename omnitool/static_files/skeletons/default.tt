@@ -141,6 +141,17 @@
 									[% END %]
 
 									<li>
+										<a href="javascript:toggle_screen_reader_mode();">
+										<i class="ace-icon fa fa-eye"></i>
+										[% IF screen_reader_mode == 'Enabled' %]
+											Disable Accessibility Mode
+										[% ELSE %]
+											Enable Accessibility Mode
+										[% END %]
+										</a>
+									</li>
+
+									<li>
 										[% IF uri_base %]
 											<a href="/ui/signout?uri_base=[%uri_base%]">
 										[% ELSE %]
