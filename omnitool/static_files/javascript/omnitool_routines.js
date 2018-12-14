@@ -1486,6 +1486,14 @@ function interactive_form_elements (tool_id,form_type) {
 			});
 		}
 
+		// try to prevent bad HTML from being pasted in by stripping out styling from pasted text
+		// stolen from https://github.com/mindmup/bootstrap-wysiwyg/issues/123
+		$('#'+tool_id+'_wyiswig').on('paste',function(e){
+			e.preventDefault();
+			var text = (e.originalEvent || e).clipboardData.getData('text/plain') || prompt('Copy some text before attempting to paste.');
+			document.execCommand('insertText', false, text);
+		});
+
 		// enable color-choosing, if they have such a field (only supports one per form)
 		if ($('#'+tool_id+'_color_picker').length > 0) {
 			$('#'+tool_id+'_color_picker').ace_colorpicker();
