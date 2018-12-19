@@ -82,7 +82,7 @@ sub connect_to_database {
 	my $self = shift;
 
 	# only do this if $self->{dbh} is not already a DBI object
-	return if $self->{dbh} && blessed($self->{dbh}) =~ /DBI/;
+	return if $self->{dbh} && blessed($self->{dbh}) =~ /DBI/ && $self->{dbh}->ping;
 
 	my ($username, $password, $credentials, $dsn);
 
