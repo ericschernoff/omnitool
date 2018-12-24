@@ -86,9 +86,11 @@ sub load_display_options {
 		# if no tool configue is specifed, there is going to be an error
 	}
 
-	# now save out that update display options set; pass the 'saved_name' param
-	# in case they are looking to bookmark this search (will be blank otherwise)
-	$self->save_display_options_hash($self->{luggage}{params}{saved_name});
+	# if they are looking to bookmark this search, go ahead and save out 
+	# the updated display options set
+	if ($self->{luggage}{params}{saved_name}) {
+		$self->save_display_options_hash($self->{luggage}{params}{saved_name});
+	}
 
 }
 
@@ -112,6 +114,7 @@ sub load_display_options_hash {
 		'object_name' => $display_options_obj_name,
 		'db_table' => $display_options_table,
 	);
+
 }
 
 # subroutine to save display options set back to the otstatedata database

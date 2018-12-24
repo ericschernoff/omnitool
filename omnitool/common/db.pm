@@ -255,13 +255,6 @@ sub do_sql {
 	# prepare the SQL
 	$sth = $self->{dbh}->prepare($sql) or $self->log_errors(qq{Error preparing $sql: }.$self->{dbh}->errstr());
 
-	# get a utility belt, if we don't have one already
-	# UPDATE: Should not need this here, and we do not want to interfere
-	# with the belt coming from luggage, since this gets called in new().
-	# if (not $self->{belt}->{all_hail}) { # set it up
-	#	$self->{belt} = omnitool::common::utility_belt->new();
-	# }
-
 	# ready to execute, but we want to plan for some possible deadlocks, since InnoDB is still not perfect
 	$cleared_deadlocks = 0;
 	while ($cleared_deadlocks == 0) {
