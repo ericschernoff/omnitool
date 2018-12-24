@@ -141,14 +141,14 @@ sub execute_method {
 	# this execution, this 'run_method' will set $self->{clear_display_options}
 	if ($self->{clear_display_options}) { # clear it out
 		$self->clear_display_options_hash();
-	# otherwise, re-save the display config for future executes, in case we modified those during the run_method
-	} else {
-		# again, only if we have a valid / true / ot6-generated client_connectio_id
-		if ($self->{display_options_key} =~ /$self->{luggage}{username}/ && length($self->{display_options_key}) > 20) {
-			$self->save_display_options_hash($self->{luggage}{params}{saved_name});
-		}
-	}
 
+	# otherwise, re-save the display config for future executes, in case we modified those during the run_method
+	# only if we have a valid / true / ot6-generated client_connection_id
+	} elsif ($self->{display_options_key} =~ /$self->{luggage}{username}/ && length($self->{display_options_key}) > 20
+	# attempt to save contention by not writing back for the 'supporting' methods
+	&& $self->{run_method} !~ /send_jemplate|send_html|send_attributes|send_tool_controls|send_breadcrumbs|advanced_sort_form|advanced_search_form|advanced_search_trigger_menu_options|fetch_updated_keys/) {
+		$self->save_display_options_hash($self->{luggage}{params}{saved_name});
+	}
 
 	# return our work product to the dispatcher
 	return $the_output;

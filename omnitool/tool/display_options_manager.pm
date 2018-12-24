@@ -87,7 +87,7 @@ sub load_display_options {
 	}
 
 	# if they are looking to bookmark this search, go ahead and save out 
-	# the updated display options set
+	# the updated display options 
 	if ($self->{luggage}{params}{saved_name}) {
 		$self->save_display_options_hash($self->{luggage}{params}{saved_name});
 	}
