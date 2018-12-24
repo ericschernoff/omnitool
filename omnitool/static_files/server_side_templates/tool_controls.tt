@@ -141,12 +141,18 @@ Expects all of $self for a Tool.pm class/sub-class.
 <span style="white-space: nowrap">
 
 [%# search-related buttons %]
-<div class="btn-group" id="search-controls-toggle_[%tool_and_instance%]">
-	<button type="button" class="btn btn-white visible-xs" onclick="xs_show_search_controls('[%tool_and_instance%]');">Search Controls</button>
-</div>
+[% IF quick_search_menus.0 %]
+	<div class="btn-group" id="search-controls-toggle_[%tool_and_instance%]">
+		<button type="button" class="btn btn-white visible-xs" onclick="xs_show_search_controls('[%tool_and_instance%]');">
+			<i class="ace-icon fa fa-search-plus"></i>
+			<span class="hidden-480">Filters</span>
+		</button>
+	</div>
+[% END %]
 <span id="search-controls_[%tool_and_instance%]" class="hidden-xs">
 [%# show up to four search menus - chosen drop-down menus %]
 [% FOREACH search_menu IN quick_search_menus %]
+	<div class="space-2 visible-xs"></div>
 	<div class="btn-group" id="field_div_quick_menu_[%search_menu%]">
 	<!-- quick search menu -->
 		[% SET this_menu = 'menu_' _ search_menu %]
@@ -184,6 +190,7 @@ Expects all of $self for a Tool.pm class/sub-class.
 		</select>
 		[%# Quick search box married up last menu for wrapping purposes %]
 		[% IF has_search_box && search_menu == quick_search_menus.-1 %]
+			<div class="space-2 visible-xs"></div>
 			<span id="quick_keyword_controls_[%tool_and_instance%]">
 				<span class="input-icon">
 					<input style="height: 32px" type="text" size="12" name='quick_keyword' id="quick_keyword_[%tool_and_instance%]" class="quick_keyword_fields" placeholder="Sticky Search" value="[%display_options.quick_keyword%]"/>
@@ -194,7 +201,6 @@ Expects all of $self for a Tool.pm class/sub-class.
 				</span>
 			</span>
 		[% END %]
-
 	</div>
 [% END %]
 

@@ -361,7 +361,7 @@ function post_data_fetch_operations (data) {
 	// reveal the 'return to tool' link, if one was provided
 	$('.return_link').hide();
 	if (data.the_tool_id == the_active_tool_ids['screen'] && data.return_link_uri && data.return_link_title) {
-		$('.return_link').html('<i class="fa fa-arrow-left blue"></i> Return to ' + data.return_link_title);
+		$('.return_link').html('<i class="fa fa-arrow-left blue"></i><span class="hidden-480"> Return to ' + data.return_link_title + '</span>');
 		$('.return_link').attr("href", data.return_link_uri);
 		$('.return_link').show();
 	} else if (data.the_tool_id == the_active_tool_ids['screen']) {
@@ -432,13 +432,13 @@ function post_data_fetch_operations (data) {
 
 		// if there's a previous record, link to this action for that record
 		if (previous_altcode != undefined) {
-			$('.previous_link').html('<i class="fa fa-fast-backward blue"></i> Previous ' + data.datatype_name);
+			$('.previous_link').html('<i class="fa fa-fast-backward blue"></i><span class="hidden-480"> Previous ' + data.datatype_name + '</span>');
 			$('.previous_link').attr("onclick", "tool_objects['" + data.the_tool_id + "'].prev_next_links('" + previous_altcode + "')");
 			$('.previous_link').show();
 		}
 		// same deal for the next records
 		if (next_altcode != undefined) {
-			$('.next_link').html('Next ' + data.datatype_name + ' <i class="fa fa-fast-forward blue"></i>');
+			$('.next_link').html('<span class="hidden-480">Next ' + data.datatype_name + '</span> <i class="fa fa-fast-forward blue"></i>');
 			$('.next_link').attr("onclick", "tool_objects['" + data.the_tool_id + "'].prev_next_links('" + next_altcode + "')");
 			$('.next_link').show();
 		}
