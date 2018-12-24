@@ -66,7 +66,7 @@ sub new {
 # method to log benchmarks for execution times and memory; useful for debugging and finding chokepoints
 sub benchmarker {
 	my $self = shift;
-	my ($log_message,$log_type) = @_;
+	my ($log_message,$log_type,$log_memory) = @_;
 
 	# return if no log message
 	return if !$log_message;
@@ -81,15 +81,22 @@ sub benchmarker {
 	$right_now = Benchmark->new;
 	$benchmark = timediff($right_now, $self->{start_benchmark});
 
-	# figure out the current memory usage for this process - stolen from https://blog.celogeek.com/201312/394/perl-universal-way-to-get-memory-usage-of-a-process/
-	$pt = Proc::ProcessTable->new;
-	%info = map { $_->pid => $_ } @{$pt->table};
-	$memory_size = $info{$$}->rss;
-	# we care about megs
-	$memory_size = sprintf("%.2f", ( $memory_size / 1048576));
+	if ($log_memory) { # logging memory is optional, because it does add time
+		# figure out the current memory usage for this process - stolen from https://blog.celogeek.com/201312/394/perl-universal-way-to-get-memory-usage-of-a-process/
+		$pt = Proc::ProcessTable->new;
+		%info = map { $_->pid => $_ } @{$pt->table};
+		$memory_size = $info{$$}->rss;
+		# we care about megs
+		$memory_size = sprintf("%.2f", ( $memory_size / 1048576));
 
-	# now log out the benchmark
-	$self->logger($log_message.' at '.timestr($benchmark). ' / Memory Size: '.$memory_size.' mb / Process ID: '.$$, $log_type);
+		# now log out the benchmark
+		$self->logger($log_message.' at '.timestr($benchmark). ' / Memory Size: '.$memory_size.' mb / Process ID: '.$$, $log_type);
+
+	# standard logging, no memory
+	} else {
+		# now log out the benchmark
+		$self->logger($log_message.' at '.timestr($benchmark). ' / Process ID: '.$$, $log_type);
+	}
 
 	# all done
 }
@@ -1275,8 +1282,12 @@ Here are the included methods, in alphabetical order:
 
 For troubleshooting choke-points / speed issues.  Will log out messages showing the number of seconds, out
 to five decimel places, to get to the chosen spot in your code execution.  First arg is the message indicating
-the place in your code, and the second is the base name for your log file.  Second arg is optional, and will
-default to 'benchmarks'.
+the place in your code, and the second is the base name for your log file.  
+
+Second arg is optional, and will default to 'benchmarks'.
+
+Third arg is also optional, if filled, the current memory footprint will also be logged. This adds some time
+and will make subsequent benchmarks inaccurate, so only turn on if you are watching memory and not speed.
 
 For most usefulness, you will call this twice, like so:
 
