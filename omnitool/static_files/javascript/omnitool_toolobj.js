@@ -158,11 +158,10 @@ function Tool (tool_attributes) {
 						this_tool_uri + '/send_json_data'
 					);
 
-
 				} else if (reload_jemplate == 1 || jemplate_bindings[ this_tool_display_div ].jemplate_loaded == 0) {
 					jemplate_bindings[ this_tool_display_div ].load_jemplate();
 
-				} else { // no, just load in the json feed to the display area
+				} else if (skip_json_reload == undefined) { // no, just load in the json feed to the display area
 					//jemplate_bindings[ this['tool_display_div'] ].load_jemplate();
 					// make sure the json_data_uri is right, because many uri's share tools/jemplates
 					jemplate_bindings[ this_tool_display_div ].json_data_uri = this_tool_uri + '/send_json_data';
