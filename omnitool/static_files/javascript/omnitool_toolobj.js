@@ -1107,10 +1107,12 @@ function Tool (tool_attributes) {
 	this.prev_next_links = function (navigation_to_altcode) {
 		// make sure to lift the current lock first
 		var this_tool_uri = this['tool_uri']; // pack for faraway trip
-		$.when( query_tool(this['tool_uri'] + '/unlock_data',{}) ).done(function(json_data) {
+		/* $.when( query_tool(this['tool_uri'] + '/unlock_data',{}) ).done(function(json_data) {
 			// then change the uri to trigger omnitool_controller
 			location.hash = this_tool_uri + '/' + navigation_to_altcode;
-		});
+		}); */
+		query_tool(this['tool_uri'] + '/unlock_data/'+this['current_data_code'],{});
+		location.hash = this_tool_uri + '/' + navigation_to_altcode;
 	}
 
 	// function to hide the tool when it is designated as outgoing
