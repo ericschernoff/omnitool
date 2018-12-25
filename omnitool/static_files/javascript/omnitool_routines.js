@@ -773,6 +773,9 @@ function omnitool_controller (event,target_tool_uri) {
 
 		// if they are moving to a new phase/method of the active tool, update that tool's jemplate binding
 		if (this_active_tool != 'Not Found') {
+			// tell the existing object about the breadcrumbs data
+			tool_objects[the_tool_id]['breadcrumbs'] = tool_attributes.breadcrumbs;
+		
 			// if keep-warm = Never, we need to always start fresh
 			if (tool_objects[the_tool_id]['keep_warm'] == 'Never' || loading_bookmark == 1) {
 				if ($( "#"+tool_objects[the_tool_id]['tool_div'] ).length > 0) {
@@ -833,8 +836,8 @@ function omnitool_controller (event,target_tool_uri) {
 
 			// get the breadcrumbs right, if in screen mode
 			if (tool_objects[the_tool_id]['tool_type_short'] == 'screen') {
-				jemplate_bindings['breadcrumbs'].json_data_uri = tool_uri + '/send_breadcrumbs'; // ?client_connection_id='+client_connection_id;
-				jemplate_bindings['breadcrumbs'].process_json_uri();
+				// jemplate_bindings['breadcrumbs'].json_data_uri = tool_uri + '/send_breadcrumbs'; // ?client_connection_id='+client_connection_id;
+				jemplate_bindings['breadcrumbs'].process_json_data(tool_attributes.breadcrumbs);
 
 				// close any open modals when reloading this screen
 				tool_objects[the_tool_id].close_modal_for_screen();
@@ -855,6 +858,12 @@ function omnitool_controller (event,target_tool_uri) {
 			if (tool_objects[the_tool_id]['keep_warm'] == 'Never') {
 				$( "#"+tool_objects[the_tool_id]['tool_div'] ).remove();
 			}
+			
+			// if the div/html was still there, we need to reload the tool controls
+			var reload_tool_controls = 0;
+			if ($( "#"+tool_objects[the_tool_id]['tool_div'] ).length) {
+				reload_tool_controls = 1;
+			}
 
 			// load it up at last
 			if (tool_uri.match('tool_mode')) { // force the jemplate to reload
@@ -871,9 +880,10 @@ function omnitool_controller (event,target_tool_uri) {
 					
 						tool_objects[the_tool_id].refresh_one_result( tool_objects[outgoing_tool_id]['current_data_code'] );
 						loading_overlay_effect('show');
-						
-					// otherwise, reload the tool controls and the json
-					} else {
+					
+					// if reload_tool_controls =1, we had the div/html already and
+					// need to reload the tool controls and the json
+					} else if (reload_tool_controls) {
 						// also reload the tool_controls, in case the keyword changed
 						$.when( tool_objects[the_tool_id].reload_tool_controls() ).done(function() {
 							// then re-run the process_json_uri
@@ -883,7 +893,17 @@ function omnitool_controller (event,target_tool_uri) {
 								tool_objects[the_tool_id].show_advanced_search();
 							}
 						});
+
+					// otherwise, just refresh the JSON					
+					} else {
+						// then re-run the process_json_uri
+						jemplate_bindings[ tool_objects[the_tool_id]['tool_display_div'] ].process_json_uri();
+						// hide the advanced search?
+						if ($('#advanced_search_' + the_tool_id).is(':visible')) {
+							tool_objects[the_tool_id].show_advanced_search();
+						}
 					}
+					
 				});
 
 			}

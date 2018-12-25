@@ -146,7 +146,8 @@ sub execute_method {
 	# only if we have a valid / true / ot6-generated client_connection_id
 	} elsif ($self->{display_options_key} =~ /$self->{luggage}{username}/ && length($self->{display_options_key}) > 20
 	# attempt to save contention by not writing back for the 'supporting' methods
-	&& $self->{run_method} !~ /send_jemplate|send_html|send_attributes|send_tool_controls|send_breadcrumbs|advanced_sort_form|advanced_search_form|advanced_search_trigger_menu_options|fetch_updated_keys/) {
+	# NOTE: make sure that send_attributes is not included -- that is usually when the parent record is changed
+	&& $self->{run_method} !~ /send_jemplate|send_html|send_tool_controls|send_breadcrumbs|advanced_sort_form|advanced_search_form|advanced_search_trigger_menu_options|fetch_updated_keys/) {
 		$self->save_display_options_hash($self->{luggage}{params}{saved_name});
 	}
 
@@ -171,6 +172,9 @@ sub send_attributes {
 	# this is a great spot to log the loading of the tool
 	$self->{luggage}{belt}->logger($self->{attributes}{name}.' accessed by '.$self->{luggage}{username},'tool_accesses');
 
+	# include the breadcrumbs to try and save that extra query on the front end
+	$self->{attributes}{breadcrumbs} = $self->send_breadcrumbs();
+	
 	# ship it out
 	return $self->{attributes};
 }
