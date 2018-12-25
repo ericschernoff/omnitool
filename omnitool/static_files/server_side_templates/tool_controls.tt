@@ -107,9 +107,17 @@ Expects all of $self for a Tool.pm class/sub-class.
 [% IF attributes.tool_type.match('Search') %]
 	<div class="btn-group">
 		<button class="btn btn-white" title="Reset Search Options" onclick="tool_objects['[%tool_and_instance%]'].reset_search_options()">
-			<i class="fa fa-trash red"></i>
+			<i class="fa fa-recycle red"></i>
 		</button>
 	</div>
+	[% IF quick_search_menus.0 %]
+		<div class="btn-group" id="search-controls-toggle_[%tool_and_instance%]">
+			<button type="button" class="btn btn-white visible-xs" onclick="xs_show_search_controls('[%tool_and_instance%]');">
+				<i class="ace-icon fa fa-gear"></i>
+				<span class="hidden-480">Filters</span>
+			</button>
+		</div>
+	[% END %]
 	[% IF has_advanced_search %]
 		<div class="btn-group" id="advanced_search_features_[%tool_and_instance%]">
 			<button class="btn btn-white" onclick="tool_objects['[%tool_and_instance%]'].show_advanced_search()">
@@ -140,15 +148,6 @@ Expects all of $self for a Tool.pm class/sub-class.
 
 <span style="white-space: nowrap">
 
-[%# search-related buttons %]
-[% IF quick_search_menus.0 %]
-	<div class="btn-group" id="search-controls-toggle_[%tool_and_instance%]">
-		<button type="button" class="btn btn-white visible-xs" onclick="xs_show_search_controls('[%tool_and_instance%]');">
-			<i class="ace-icon fa fa-search-plus"></i>
-			<span class="hidden-480">Filters</span>
-		</button>
-	</div>
-[% END %]
 <span id="search-controls_[%tool_and_instance%]" class="hidden-xs">
 [%# show up to four search menus - chosen drop-down menus %]
 [% FOREACH search_menu IN quick_search_menus %]

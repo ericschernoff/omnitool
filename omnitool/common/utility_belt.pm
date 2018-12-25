@@ -1305,8 +1305,6 @@ And if today is 09/04/2016, you could look in $OTHOME/log/benchmarks-2016-09-04.
 You can use this for permanent logging of execution times for various routines.  In that case, please pass the
 second argument to create a specialized log file.
 
-Updated:  Now, it includes the memory footprint plus the process ID in the logging, which can be hanky for finding leaks.
-
 =head2 comma_list()
 
 Takes a reference to an array plus an optional delimiter, runs the arrayref through our 'uniquify_list'
