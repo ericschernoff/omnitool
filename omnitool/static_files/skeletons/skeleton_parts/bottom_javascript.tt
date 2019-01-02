@@ -185,9 +185,8 @@
 <div id="system_modal" class="modal fade" tabindex="-1">
 </div>
 
-<!-- div for a blank modal to get the overlay when loading up an app -->
-<div id="blank_modal" class="modal fade" tabindex="-1">
-</div>
+<!-- div for an overlay when loading up an app -->
+<div id="loading_overlay" class="ajax-loading-overlay"></div>
 
 <!-- content-is-loading modal -->
 <div id="modal-loading" class="modal" tabindex="-1" style="z-index: 9998;">

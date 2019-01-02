@@ -701,13 +701,10 @@ function loading_modal_display (display_text) {
 function loading_overlay_effect (hide_or_show) { // arg would be blank or 'show' to hide the content area
 	// we are doing a lazy way to throw up an overlay, just having a blank modal DIV
 	if (hide_or_show != undefined && hide_or_show != 'show') {
-		$('#blank_modal').modal({
-			backdrop: 'static',
-			keyboard: true
-		});
+		$('#loading_overlay').show();
 	// page is ready, release			
 	} else {
-		$("#blank_modal").modal('hide');
+		$('#loading_overlay').hide();
 	}
 }
 
