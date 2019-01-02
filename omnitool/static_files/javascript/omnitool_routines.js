@@ -700,11 +700,11 @@ function loading_modal_display (display_text) {
 // maybe makes the page feel faster than the old 'loading...' modal
 function loading_overlay_effect (hide_or_show) { // arg would be blank or 'show' to hide the content area
 	// we are doing a lazy way to throw up an overlay, just having a blank modal DIV
-	if (hide_or_show != undefined && hide_or_show != 'show') {
-		$('#loading_overlay').show();
-	// page is ready, release			
-	} else {
+	// never show if the system modal (error) is up ... or maybe the page is ready
+	if ($("#system_modal").hasClass('in') || hide_or_show == 'show') {
 		$('#loading_overlay').hide();
+	} else {
+		$('#loading_overlay').show();
 	}
 }
 
@@ -863,47 +863,40 @@ function omnitool_controller (event,target_tool_uri) {
 			}
 
 			// load it up at last
-			if (tool_uri.match('tool_mode') || $( "#"+tool_objects[the_tool_id]['tool_div'] ).length == undefined) { // force the jemplate to reload
-				tool_objects[the_tool_id].load_tool(1);
+			$.when( tool_objects[the_tool_id].load_tool(0,1) ).done(function() {
 
-			} else { // normal re-load of previously-inactive tool
-
-				$.when( tool_objects[the_tool_id].load_tool(0,1) ).done(function() {
-
-					// does it qualify for a single-item reload?  basically, only if we are moving from a modal/message to a screen.
-					// if going from one screen to another, we want a full reload
-					if (tool_objects[outgoing_tool_id]['tool_type_short'] != 'screen' && tool_objects[the_tool_id]['tool_type_short'] == 'screen' && tool_objects[the_tool_id]['single_record_jemplate_block'] != undefined && tool_objects[the_tool_id]['single_record_jemplate_block'] != 0
-					&& tool_objects[outgoing_tool_id] != undefined && tool_objects[outgoing_tool_id]['current_data_code'] != undefined && tool_objects[outgoing_tool_id]['current_data_code'] != 'none') {
-					
-						tool_objects[the_tool_id].refresh_one_result( tool_objects[outgoing_tool_id]['current_data_code'] );
-						loading_overlay_effect('show');
-					
-					// if reload_tool_controls =1, we had the div/html already and
-					// need to reload the tool controls and the json
-					} else if (reload_tool_controls) {
-						// also reload the tool_controls, in case the keyword changed
-						$.when( tool_objects[the_tool_id].reload_tool_controls() ).done(function() {
-							// then re-run the process_json_uri
-							jemplate_bindings[ tool_objects[the_tool_id]['tool_display_div'] ].process_json_uri();
-							// hide the advanced search?
-							if ($('#advanced_search_' + the_tool_id).is(':visible')) {
-								tool_objects[the_tool_id].show_advanced_search();
-							}
-						});
-
-					// otherwise, just refresh the JSON					
-					} else {
+				// does it qualify for a single-item reload?  basically, only if we are moving from a modal/message to a screen.
+				// if going from one screen to another, we want a full reload
+				if (tool_objects[outgoing_tool_id]['tool_type_short'] != 'screen' && tool_objects[the_tool_id]['tool_type_short'] == 'screen' && tool_objects[the_tool_id]['single_record_jemplate_block'] != undefined && tool_objects[the_tool_id]['single_record_jemplate_block'] != 0
+				&& tool_objects[outgoing_tool_id] != undefined && tool_objects[outgoing_tool_id]['current_data_code'] != undefined && tool_objects[outgoing_tool_id]['current_data_code'] != 'none') {
+				
+					tool_objects[the_tool_id].refresh_one_result( tool_objects[outgoing_tool_id]['current_data_code'] );
+					loading_overlay_effect('show');
+				
+				// if reload_tool_controls =1, we had the div/html already and
+				// need to reload the tool controls and the json
+				} else if (reload_tool_controls) {
+					// also reload the tool_controls, in case the keyword changed
+					$.when( tool_objects[the_tool_id].reload_tool_controls() ).done(function() {
 						// then re-run the process_json_uri
 						jemplate_bindings[ tool_objects[the_tool_id]['tool_display_div'] ].process_json_uri();
 						// hide the advanced search?
 						if ($('#advanced_search_' + the_tool_id).is(':visible')) {
 							tool_objects[the_tool_id].show_advanced_search();
 						}
-					}
-					
-				});
+					});
 
-			}
+				// otherwise, just refresh the JSON					
+				} else {
+					// then re-run the process_json_uri
+					jemplate_bindings[ tool_objects[the_tool_id]['tool_display_div'] ].process_json_uri();
+					// hide the advanced search?
+					if ($('#advanced_search_' + the_tool_id).is(':visible')) {
+						tool_objects[the_tool_id].show_advanced_search();
+					}
+				}
+				
+			});
 
 		}
 
@@ -1101,7 +1094,7 @@ function open_system_modal (data) {
 		}
 	
 		loading_modal_display('hide');
-		loading_overlay_effect('hide');
+		loading_overlay_effect('show');
 	});
 }
 
