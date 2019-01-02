@@ -863,7 +863,7 @@ function omnitool_controller (event,target_tool_uri) {
 			}
 
 			// load it up at last
-			if (tool_uri.match('tool_mode')) { // force the jemplate to reload
+			if (tool_uri.match('tool_mode') || $( "#"+tool_objects[the_tool_id]['tool_div'] ).length == undefined) { // force the jemplate to reload
 				tool_objects[the_tool_id].load_tool(1);
 
 			} else { // normal re-load of previously-inactive tool
@@ -1101,6 +1101,7 @@ function open_system_modal (data) {
 		}
 	
 		loading_modal_display('hide');
+		loading_overlay_effect('hide');
 	});
 }
 

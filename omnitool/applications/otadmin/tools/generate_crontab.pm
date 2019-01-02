@@ -77,6 +77,10 @@ sub perform_action {
 		# tmp file maintenance
 		push(@{ $self->{json_results}{paragraphs} },'# need this on any/all OT6 workers an app servers:  delete temp files older than 7 days'."\n".qq{30 4 * * * find /opt/omnitool/tmp -type f -mtime +7 -execdir rm -- '{}' \;});
 
+		# instance-wide maintenance tasks notes
+		push(@{ $self->{json_results}{paragraphs} }, "# To run Instance-wide daily cron routines, please see comments in omnitool::applications::otadmin::datatypes::instances above daily_routines() \n".
+			"# and set up an instance sub-class like omnitool::applications::ciscolabs::common::daily_routines.");
+
 		# cycle through each datatype and show X entries, where X = support_email_and_tasks-2 if support_email_and_tasks > 4
 		foreach $dt (@{$datatypes_object->{records_keys}}) {
 			# what's an appropriate number to start?  remember, the script runs for 3-4 minutes, and it will

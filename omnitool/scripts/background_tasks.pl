@@ -59,6 +59,17 @@ $omniclass_object = $$luggage{object_factory}->omniclass_object(
 	'dt' => $target_datatype,
 );
 
+# are we running some instance-wide daily routines via 'pure-ish' cron?
+# example cron entry:
+# 23 * * * * /opt/omnitool/code/omnitool/scripts/background_tasks.pl OT_ADMIN_INSTANCE_HOSTNAME 5_1 daily_routines TARGET_INSTANCE_ALTCODE
+# I like 23, which is 11pm, because the servers are on UTC time and that's 6-9pm in the US
+if ($ARGV[2] eq 'daily_routines' && $target_datatype eq '5_1' && $ARGV[3]) {
+	$omniclass_object->simple_load($ARGV[3]);
+	$omniclass_object->run_daily_routines();
+	# do not do the rest of this stuff
+	exit;
+}
+
 # check to see if there are more than the allowed number of scripts running for this instance/datatype combo per worker
 # use the very cool Proc::ProcessTable module to avoid the need for another DB table
 

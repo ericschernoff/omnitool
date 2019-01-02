@@ -293,24 +293,17 @@ sub post_save {
 	}
 }
 
-# start our routine to run any daily or weekly tasks
-# this is kicked off via the 'Start Daily BG Tasks' action in Manage Instances
+# start our routine to run our daily/weekly routines
+# this is run via $OTPERL/scripts/backgroun_tasks.pl
+# example cron entry:
+# 23 * * * * /opt/omnitool/code/omnitool/scripts/background_tasks.pl OT_ADMIN_INSTANCE_HOSTNAME 5_1 daily_routines TARGET_INSTANCE_ALTCODE
+# I like 23, which is 11pm, because the servers are on UTC time and that's 6-9pm in the US
 sub daily_routines {
 	my $self = shift;
 
 	my ($args) = @_;
 
 	my ($the_class_name, $this_instance_luggage, $status, $message, $new_task_id, $next_task_delay_hours, $end_time, $start_time);
-
-	# run tomorrow's daily tasks exactly 23.9 hours after this one starts
-	# (the 0.1 is because our cron routine to run this occurs every 10 minutes, and we
-	# don't want this to get moved ahead 10 minutes per day)
-	$new_task_id = $self->add_task(
-		'method' => 'daily_routines',
-		'data_code' => $$args{data_code},
-		'delay_hours' => 23.9,
-		'duplicates_are_ok' => 1,
-	);
 
 	# get a %$luggage for this instance
 	$this_instance_luggage = pack_luggage(
@@ -329,8 +322,14 @@ sub daily_routines {
 	# now become that instance-specific class
 	bless $self, $the_class_name;
 
-	# execute the daily-tasks method
-	($status,$message) = $self->run_daily_routines($args, $this_instance_luggage);
+	# execute the daily-tasks method, carefully
+	eval {
+		($status,$message) = $self->run_daily_routines($args, $this_instance_luggage);
+	};
+	if ($@) { # hard error
+		$status = 'Error';
+		$message = 'Eval message: '.$@;
+	}
 
 	# send back our results
 	return ($status,$message);
