@@ -296,7 +296,7 @@ sub post_save {
 # start our routine to run our daily/weekly routines
 # this is run via $OTPERL/scripts/backgroun_tasks.pl
 # example cron entry:
-# 23 * * * * /opt/omnitool/code/omnitool/scripts/background_tasks.pl OT_ADMIN_INSTANCE_HOSTNAME 5_1 daily_routines TARGET_INSTANCE_ALTCODE
+# 0 23 * * * /opt/omnitool/code/omnitool/scripts/background_tasks.pl OT_ADMIN_INSTANCE_HOSTNAME 5_1 daily_routines TARGET_INSTANCE_ALTCODE
 # I like 23, which is 11pm, because the servers are on UTC time and that's 6-9pm in the US
 sub daily_routines {
 	my $self = shift;
@@ -329,7 +329,24 @@ sub daily_routines {
 	if ($@) { # hard error
 		$status = 'Error';
 		$message = 'Eval message: '.$@;
+	
+	# if no error, record successful run-through
+	} else {
+		$self->{db}->do_sql(qq{
+			replace into otstatedata.instance_daily_routines_runs (instance_data_code, last_run_timestamp)
+			values (?, unix_timestamp())
+		}, [ $self->{data_code} ]);		
 	}
+
+=cut
+	Depends on:
+	
+	CREATE TABLE otstatedata.instance_daily_routines_runs (
+	instance_data_code varchar(25) NOT NULL,
+	last_run_timestamp int(11) DEFAULT NULL,
+	PRIMARY KEY (instance_data_code)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+=cut
 
 	# send back our results
 	return ($status,$message);

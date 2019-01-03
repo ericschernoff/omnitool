@@ -691,7 +691,7 @@ function loading_modal_display (display_text) {
 	} else if ($("#modal-loading").hasClass('in')) {
 		$("#modal-loading").modal('hide');
 		// and open up the content area as well, since that's probably going on
-		loading_overlay_effect('show');
+		loading_overlay_effect('hide');
 	}
 }
 
@@ -701,7 +701,7 @@ function loading_modal_display (display_text) {
 function loading_overlay_effect (hide_or_show) { // arg would be blank or 'show' to hide the content area
 	// we are doing a lazy way to throw up an overlay, just having a blank modal DIV
 	// never show if the system modal (error) is up ... or maybe the page is ready
-	if ($("#system_modal").hasClass('in') || hide_or_show == 'show') {
+	if ($("#system_modal").hasClass('in') || hide_or_show == 'hide') {
 		$('#loading_overlay').hide();
 	} else {
 		$('#loading_overlay').show();
@@ -724,21 +724,20 @@ function omnitool_controller (event,target_tool_uri) {
 		var tool_uri = target_tool_uri.replace( /^#/, '' );
 	}
 
+	// no double slashes
+	var tool_uri = tool_uri.replace( /\/\//, '/' );
+
 	// tell the user we are loading -- take this out later
 	if (event == undefined || event.message_tool == undefined) {
-		loading_overlay_effect('hide');
+		loading_overlay_effect('show');
 	} else if (event.message_tool != undefined) {
 		loading_modal_display('Processing...');		
 	}
-	
-	// no double slashes
-	var tool_uri = tool_uri.replace( /\/\//, '/' );
 
 	// first step is to resolve that uri to a tool ID (app-inst + tool_id)
 	// we do it this way because a specific tool may have multiple uri's, and
 	// we don't want to build objects on a per-uri basis, but rather per-tool_id
 	$.when( get_tool_id_for_uri(tool_uri) ).done(function(tool_attributes) {
-		
 		var the_tool_id = tool_attributes.the_tool_id;
 		
 		// if the tool was not found, jump to the default
@@ -770,8 +769,9 @@ function omnitool_controller (event,target_tool_uri) {
 
 		// if they are moving to a new phase/method of the active tool, update that tool's jemplate binding
 		if (this_active_tool != 'Not Found') {
+
 			// tell the existing object about the breadcrumbs data
-			tool_objects[the_tool_id]['breadcrumbs'] = tool_attributes.breadcrumbs;
+			tool_objects[the_tool_id]['breadcrumbs'] = tool_attributes.breadcrumbs;		
 		
 			// if keep-warm = Never, we need to always start fresh
 			if (tool_objects[the_tool_id]['keep_warm'] == 'Never' || loading_bookmark == 1) {
@@ -782,6 +782,7 @@ function omnitool_controller (event,target_tool_uri) {
 					tool_objects[the_tool_id].load_tool();
 				}
 			} else if (tool_uri.match('tool_mode')) { // changing tool mode; reload the jemplate
+				
 				jemplate_bindings[ tool_objects[the_tool_id]['tool_display_div'] ].load_jemplate();
 
 			// re-opening modals are fairly straight-forward
@@ -794,12 +795,12 @@ function omnitool_controller (event,target_tool_uri) {
 				if (tool_objects[the_tool_id]['single_record_jemplate_block'] != undefined && tool_objects[the_tool_id]['single_record_jemplate_block'] != 0) {
 
 					// if there was a current altcode for the outgoing tool, refresh that record
-					if (tool_objects[outgoing_tool_id] != undefined && tool_objects[outgoing_tool_id]['current_altcode'] != undefined && tool_objects[outgoing_tool_id]['current_altcode'] != 'none') {
-						tool_objects[the_tool_id].refresh_one_result( tool_objects[outgoing_tool_id]['current_altcode'] );
- 						// and make sure it is the active tool
+					if (tool_objects[outgoing_tool_id] != undefined && tool_objects[outgoing_tool_id]['current_data_code'] != undefined && tool_objects[outgoing_tool_id]['current_data_code'] != 'none') {
+						tool_objects[the_tool_id].refresh_one_result( tool_objects[outgoing_tool_id]['current_data_code'] );
+						// and make sure it is the active tool
 						the_active_tool_ids['screen'] = the_tool_id;
 						tool_objects[the_tool_id]['search_paused'] = 'No';
-						loading_overlay_effect('show');
+						loading_overlay_effect('hide');
 
 					// otherwise, refresh all the records
 					} else {
@@ -826,6 +827,7 @@ function omnitool_controller (event,target_tool_uri) {
 						if ($('#advanced_search_' + the_tool_id).is(':visible')) {
 							tool_objects[the_tool_id].show_advanced_search();
 						}
+						loading_overlay_effect('hide');
 					});
 				}
 			}
@@ -835,35 +837,34 @@ function omnitool_controller (event,target_tool_uri) {
 			if (tool_objects[the_tool_id]['tool_type_short'] == 'screen') {
 				// jemplate_bindings['breadcrumbs'].json_data_uri = tool_uri + '/send_breadcrumbs'; // ?client_connection_id='+client_connection_id;
 				jemplate_bindings['breadcrumbs'].process_json_data(tool_attributes.breadcrumbs);
-
+				
 				// close any open modals when reloading this screen
 				tool_objects[the_tool_id].close_modal_for_screen();
 			}
 
 		// do we already have a tool object?
 		} else if (tool_objects[the_tool_id] == undefined) { // no, need to create
-			// create the object with the attributes we already have
-			
+		
+			// create the object with the attributes we already have	
 			// we need to know the 'starting' uri for this tool for api_explorer_mode
 			tool_attributes.called_via_uri = tool_uri;
 			// construct the new Tool object and call load_tool() to trigger the message
 			tool_objects[the_tool_id] = new Tool(tool_attributes);
-			tool_objects[the_tool_id].load_tool();
+			tool_objects[the_tool_id].load_tool();			
 
 		} else { // yes, just load it up
 			// if keep-warm = Never, we need to always start fresh
 			if (tool_objects[the_tool_id]['keep_warm'] == 'Never') {
 				$( "#"+tool_objects[the_tool_id]['tool_div'] ).remove();
 			}
-			
+
 			// if the div/html was still there, we need to reload the tool controls
 			var reload_tool_controls = 0;
 			if ($( "#"+tool_objects[the_tool_id]['tool_div'] ).length) {
 				reload_tool_controls = 1;
 			}
 
-			// load it up at last
-			$.when( tool_objects[the_tool_id].load_tool(0,1) ).done(function() {
+			$.when( tool_objects[the_tool_id].load_tool(1,1) ).done(function() {
 
 				// does it qualify for a single-item reload?  basically, only if we are moving from a modal/message to a screen.
 				// if going from one screen to another, we want a full reload
@@ -871,9 +872,9 @@ function omnitool_controller (event,target_tool_uri) {
 				&& tool_objects[outgoing_tool_id] != undefined && tool_objects[outgoing_tool_id]['current_data_code'] != undefined && tool_objects[outgoing_tool_id]['current_data_code'] != 'none') {
 				
 					tool_objects[the_tool_id].refresh_one_result( tool_objects[outgoing_tool_id]['current_data_code'] );
-					loading_overlay_effect('show');
+					loading_overlay_effect('hide');
 				
-				// if reload_tool_controls =1, we had the div/html already and
+				// if reload_tool_controls = 1, we had the div/html already and
 				// need to reload the tool controls and the json
 				} else if (reload_tool_controls) {
 					// also reload the tool_controls, in case the keyword changed
@@ -884,8 +885,8 @@ function omnitool_controller (event,target_tool_uri) {
 						if ($('#advanced_search_' + the_tool_id).is(':visible')) {
 							tool_objects[the_tool_id].show_advanced_search();
 						}
+						loading_overlay_effect('hide');
 					});
-
 				// otherwise, just refresh the JSON					
 				} else {
 					// then re-run the process_json_uri
@@ -893,9 +894,9 @@ function omnitool_controller (event,target_tool_uri) {
 					// hide the advanced search?
 					if ($('#advanced_search_' + the_tool_id).is(':visible')) {
 						tool_objects[the_tool_id].show_advanced_search();
-					}
+					}						
+					loading_overlay_effect('hide');
 				}
-				
 			});
 
 		}
@@ -1094,7 +1095,7 @@ function open_system_modal (data) {
 		}
 	
 		loading_modal_display('hide');
-		loading_overlay_effect('show');
+		loading_overlay_effect('hide');
 	});
 }
 

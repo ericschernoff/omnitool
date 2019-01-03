@@ -186,7 +186,7 @@
 </div>
 
 <!-- div for an overlay when loading up an app -->
-<div id="loading_overlay" class="ajax-loading-overlay"></div>
+<div id="loading_overlay" class="ajax-loading-overlay" onclick="$(this).hide()"></div>
 
 <!-- content-is-loading modal -->
 <div id="modal-loading" class="modal" tabindex="-1" style="z-index: 9998;">
