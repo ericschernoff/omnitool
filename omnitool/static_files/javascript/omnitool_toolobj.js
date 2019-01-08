@@ -242,8 +242,8 @@ function Tool (tool_attributes) {
 
 		// get the breadcrumbs right, if in screen mode
 		if (this['tool_type_short'] == 'screen') {
-			//jemplate_bindings['breadcrumbs'].json_data_uri = this['tool_uri'] + '/send_breadcrumbs';
-			jemplate_bindings['breadcrumbs'].process_json_data(this['breadcrumbs']);
+			jemplate_bindings['breadcrumbs'].json_data_uri = this['tool_uri'] + '/send_breadcrumbs';
+			jemplate_bindings['breadcrumbs'].process_json_uri();
 		}
 
 		// if it has a 'query_interval' for the search, set a timer to reload that jemplate

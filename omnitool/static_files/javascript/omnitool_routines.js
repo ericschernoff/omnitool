@@ -835,8 +835,8 @@ function omnitool_controller (event,target_tool_uri) {
 
 			// get the breadcrumbs right, if in screen mode
 			if (tool_objects[the_tool_id]['tool_type_short'] == 'screen') {
-				// jemplate_bindings['breadcrumbs'].json_data_uri = tool_uri + '/send_breadcrumbs'; // ?client_connection_id='+client_connection_id;
-				jemplate_bindings['breadcrumbs'].process_json_data(tool_attributes.breadcrumbs);
+				jemplate_bindings['breadcrumbs'].json_data_uri = tool_uri + '/send_breadcrumbs'; // ?client_connection_id='+client_connection_id;
+				jemplate_bindings['breadcrumbs'].process_json_uri();
 				
 				// close any open modals when reloading this screen
 				tool_objects[the_tool_id].close_modal_for_screen();
