@@ -1519,6 +1519,12 @@ The 'Warn' status is meant to be a 'soft' error, mainly so that you can exclude 
 kind of daily/week report on errors.  Please use 'Warn' when the task either completed well enough,
 or it's failure is not critical to your life being happy.
 
+Monitoring Background Tasks: To "watch" background tasks for your Datatypes, navigate to
+'Manage Instances' under the OmniTool Admin UI, and select 'Background Tasks' next to the
+desired Application Instance.  This screen will allow you to search background tasks by
+Datatype, Method, and Record ID (Altcode).  For failed tasks, you are able to see the error
+messages and mark the task 'Retry.'
+
 To retrieve the task ID and the method name for the next-to-run pending task for a record, you can:
 
 	If the record is not already loaded:
@@ -1559,12 +1565,6 @@ and works quite well.  No need to restart -- you get fresh scripts all the time,
 and if it fails one minute, you fix it and succeed the next minute.  Please feel free to
 modify my 'background_tasks.pl' script to run in a more modern context.
 
-Monitoring Background Tasks: To "watch" background tasks for your Datatypes, navigate to
-'Manage Instances' under the OmniTool Admin UI, and select 'Background Tasks' next to the
-desired Application Instance.  This screen will allow you to search background tasks by
-Datatype, Method, and Record ID (Altcode).  For failed tasks, you are able to see the error
-messages and mark the task 'Retry.'
-
 Pausing Tasks: do_task() will not do anything if the 'pause_background_tasks' column is
 set to 'Yes' for the current Application Instance.  This allows for code deploys without
 breaking background tasks, and can be set via the OmniTool Admin UI when updating an
@@ -1573,7 +1573,7 @@ Instance. (Or your CI can issue a nice SQL update command or two.)
 Also, do_task() will periodically delete tasks which were marked Completed more than
 30 days ago.  This will be attempted every 500-1000 seconds.
 
-=head2 Instance Daily Taks
+=head2 Instance Daily Tasks
 
 You may want to have Instance-wide background tasks running each day (or week).  Here is
 how you set that up:
@@ -1589,23 +1589,15 @@ how you set that up:
 	completes step 3 below.  Also, please see the example code for limiting the day(s)
 	upon which something is executed.
 
-3. Navigate to the target Instance via the OmniTool Admin web UI and click 'Start Daily
-	BG Tasks' from its Actions menu.  This will cancel any previously-scheduled daily
-	background tasks and schedule a new one to start immediately, under the name of the
-	admin who just clicked that link (which is you, by the way).  To monitor the daily
-	background tasks, please navigate to the parent OmniTool Admin Instance and check
-	the 'Background Tasks' Tool for the OT Admin Instance that contains the configs
-	for your Instance --> so probably at the top level OT Admin Instance.
+3. Add a crontab entry in your worker node to run those tasks at a specific time each day:
+	0 23 * * * /opt/omnitool/code/omnitool/scripts/background_tasks.pl OT_ADMIN_INSTANCE_HOSTNAME 5_1 daily_routines TARGET_INSTANCE_ALTCODE
+	
+	I like 23, which is 11pm, because the servers are on UTC time and that's 6-9pm in the US.
+	I run these as a 'pure' type cron entry so that they will at least partially run, 
+	even if there is a problem with the background tasks.
 
-That last part is confusing.  Basically, you are creating a background task to run on
-the App Instance, within its parent OT Admin Instance, so you have to watch it at the
-higher level.
-
-With that in mind, your best practice is for your daily Instance-wide tasks to actually spawn
+Your best practice is for your daily Instance-wide tasks to actually spawn
 a bunch of other background tasks to run within the Instance itself.
-
-Also, please bear in mind that the daily tasks will happen each day, at roughly the time
-you started them.
 
 =head2 Generating & Sending Outbound Email
 

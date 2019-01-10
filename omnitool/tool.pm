@@ -147,7 +147,8 @@ sub execute_method {
 	} elsif ($self->{display_options_key} =~ /$self->{luggage}{username}/ && length($self->{display_options_key}) > 20
 	# attempt to save contention by not writing back for the 'supporting' methods
 	# NOTE: make sure that send_attributes is not included -- that is usually when the parent record is changed
-	&& $self->{run_method} !~ /send_jemplate|send_html|send_tool_controls|send_breadcrumbs|advanced_sort_form|advanced_search_form|advanced_search_trigger_menu_options|fetch_updated_keys/) {
+	# also make sure 'unlock_data' is included, as that might be running concurrently when using the next/previous buttons
+	&& $self->{run_method} !~ /send_jemplate|send_html|send_tool_controls|send_breadcrumbs|advanced_sort_form|advanced_search_form|advanced_search_trigger_menu_options|fetch_updated_keys|unlock_data/) {
 		$self->save_display_options_hash($self->{luggage}{params}{saved_name});
 	}
 
