@@ -71,6 +71,7 @@ SSLProxyEngine off
 	SSLProtocol -all +TLSv1 +TLSv1.2 -SSLv3
 	SSLCipherSuite HIGH:!aNULL:+SHA1:!MD5
 	SSLCompression off
+	Header always set Strict-Transport-Security "max-age=63072000; includeSubdomains;"
 
 	# START OKAY TO EDIT
 	SSLCertificateFile [%options.othome%]/configs/ssl_cert/[%options.ot_primary_hostname%].crt
