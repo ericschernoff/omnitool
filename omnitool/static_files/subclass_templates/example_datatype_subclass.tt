@@ -232,6 +232,19 @@ sub post_validate_form {
 	# to let it submit without problem, return 0;
 }
 
+# example method to be called via called_named_method Tool.pm sub-class
+# this method should be named for the referring Tool's uri_path_base.
+# This will be an inline data action, so that the target record is already
+# loaded into $self->{data}.  Do some work, then return a one-line message
+# for the gritter to display
+sub example_call_named_method {
+	my $self = shift;
+	
+	# do some work on $self->{data};
+	
+	return 'Message for my pop-over gritter response.';
+}
+
 # example view_details method to produce %$details_hash for displaying full
 # data details via Complex_Details.tt
 sub view_details {
@@ -330,21 +343,20 @@ sub view_details {
 }
 
 
-# example of a method which would be called from the background_task_manager via
-# do_task() to do some work in the background
+# example of a method which would be called from the background_task_manager 
+# via do_task() to do some work in the background
 sub example_background_task {
 	my $self = shift;
 	my ($args) = @_; # args passed to load()
 	# this can contain:
-	#	- data_code: a specific record's primary key
 	#	- any arguments sent in by your add_task() call
 	# it WILL contain
 	#	- task_id: the primary key of the currently-running task in background_table
 
-	# you may want to load the data
-	$self->load(
-		'data_codes' => [$$args{data_code}]
-	);
+	# if the background task was called with a target data_code, that 
+	# record is already loaded into $self->{data}
+	# also, this task will be run in tne name (session) of whichever user
+	# was running the code that queued up this background_task
 
 	# do some stuff here
 
