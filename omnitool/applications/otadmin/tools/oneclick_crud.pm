@@ -186,6 +186,8 @@ sub perform_form_action {
 	$$tool_params{uri_path_base} = lc($target_datatype_name);
 		$$tool_params{uri_path_base} =~ s/[^0-9a-z\_]//gi;
 	$$tool_params{button_name} = $target_datatype_name.'s'; # they will want to edit that later
+	# button name can't be longer then 20 chars
+	$$tool_params{button_name} = substr($$tool_params{button_name},0,19) if length($$tool_params{button_name}) > 20;
 
 	# get the parent string
 	$parent_string = $self->figure_new_parent();
@@ -252,6 +254,8 @@ sub perform_form_action {
 		$$tool_params{name} = 'Create a '.$target_datatype_name;
 		$$tool_params{uri_path_base} = 'create';
 		$$tool_params{button_name} = 'Create a '.$target_datatype_name;
+		# button name can't be longer then 20 chars
+		$$tool_params{button_name} = substr($$tool_params{button_name},0,19) if length($$tool_params{button_name}) > 20;
 		# $$tool_params{is_locking} = 'Yes';
 		$$tool_params{share_parent_inline_action_tools} = 'Yes';
 		# Use Inline Actions from Parent Search   | share_parent_inline_action_tools | No                |
@@ -284,7 +288,10 @@ sub perform_form_action {
 	if ($self->{belt}->really_in_list('update', $self->{luggage}{params}{sub_tools_to_create})) {
 		$$tool_params{name} = 'Update a '.$target_datatype_name;
 		$$tool_params{uri_path_base} = 'update';
-		$$tool_params{button_name} = 'Update a '.$target_datatype_name;
+		$$tool_params{button_name} = 'Update '.$target_datatype_name;
+		# button name can't be longer then 20 chars
+		$$tool_params{button_name} = substr($$tool_params{button_name},0,19) if length($$tool_params{button_name}) > 20;
+
 		$$tool_params{is_locking} = 'Yes';
 		$$tool_params{share_parent_inline_action_tools} = 'Yes';
 		# Use Inline Actions from Parent Search   | share_parent_inline_action_tools | No                |
@@ -318,7 +325,10 @@ sub perform_form_action {
 	if ($self->{belt}->really_in_list('delete', $self->{luggage}{params}{sub_tools_to_create})) {
 		$$tool_params{name} = 'Delete a '.$target_datatype_name;
 		$$tool_params{uri_path_base} = 'delete';
-		$$tool_params{button_name} = 'Delete a '.$target_datatype_name;
+		$$tool_params{button_name} = 'Delete '.$target_datatype_name;
+		# button name can't be longer then 20 chars
+		$$tool_params{button_name} = substr($$tool_params{button_name},0,19) if length($$tool_params{button_name}) > 20;
+
 		$$tool_params{is_locking} = 'Yes';
 		$$tool_params{share_parent_inline_action_tools} = 'No';
 		# Use Inline Actions from Parent Search   | share_parent_inline_action_tools | No                |
