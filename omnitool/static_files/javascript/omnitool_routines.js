@@ -1816,8 +1816,6 @@ function render_tool_chart (tool_id, alternative_chart_id) {
 		var chartarea_div = $('#chartarea_'+tool_id);
 	}
 
-	// where do the charts go
-	var chartarea_div = $('#chartarea_'+tool_id);
 	// call for the chart data JSON
 	$.when( query_tool(tool_objects[tool_id]['tool_uri'] + '/charting_json', { alternative_chart_id: alternative_chart_id } ) ).done(function(data) {
 		// keep it looking nice

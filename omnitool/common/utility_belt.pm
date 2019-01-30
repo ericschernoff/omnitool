@@ -711,6 +711,23 @@ sub logger {
 	return $now;
 }
 
+# method to accept two numbers and calculate a percentage which is the first number
+# over the second; i.e. 25, 100 ==> 25%
+sub make_percentage {
+	my $self = shift;
+	
+	my ($portion_number, $total_number) = @_;
+	
+	# default to 100% if invalid
+	if ($portion_number =~ /[^0-9\.]/ || $portion_number > $total_number || !$portion_number) {
+		return '100%';
+	}
+	
+	# return like 95%
+	return sprintf("%.1f", ( 100 * ($portion_number / $total_number) ) ).'%';
+	
+}
+
 # method to get a list of month names, based on number of months back and forward
 sub month_name_list {
 	my $self = shift;
@@ -1576,6 +1593,15 @@ just use that for testing your apps, not in real-world logging.
 
 You can send a third argument, a target logs directory if you want to send this log somewhere 
 other than $ENV{OTHOME}/logs.  This new directory must exist in the system.
+
+=head2 make_percentage()
+
+Takes two numbers, a 'portion' number and a 'total' number and returns the percentage text,
+i.e. 35%.  For example:
+
+	$percentage = $belt->make_percentage(25,100);
+
+$percentage now is '25.0%';
 
 =head2 month_name_list()
 
