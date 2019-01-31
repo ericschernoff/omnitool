@@ -45,6 +45,7 @@ sub send_html {
 			# try to clear the altcode for this parent Tool's config, so they won't see the
 			# message if they go to the have-access tool in another window.
 			$self->{display_options}{altcode} = '';
+			$self->{do_save_display_options} = 1;
 			# sanity
 			my $inst_contact = $self->{luggage}{session}{app_instance_info}{inst_contact};
 			# message for tools_area_skeleton.tt
@@ -262,6 +263,7 @@ sub advanced_search_form {
 		$$tool_filter_menu{default_option_value} ||= 'Any'; # 'Any' is our default default option
 		if (!$self->{display_options}{$value_key} && $$tool_filter_menu{default_option_value}) {
 			$self->{display_options}{$value_key} = $$tool_filter_menu{default_option_value};
+			$self->{do_save_display_options} = 1;
 			# this will get saved by display_options_manager() when we are done
 		}
 
@@ -556,6 +558,7 @@ sub build_filter_menu_options {
 
 			# set the chosen option to the default_option_value
 			$self->{display_options}{$value_key} = $$this_tool_filter_menu{default_option_value};
+			$self->{do_save_display_options} = 1;
 			# this will get saved by display_options_manager() when we are done
 		}
 
