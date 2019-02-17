@@ -588,6 +588,9 @@ To load up data from your MySQL database into the OmniClass object:
 		'complex_sorting' => [complex,sort,instructions'],  # optional; provide an arrayref of column/direction combinations
 															# if you would like the records_keys sorted by multiple columns
 															# please see complex_sort() below
+		'resolver_hash_field' => 'field_name',  # supply a valid field name if you would like to process
+												# create_resolver_hash() against the found search results.
+												# please see notes on create_resolver_hash() below
 	);
 
 This method will populate the data into these attributes of the object:

@@ -245,6 +245,15 @@ sub load {
 		$self->post_load($args_ref);
 	}
 
+	# and/or would they like to set up a resolver hash
+	if ($args{resolver_hash_field} && $self->{records_keys}[0]) { # yep, proceed
+		$self->create_resolver_hash(
+			'data_codes' => $self->{search_results},
+			'field_name' => $args{resolver_hash_field},
+			'already_loaded' => 1,
+		);
+	}
+
 	# all done!
 }
 
