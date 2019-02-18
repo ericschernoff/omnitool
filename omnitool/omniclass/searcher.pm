@@ -377,23 +377,16 @@ sub search {
 
 	# $self->{belt}->benchmarker('OmniClass Search Run for '.$self->{table_name});
 
+	# if they want a resolver_hash, then we shall auto-load
+	$args{auto_load} = 1 if $args{resolver_hash_field};
+
 	# OK, do they want to auto-load the search results
 	if ($args{auto_load} || $args{simple_query_mode}) { # yep, proceed
 		# have to transfer in all the args they sent
 		$args{data_codes} = $self->{search_results};
 		$self->load(%args);
-		$args{already_loaded} = 1; # for below
 
 		# $self->{belt}->benchmarker('OmniClass AutoLoad Done for '.$self->{table_name});
-	}
-
-	# and/or would they rather set up a resolver hash
-	if ($args{resolver_hash_field}) { # yep, proceed
-		$self->create_resolver_hash(
-			'data_codes' => $self->{search_results},
-			'field_name' => $args{resolver_hash_field},
-			'already_loaded' => $args{already_loaded},
-		);
 	}
 
 	# all done
