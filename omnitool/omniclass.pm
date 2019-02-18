@@ -165,6 +165,7 @@ sub new {
 			'skip_metainfo' => $args{skip_metainfo},
 			'load_fields' => $args{load_fields},
 			'simple_query_mode' => $args{simple_query_mode},
+			'resolver_hash_field' => $args{resolver_hash_field},
 		);
 	# or if they specified a search on load, call that with auto_load=1
 	# unless they wanted to short-circuit the auto-load

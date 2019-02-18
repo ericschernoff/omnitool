@@ -145,7 +145,8 @@ sub read_excel {
 
                 # get ahold of the actual cell object
 				$cell = $sheet->{Cells}[$row][$col];
-				next if !$cell; # skip if blank
+				
+				# next if !$cell; # skip if blank
 
 				# add it to our nice array
 				push (@{ $the_data[$sheet_num][$row] }, $cell->{Val} );
