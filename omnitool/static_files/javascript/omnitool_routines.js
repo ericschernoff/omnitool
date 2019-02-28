@@ -1176,6 +1176,11 @@ function open_api_explorer_modal (data) {
 	data.system_uri_base = system_uri_base;
 	
 	data.post_parameters_string = JSON.stringify(data.post_parameters, undefined, 2);
+
+	// display the tool's description if we have it
+	if (the_current_active_tool_id != 'none' && tool_objects[the_current_active_tool_id]['description'] != undefined) {
+		data.tool_description = tool_objects[the_current_active_tool_id]['description'];	
+	}
 	
 	// form submits will have post_parameters as a list of hash
 	if (Array.isArray(data.post_parameters)) {

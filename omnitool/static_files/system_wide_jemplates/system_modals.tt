@@ -86,6 +86,13 @@
 		</label>
 	</div>
 
+	[% IF tool_description %]
+		<h4>Current Endpoint Description</h4>
+		
+		 [% tool_description %]
+		 
+	[% END %]
+
 	<h4>POST Query Details</h4>
 
 	Posted to URL: https://[%hostname%]/[%uri%]
