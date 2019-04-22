@@ -34,7 +34,7 @@ var instance_title = '';
 var background_refresher;
 
 // a var to let us know when we are in 'API Explorer Mode,' which shows the user the POST requests
-// for searching, form, and message tools.  
+// for searching, form, and message tools.
 var api_explorer_mode = 0;
 // for managing the view_details displays of the API explorer
 var post_data_fetch_do_api_explorer = 0;
@@ -152,7 +152,7 @@ $( document ).ready(function() {
 	jemplate_bindings['ot_navbar_notifications'] = new jemplate_binding('navbar_notification_area', '/ui/navbar_notifications_template', 'navbar_notifications.tt', '/ui/notifications');
 	// refresh those notifications every 90 seconds
 	var ot_navbar_notifications_refresh = setInterval(
-		function() { 
+		function() {
 			// refresh these notifications if the mouse has moved in the past two minutes
 			var last_mouse_move = ( Math.floor(Date.now() / 1000) ) - mouse_move_time;
 			if (last_mouse_move < 120) {
@@ -161,7 +161,7 @@ $( document ).ready(function() {
 		},
 		90000
 	);
-	
+
 
 	// close the modal
 	loading_modal_display('hide');
@@ -267,7 +267,7 @@ function jemplate_binding (element_id, jemplate_uri, jemplate_name, json_data_ur
 		if (this.jemplate_loaded == 1 && $.isEmptyObject(json_data) == false) {
 			// include screen reader mode status
 			json_data.screen_reader_mode = screen_reader_mode;
-			
+
 			// now do the processing
 			Jemplate.process(this.jemplate_name, json_data, this.element_id);
 			// we also need to call 'post_data_fetch_operations()' with this JSON
@@ -345,7 +345,7 @@ function post_data_fetch_operations (data) {
 
 	// enable any pop-overs that were just loaded up
 	enable_popovers();
-	
+
 	// attach the sent altcode/data_code to the tool, for possible un-locking purposes -- and maybe refreshing that targeted record
 	if (data.altcode) {
 		tool_objects[data.the_tool_id]['current_altcode'] = data.altcode;
@@ -356,8 +356,8 @@ function post_data_fetch_operations (data) {
 		tool_objects[data.the_tool_id]['current_data_code'] = data.data_code;
 	} else {
 		tool_objects[data.the_tool_id]['current_data_code'] = 'none';
-	}	
- 	
+	}
+
 	// reveal the 'return to tool' link, if one was provided
 	$('.return_link').hide();
 	if (data.the_tool_id == the_active_tool_ids['screen'] && data.return_link_uri && data.return_link_title) {
@@ -400,9 +400,9 @@ function post_data_fetch_operations (data) {
 		if (data.records_found_count) {
 			var records_word;
 			if (data.records_found_count == 1) {
-				records_word = 'record';			
+				records_word = 'record';
 			} else {
-				records_word = 'records';			
+				records_word = 'records';
 			}
 			$('#above_tool_display_'+ data.the_tool_id).html('<i>Found ' + data.records_found_count + ' ' + records_word + ' in ' + data.response_time + ' seconds.</i>');
 		} else {
@@ -442,7 +442,7 @@ function post_data_fetch_operations (data) {
 			$('.next_link').attr("onclick", "tool_objects['" + data.the_tool_id + "'].prev_next_links('" + next_altcode + "')");
 			$('.next_link').show();
 		}
-		
+
 		// if there are inline actions, show the secondary 'quick actions' drop-down
 		if (data['inline_actions'] != undefined && data['inline_actions'][0]['button_name']) {
 			Jemplate.process('inline_action_menu.tt', data, '#quick_inline_actions_menu_' + data.the_tool_id);
@@ -455,7 +455,7 @@ function post_data_fetch_operations (data) {
 		show_or_hide_element('top_notice_'+data.the_tool_id, data.top_notice);
 
 	}
-	
+
 	// see Tool.load_tool(), but the short story is that we will need to allow for the
 	// API explorer for view_details tools
 	if (post_data_fetch_do_api_explorer == 1) {
@@ -577,7 +577,7 @@ function post_data_fetch_operations (data) {
 		} else { // default to five minutes
 			var countdown_seconds = 300;
 		}
-		
+
 		// use the countdown timer routines in the Tool object for this timer
 		tool_objects[data.the_tool_id].start_lock_countdown(countdown_seconds, data.return_link_uri);
 
@@ -630,7 +630,7 @@ function post_data_fetch_operations (data) {
 
 		}
 	}
-	
+
 }
 
 // utility function to either show an element with html or hide it
@@ -731,7 +731,7 @@ function omnitool_controller (event,target_tool_uri) {
 	if (event == undefined || event.message_tool == undefined) {
 		loading_overlay_effect('show');
 	} else if (event.message_tool != undefined) {
-		loading_modal_display('Processing...');		
+		loading_modal_display('Processing...');
 	}
 
 	// first step is to resolve that uri to a tool ID (app-inst + tool_id)
@@ -739,7 +739,7 @@ function omnitool_controller (event,target_tool_uri) {
 	// we don't want to build objects on a per-uri basis, but rather per-tool_id
 	$.when( get_tool_id_for_uri(tool_uri) ).done(function(tool_attributes) {
 		var the_tool_id = tool_attributes.the_tool_id;
-		
+
 		// if the tool was not found, jump to the default
 		if (the_tool_id == 'TOOL_NOT_FOUND') {
 			location.hash = '#' + default_tool;
@@ -771,8 +771,8 @@ function omnitool_controller (event,target_tool_uri) {
 		if (this_active_tool != 'Not Found') {
 
 			// tell the existing object about the breadcrumbs data
-			tool_objects[the_tool_id]['breadcrumbs'] = tool_attributes.breadcrumbs;		
-		
+			tool_objects[the_tool_id]['breadcrumbs'] = tool_attributes.breadcrumbs;
+
 			// if keep-warm = Never, we need to always start fresh
 			if (tool_objects[the_tool_id]['keep_warm'] == 'Never' || loading_bookmark == 1) {
 				if ($( "#"+tool_objects[the_tool_id]['tool_div'] ).length > 0) {
@@ -782,7 +782,7 @@ function omnitool_controller (event,target_tool_uri) {
 					tool_objects[the_tool_id].load_tool();
 				}
 			} else if (tool_uri.match('tool_mode')) { // changing tool mode; reload the jemplate
-				
+
 				jemplate_bindings[ tool_objects[the_tool_id]['tool_display_div'] ].load_jemplate();
 
 			// re-opening modals are fairly straight-forward
@@ -837,20 +837,20 @@ function omnitool_controller (event,target_tool_uri) {
 			if (tool_objects[the_tool_id]['tool_type_short'] == 'screen') {
 				jemplate_bindings['breadcrumbs'].json_data_uri = tool_uri + '/send_breadcrumbs'; // ?client_connection_id='+client_connection_id;
 				jemplate_bindings['breadcrumbs'].process_json_uri();
-				
+
 				// close any open modals when reloading this screen
 				tool_objects[the_tool_id].close_modal_for_screen();
 			}
 
 		// do we already have a tool object?
 		} else if (tool_objects[the_tool_id] == undefined) { // no, need to create
-		
-			// create the object with the attributes we already have	
+
+			// create the object with the attributes we already have
 			// we need to know the 'starting' uri for this tool for api_explorer_mode
 			tool_attributes.called_via_uri = tool_uri;
 			// construct the new Tool object and call load_tool() to trigger the message
 			tool_objects[the_tool_id] = new Tool(tool_attributes);
-			tool_objects[the_tool_id].load_tool();			
+			tool_objects[the_tool_id].load_tool();
 
 		} else { // yes, just load it up
 			// if keep-warm = Never, we need to always start fresh
@@ -870,10 +870,10 @@ function omnitool_controller (event,target_tool_uri) {
 				// if going from one screen to another, we want a full reload
 				if (tool_objects[outgoing_tool_id]['tool_type_short'] != 'screen' && tool_objects[the_tool_id]['tool_type_short'] == 'screen' && tool_objects[the_tool_id]['single_record_jemplate_block'] != undefined && tool_objects[the_tool_id]['single_record_jemplate_block'] != 0
 				&& tool_objects[outgoing_tool_id] != undefined && tool_objects[outgoing_tool_id]['current_data_code'] != undefined && tool_objects[outgoing_tool_id]['current_data_code'] != 'none') {
-				
+
 					tool_objects[the_tool_id].refresh_one_result( tool_objects[outgoing_tool_id]['current_data_code'] );
 					loading_overlay_effect('hide');
-				
+
 				// if reload_tool_controls = 1, we had the div/html already and
 				// need to reload the tool controls and the json
 				} else if (reload_tool_controls) {
@@ -887,14 +887,14 @@ function omnitool_controller (event,target_tool_uri) {
 						}
 						loading_overlay_effect('hide');
 					});
-				// otherwise, just refresh the JSON					
+				// otherwise, just refresh the JSON
 				} else {
 					// then re-run the process_json_uri
 					jemplate_bindings[ tool_objects[the_tool_id]['tool_display_div'] ].process_json_uri();
 					// hide the advanced search?
 					if ($('#advanced_search_' + the_tool_id).is(':visible')) {
 						tool_objects[the_tool_id].show_advanced_search();
-					}						
+					}
 					loading_overlay_effect('hide');
 				}
 			});
@@ -1016,10 +1016,10 @@ function query_tool (tool_uri,post_data_object) {
 
 // function to check the results of a query to the server, and alert the user as needed
 function check_for_errors (response) {
-	
+
 	if (response == undefined) { // nothing to do here
 		return 0;
-	}	
+	}
 
 	// did it indicate they need to log in?
 	if (typeof response == 'string' && response == 'Authentication needed.') { // send them to login page
@@ -1093,7 +1093,7 @@ function open_system_modal (data) {
 			$('#system_modal').data('bs.modal').options.keyboard = true;
 			$('#system_modal').data('bs.modal').escape();
 		}
-	
+
 		loading_modal_display('hide');
 		loading_overlay_effect('hide');
 	});
@@ -1102,14 +1102,14 @@ function open_system_modal (data) {
 // method to display the terms of service; accessed via username drop-down in UI
 // link should only be visible if terms_of_service.tt exists in $CODE_DIR/jemplates
 function open_terms_of_service (data) {
-	
+
 	// open the modal
 	$.when( open_system_modal({
 		terms_of_service: 1,
 		modal_title: instance_title + ' Terms of Service',
 		modal_title_icon: 'fa-legal'
 	}) ).done(function() {
-		
+
 		// and then load and render the terms of service for this application instance
 		jemplate_bindings[ 'terms_of_service' ] = new jemplate_binding(
 			'terms_of_service',
@@ -1117,9 +1117,9 @@ function open_terms_of_service (data) {
 			'terms_of_service.tt',
 			'/ui/get_instance_info'
 		);
-	
+
 	});
-		
+
 }
 
 // method to open up the API Information modal
@@ -1149,12 +1149,12 @@ function toggle_api_explorer_mode () {
 // for a Searching tool or (d) submit the Advanced Search form
 // relies on the api_explorer part of system_modals.tt
 function open_api_explorer_modal (data) {
-	// that data struct will have: 
+	// that data struct will have:
 	// 	uri = the URI to post to
 	//	post_parameters = either an array of the form's data or the search_parameters from Tool::searcher()
 	// 	results_data = the json_data that was sent back from the OT6 server
 	//	tool_name = the name of the Tool that was just queried, for which this query will work
-	
+
 	// do not do this if the explorer modal is already open, i.e. when a message tool fires and then underlying search tool right behind it
 	if ($("#system_modal").hasClass('in')) {
 		return;
@@ -1168,28 +1168,28 @@ function open_api_explorer_modal (data) {
 
 	// tell system_modals.tt to show this
 	data.api_explorer_mode = 1;
-	
+
 	// pass the title / icon info / instance contact
 	data.modal_title = 'API / POST Query Details for ' + data.tool_name;
 	data.modal_title_icon = 'fa-code';
 	data.instance_contact_email = instance_contact_email;
 	data.system_uri_base = system_uri_base;
-	
+
 	data.post_parameters_string = JSON.stringify(data.post_parameters, undefined, 2);
 
 	// display the tool's description if we have it
 	if (the_current_active_tool_id != 'none' && tool_objects[the_current_active_tool_id]['description'] != undefined) {
-		data.tool_description = tool_objects[the_current_active_tool_id]['description'];	
+		data.tool_description = tool_objects[the_current_active_tool_id]['description'];
 	}
-	
+
 	// form submits will have post_parameters as a list of hash
 	if (Array.isArray(data.post_parameters)) {
 		data.form_submission = 1;
 	}
-	
+
 	// stringified version of the data sent back from the OT6 server
 	data.results_data_string = JSON.stringify(data.results_data, undefined, 2);
-	
+
 	// open the modal
 	open_system_modal(data);
 }
@@ -1250,13 +1250,13 @@ create_gritter_notice = function(data) {
 	}
 
 	$.extend($.gritter.options, {
-	    position: 'bottom-right', // possibilities: bottom-left, bottom-right, top-left, top-right
+	    position: 'bottom-left', // possibilities: bottom-left, bottom-right, top-left, top-right
 		fade_in_speed: 100, // how fast notifications fade in (string or int)
 		fade_out_speed: 100, // how fast the notices fade out
 		time: 3000 // hang on the screen for...
 	});
 
-	// limit our open gritters 
+	// limit our open gritters
 	if ($('.gritter-item-wrapper').length > 3) {
 		var delete_this_id = $('.gritter-item-wrapper').first().attr('id').replace('gritter-item-','');
 		$.gritter.remove( delete_this_id );
@@ -1412,7 +1412,7 @@ function interactive_form_elements (tool_id,form_type) {
 					{
 						name: 'bold',
 						title: 'Toggle Bold Style',
-					},		
+					},
 					{
 						name: 'italic',
 						title: 'Toggle Italic Style',
@@ -1420,72 +1420,72 @@ function interactive_form_elements (tool_id,form_type) {
 					{
 						name: 'underline',
 						title: 'Toggle Underline Style',
-					},		
+					},
 					{
 						name: 'strikethrough',
 						title: 'Toggle Strike-Through Style',
-					},		
+					},
 					null,
 					{
 						name: 'foreColor',
 						title: 'Change Text Color',
-					},		
+					},
 					null,
 					{
 						name: 'insertunorderedlist',
 						title: 'Inset Unordered List',
-					},		
+					},
 					{
 						name: 'insertorderedlist',
 						title: 'Inset Ordered List',
-					},		
+					},
 					{
 						name: 'outdent',
 						title: 'Add outdent',
-					},		
+					},
 					{
 						name: 'indent',
 						title: 'Add indent',
-					},		
+					},
 					{
 						name: 'justifyleft',
 						title: 'Justify Left',
-					},		
+					},
 					{
 						name: 'justifycenter',
 						title: 'Justify Center',
-					},		
+					},
 					{
 						name: 'justifyright',
 						title: 'Justify Right',
-					},		
+					},
 					null,
 					{
 						name: 'createLink',
 						title: 'Create Link',
-					},		
+					},
 					{
 						name: 'unlink',
 						title: 'Unlink',
-					},		
+					},
 					{
 						name: 'insertImage',
 						title: 'Inset Image',
-					},		
+					},
 					null,
 					{
 						name: 'undo',
 						title: 'Undo Last Change',
-					},		
+					},
 					{
 						name: 'redo',
 						title: 'Redo Last Change',
-					},		
+					},
 					null,
 					{
 						name: 'viewSource',
 						title: 'View Source',
-					},		
+					},
 				],
 				wysiwyg: {
 					hotKeys: {

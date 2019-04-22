@@ -309,11 +309,7 @@ sub send_outbound_email {
 	}
 
 	# for non-Gmail, $protocol might be SSL or TLS
-	if ($protocol =~ /ssl/i) {
-		push(@driver_options, ssl => 1);
-	} elsif ($protocol =~ /tls/i) {
-		push(@driver_options, tls => 1);
-	}
+	push(@driver_options, tls => 1);
 
 	# grab system domain name for any needed defaulting of sender/recipient email addresses
 	$default_domain = hostdomain();
