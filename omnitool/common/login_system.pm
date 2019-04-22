@@ -311,6 +311,7 @@ sub test_their_credentials {
 			# expires => '+24h'
 		};
 		# useing the redirect with the cookie is the most reliable way to set it
+		$self->{luggage}{db}->do_sql('commit'); # must commit since we are terminating early
 		$self->{luggage}{belt}->{response}->redirect($self->{luggage}{params}{requested_uri});
 
 		# tell web_authentication() to not present login form
