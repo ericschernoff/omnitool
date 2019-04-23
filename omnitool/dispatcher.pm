@@ -32,9 +32,6 @@ sub new {
 	if (!$args{db} || (not $args{db}->{dbh}->ping)) {
 		$args{db} = omnitool::common::db->new();
 	}
-	
-	# let's use proper ACID transactions
-	$args{db}->do_sql('begin');
 
 	# let's get ready for our trip.  Please see notes within omnitool::common::luggage for all that this does
 	# luggage.pm and sessions.pm conspire to keep this tied to just this instance based on the HTTP_HOST
@@ -55,7 +52,7 @@ sub new {
 sub dispatch {
 	my ($luggage, $ui, $our_output, @uri_parts, $base_path, $blank, $method_name, $uri_path_base, $tool_obj, $run_method, $time_left);
 	my $self = shift;
-	
+
 	# if we are under a maintenance, we will want to report that to the user/browser
 	# in that case, the OT_MAINTENANCE env var will be set in our startup script
 	if ($ENV{OT_MAINTENANCE}) {
@@ -107,9 +104,6 @@ sub dispatch {
 	} else {
 		$our_output = 'ERROR: Do not have a handler set for '.$self->{luggage}{uri}.'.';
 	}
-
-	# let's use proper ACID transactions
-	$self->{luggage}{db}->do_sql('commit');
 
 	# call on our postman object to deliver this
 	$self->{luggage}{belt}->mr_zebra($our_output);
