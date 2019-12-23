@@ -35,6 +35,10 @@ __END__
 
 OmniTool - Build web application suites very quickly and with minimal code.
 
+=head1 END-OF-LIFE / DEPRECATION
+
+This system is no longer under active development, and use for new projects is highly-discouraged.  
+
 =head1 SYNOPSIS
 
 use omnitool;
