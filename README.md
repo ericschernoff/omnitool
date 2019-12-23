@@ -2,6 +2,12 @@
 
 OmniTool - Build web application suites very quickly and with minimal code.
 
+# END-OF-LIFE / DEPRECATION
+
+This system is no longer under active development.  OmniTool should not be used for any new projects.
+
+This repo contains some interesting ideas and perhaps a few solutions, so this repo will remain online for archive purposes.  If you are interested in taking over this project, please let me know.
+
 # SYNOPSIS
 
 	use omnitool;
